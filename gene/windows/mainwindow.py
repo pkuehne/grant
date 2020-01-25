@@ -3,8 +3,9 @@
 import sys
 import os
 import yaml
-from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel, QVBoxLayout, QAction
-from PyQt5.QtWidgets import QMessageBox, QFileDialog
+from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QAction
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QTableView
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from gene.research import ResearchProject
 
 
@@ -36,9 +37,13 @@ class MainWindow(QMainWindow):
         self.root = QWidget(self)
         self.setCentralWidget(self.root)
 
+        self.plan_model = QStandardItemModel()
+        self.plan_model.setHorizontalHeaderLabels(["Plan", "Open Tasks"])
+        self.plan_table = QTableView()
+        self.plan_table.setModel(self.plan_model)
+
         layout = QVBoxLayout()
-        layout.addWidget(QLabel("title"))
-        layout.addWidget(QLabel("goal"))
+        layout.addWidget(self.plan_table)
 
         self.root.setLayout(layout)
 
@@ -80,6 +85,17 @@ class MainWindow(QMainWindow):
         file_menu.addAction(save_project_action)
         file_menu.addSeparator()
         file_menu.addAction(quit_action)
+
+    def populate_plan_table(self):
+        """ Populates the plan table with all plans """
+        if self.project is None:
+            return
+
+        for plan in self.project.plans:
+            row = []
+            row.append(QStandardItem(plan.title))
+            row.append(QStandardItem(str(len(plan.tasks))))
+            self.plan_model.appendRow(row)
 
     def create_new_project(self):
         """ Creates a new Research Project """
@@ -125,3 +141,4 @@ class MainWindow(QMainWindow):
         with open(self.project.filename) as file:
             self.project.from_py(yaml.safe_load(file))
         self.setup_window_title()
+        self.populate_plan_table()
