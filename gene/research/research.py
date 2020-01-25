@@ -71,20 +71,18 @@ class ResearchPlan:
 class ResearchProject:
     """ All the research plans for a gedcom """
 
-    def __init__(self):
-        self.title = ""
+    def __init__(self, filename):
+        self.version = "1.0"
         self.gedcom = "none"
+        self.filename = filename
         self.plans = []
 
     def __str__(self):
-        retval = "Research Project: " + self.title
-        for plan in self.plans:
-            retval = retval + "\n\t" + str(plan)
-        return retval
+        return self.filename
 
     def from_py(self, data):
         """ Converts from pythonic datastructures to class """
-        self.title = data["title"]
+        self.version = data["version"]
         self.gedcom = data["gedcom"]
         for plan_data in data["plans"]:
             plan = ResearchPlan()
@@ -95,7 +93,7 @@ class ResearchProject:
     def to_py(self):
         """ Converts to pythonic representation """
         data = {}
-        data["title"] = self.title
+        data["version"] = self.version
         data["gedcom"] = self.gedcom
         data["plans"] = []
         for plan in self.plans:
@@ -104,4 +102,4 @@ class ResearchProject:
 
     def has_gedcom(self):
         """ Whether a gedcom file is associated with this project """
-        return self.gedcom is not "none"
+        return self.gedcom != "none"
