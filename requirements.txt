@@ -1,3 +1,4 @@
 pyqt5
 pytest
+pytest-qt
 pyyaml

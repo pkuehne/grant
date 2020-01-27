@@ -11,6 +11,8 @@ from gene.research import ResearchProject
 from .plan_overview import PlanOverview
 from .plan_details import PlanDetails
 
+ABOUT_STRING = "Copyright (c) 2020 by Peter Kuehne"
+
 
 class MainWindow(QMainWindow):
     """ The Main Window where we start """
@@ -42,16 +44,17 @@ class MainWindow(QMainWindow):
         """ Sets up all widgets and window stuff """
         self.stack = QStackedWidget()
 
-        self.plan_overview_screen = PlanOverview()
-        self.screens["plans"] = self.stack.addWidget(self.plan_overview_screen)
-        self.plan_changed.connect(
-            self.plan_overview_screen.load_plans)
         self.plan_details_screen = PlanDetails()
         self.screens["details"] = self.stack.addWidget(
             self.plan_details_screen)
         self.plan_details_screen.plan_changed.connect(self.plan_changed.emit)
         self.plan_details_screen.close_clicked.connect(
             lambda: self.stack.setCurrentIndex(self.screens["plans"]))
+
+        self.plan_overview_screen = PlanOverview()
+        self.screens["plans"] = self.stack.addWidget(self.plan_overview_screen)
+        self.plan_changed.connect(
+            self.plan_overview_screen.load_plans)
 
         def select_plan(index: int):
             self.plan_details_screen.select_plan(index)
@@ -61,7 +64,7 @@ class MainWindow(QMainWindow):
         self.plan_overview_screen.plan_deleted.connect(
             self.plan_overview_screen.load_plans)
 
-        self.stack.setCurrentIndex(0)
+        self.stack.setCurrentIndex(self.screens["plans"])
         self.setCentralWidget(self.stack)
 
         self.project_changed.connect(self.project_changed_handler)
@@ -121,7 +124,7 @@ class MainWindow(QMainWindow):
         def create_help_menu():
             about_action = QAction("&About", self)
             about_action.triggered.connect(lambda:
-                                           QMessageBox.about(self, "About", "test"))
+                                           QMessageBox.about(self, "About", ABOUT_STRING))
             help_menu = self.menuBar().addMenu("&Help")
             help_menu.addAction(about_action)
 

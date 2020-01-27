@@ -65,7 +65,7 @@ class PlanOverview(QWidget):
         if self.project is None:
             return
 
-        self.plan_model.clear()  # removeRows()
+        self.plan_model.setRowCount(0)
         for plan in self.project.plans:
             row = []
             row.append(QStandardItem(plan.title))
