@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QMainWindow, QAction
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from PyQt5.QtWidgets import QStackedWidget
 from PyQt5.QtCore import pyqtSignal
-from gene.research import ResearchProject, ResearchPlan
+from gene.research import ResearchProject
 from .plan_overview import PlanOverview
 from .plan_details import PlanDetails
 
@@ -15,7 +15,7 @@ from .plan_details import PlanDetails
 class MainWindow(QMainWindow):
     """ The Main Window where we start """
     project_changed = pyqtSignal()
-    plan_changed = pyqtSignal(int)
+    plan_changed = pyqtSignal()
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -44,19 +44,22 @@ class MainWindow(QMainWindow):
 
         self.plan_overview_screen = PlanOverview()
         self.screens["plans"] = self.stack.addWidget(self.plan_overview_screen)
-        self.plan_changed.connect(lambda _:
-                                  self.plan_overview_screen.populate_plan_table())
+        self.plan_changed.connect(
+            self.plan_overview_screen.load_plans)
         self.plan_details_screen = PlanDetails()
         self.screens["details"] = self.stack.addWidget(
             self.plan_details_screen)
+        self.plan_details_screen.plan_changed.connect(self.plan_changed.emit)
         self.plan_details_screen.close_clicked.connect(
             lambda: self.stack.setCurrentIndex(self.screens["plans"]))
-        self.plan_details_screen.plan_saved.connect(self.plan_changed.emit)
 
         def select_plan(index: int):
             self.plan_details_screen.select_plan(index)
             self.stack.setCurrentIndex(self.screens["details"])
-        self.plan_overview_screen.plan_selected.connect(select_plan)
+        self.plan_overview_screen.plan_edited.connect(select_plan)
+        self.plan_overview_screen.plan_added.connect(select_plan)
+        self.plan_overview_screen.plan_deleted.connect(
+            self.plan_overview_screen.load_plans)
 
         self.stack.setCurrentIndex(0)
         self.setCentralWidget(self.stack)
@@ -93,6 +96,11 @@ class MainWindow(QMainWindow):
             save_project_action.triggered.connect(self.save_project)
             save_project_action.setDisabled(True)
 
+            save_project_as_action = QAction("Save &As ...", self)
+            save_project_as_action.setShortcut("CTRL+A")
+            save_project_as_action.triggered.connect(self.save_project_as)
+            save_project_as_action.setDisabled(True)
+
             quit_action = QAction("&Quit", self)
             quit_action.setShortcut("CTRL+Q")
             quit_action.triggered.connect(sys.exit)
@@ -101,40 +109,23 @@ class MainWindow(QMainWindow):
             file_menu.addAction(create_new_action)
             file_menu.addAction(open_project_action)
             file_menu.addAction(save_project_action)
+            file_menu.addAction(save_project_as_action)
             file_menu.addSeparator()
             file_menu.addAction(quit_action)
 
-            self.project_changed.connect(
-                lambda: save_project_action.setDisabled(self.project is None))
-
-        def create_add_menu():
-            add_plan_action = QAction("Add &Plan", self)
-            add_plan_action.setShortcut("CTRL+P")
-            add_plan_action.setDisabled(True)
-
-            def add():
-                self.project.plans.append(ResearchPlan())
-                self.plan_changed.emit(len(self.project.plans)-1)
-                self.plan_details_screen.select_plan(len(self.project.plans)-1)
-                self.stack.setCurrentIndex(self.screens["details"])
-
-            add_plan_action.triggered.connect(add)
-
-            add_menu = self.menuBar().addMenu("&Add")
-            add_menu.addAction(add_plan_action)
-
-            self.project_changed.connect(
-                lambda: add_plan_action.setDisabled(self.project is None))
+            def enable_on_project_load():
+                save_project_action.setDisabled(self.project is None)
+                save_project_as_action.setDisabled(self.project is None)
+            self.project_changed.connect(enable_on_project_load)
 
         def create_help_menu():
             about_action = QAction("&About", self)
             about_action.triggered.connect(lambda:
-                                           QMessageBox.about(self, "ABout", "test"))
+                                           QMessageBox.about(self, "About", "test"))
             help_menu = self.menuBar().addMenu("&Help")
             help_menu.addAction(about_action)
 
         create_file_menu()
-        create_add_menu()
         create_help_menu()
 
     def project_changed_handler(self):
@@ -170,6 +161,23 @@ class MainWindow(QMainWindow):
         with open(self.project.filename, 'w') as file:
             yaml.dump(self.project.to_py(), file)
         print("Saved project: " + self.project.filename)
+
+    def save_project_as(self):
+        """ Saves the currently loaded project as a new name """
+        if self.project is None:
+            print("No project to save")
+            return
+
+        (file_name, _) = QFileDialog.getSaveFileName(
+            self, "Save as ", ".", "Gene Project (*.gra)")
+        if file_name == "":
+            print("Cancelled saving")
+            return
+
+        self.project.filename = file_name
+        self.save_project()
+
+        self.project_changed.emit()
 
     def open_project(self):
         """ Opens an existing project """

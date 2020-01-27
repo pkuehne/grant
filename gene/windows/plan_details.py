@@ -11,7 +11,7 @@ from gene.research import ResearchPlan
 class PlanDetails(QWidget):
     """ Displays all current Research Plans """
     close_clicked = pyqtSignal()
-    plan_saved = pyqtSignal(int)
+    plan_changed = pyqtSignal()
 
     def __init__(self):
         super(PlanDetails, self).__init__()
@@ -20,22 +20,19 @@ class PlanDetails(QWidget):
 
         form = QFormLayout()
         self.title = QLineEdit()
+        self.title.editingFinished.connect(self.save_plan)
         form.addRow(QLabel("Title:"), self.title)
+
         self.goal = QTextEdit()
+        self.goal.textChanged.connect(self.save_plan)
         form.addRow(QLabel("Goal:"), self.goal)
 
-        save_button = QPushButton()
-        save_button.setText("Save")
-        save_button.pressed.connect(self.save_plan)
-        delete_button = QPushButton()
-        delete_button.setText("Delete")
         close_button = QPushButton()
         close_button.setText("Close")
         close_button.pressed.connect(self.close_clicked.emit)
 
         button_box = QHBoxLayout()
-        button_box.addWidget(save_button)
-        button_box.addWidget(delete_button)
+        button_box.addStretch()
         button_box.addWidget(close_button)
 
         layout = QVBoxLayout()
@@ -54,7 +51,7 @@ class PlanDetails(QWidget):
             return
 
         self.index = index
-        plan = self.project.plans[self.index]
+        plan: ResearchPlan = self.project.plans[self.index]
         print("Selecting " + str(index) + " -> " + str(plan))
         self.title.setText(plan.title)
         self.goal.setText(plan.goal)
@@ -64,4 +61,4 @@ class PlanDetails(QWidget):
         plan = self.project.plans[self.index]
         plan.title = self.title.text()
         plan.goal = self.goal.document().toPlainText()
-        self.plan_saved.emit(self.index)
+        self.plan_changed.emit()
