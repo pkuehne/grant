@@ -5,9 +5,10 @@ from PyQt5.QtWidgets import QTableView, QAbstractItemView
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtCore import pyqtSignal
 from gene.research import ResearchProject, ResearchPlan
+from gene.windows.base_screens import DetailSecreen
 
 
-class PlanOverview(QWidget):
+class PlanOverview(DetailSecreen):
     """ Displays all current Research Plans """
 
     plan_edited = pyqtSignal(int)
@@ -16,7 +17,6 @@ class PlanOverview(QWidget):
 
     def __init__(self):
         super(PlanOverview, self).__init__()
-        self.project: ResearchProject = None
         self.plan_model = QStandardItemModel()
         self.plan_model.setHorizontalHeaderLabels(["Plan", "Open Tasks"])
         self.plan_table = QTableView()
@@ -54,9 +54,9 @@ class PlanOverview(QWidget):
 
         self.setLayout(layout)
 
-    def load_project(self, project: ResearchProject):
+    def update_project(self, project: ResearchProject):
         """ Slot for when project changes """
-        self.project = project
+        super(PlanOverview, self).update_project(project)
         self.load_plans()
 
     def load_plans(self):
@@ -67,7 +67,7 @@ class PlanOverview(QWidget):
 
         self.plan_model.setRowCount(0)
         for plan in self.project.plans:
-            row = []
+            row=[]
             row.append(QStandardItem(plan.title))
             row.append(QStandardItem(str(len(plan.tasks))))
             self.plan_model.appendRow(row)

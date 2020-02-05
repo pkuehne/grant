@@ -6,12 +6,16 @@ import yaml
 from PyQt5.QtWidgets import QMainWindow, QAction
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from PyQt5.QtWidgets import QStackedWidget
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtCore import pyqtSignal
 from gene.research import ResearchProject
 from .plan_overview import PlanOverview
 from .plan_details import PlanDetails
+from .base_screens import DetailSecreen
+from .tree_selection_screen import TreeSelectionScreen
 
-ABOUT_STRING = "Copyright (c) 2020 by Peter Kuehne"
+ABOUT_STRING = "Copyright (c) 2020 by Peter Kühne"
 
 
 class MainWindow(QMainWindow):
@@ -24,6 +28,10 @@ class MainWindow(QMainWindow):
         self.project = None
         self.discard_dialog = None
         self.screens = {}
+        self.selection_screens = {}
+        self.selection_stack = None
+        self.detail_screens = {}
+        self.detail_stack = None
         self.setup_window()
         self.setup_window_title()
         self.setup_menubar()
@@ -42,30 +50,29 @@ class MainWindow(QMainWindow):
 
     def setup_window(self):
         """ Sets up all widgets and window stuff """
-        self.stack = QStackedWidget()
+        self.selection_stack = QStackedWidget()
 
-        self.plan_details_screen = PlanDetails()
-        self.screens["details"] = self.stack.addWidget(
-            self.plan_details_screen)
-        self.plan_details_screen.plan_changed.connect(self.plan_changed.emit)
-        self.plan_details_screen.close_clicked.connect(
-            lambda: self.stack.setCurrentIndex(self.screens["plans"]))
+        self.selection_screens["tree"] = TreeSelectionScreen()
+        self.selection_stack.addWidget(self.selection_screens["tree"])
 
-        self.plan_overview_screen = PlanOverview()
-        self.screens["plans"] = self.stack.addWidget(self.plan_overview_screen)
-        self.plan_changed.connect(
-            self.plan_overview_screen.load_plans)
+        self.detail_stack = QStackedWidget()
 
-        def select_plan(index: int):
-            self.plan_details_screen.select_plan(index)
-            self.stack.setCurrentIndex(self.screens["details"])
-        self.plan_overview_screen.plan_edited.connect(select_plan)
-        self.plan_overview_screen.plan_added.connect(select_plan)
-        self.plan_overview_screen.plan_deleted.connect(
-            self.plan_overview_screen.load_plans)
+        self.detail_screens["blank"] = DetailSecreen()
+        self.detail_stack.addWidget(self.detail_screens["blank"])
+        self.detail_screens["plan"] = PlanOverview()
+        self.detail_stack.addWidget(self.detail_screens["plan"])
+        self.detail_screens["task"] = PlanDetails()
+        self.detail_stack.addWidget(self.detail_screens["task"])
 
-        self.stack.setCurrentIndex(self.screens["plans"])
-        self.setCentralWidget(self.stack)
+        self.detail_stack.setCurrentWidget(self.detail_screens["blank"])
+
+        central_widget = QWidget()
+        layout = QHBoxLayout()
+        layout.addWidget(self.selection_stack)
+        layout.addWidget(self.detail_stack)
+        central_widget.setLayout(layout)
+
+        self.setCentralWidget(central_widget)
 
         self.project_changed.connect(self.project_changed_handler)
 
@@ -134,8 +141,11 @@ class MainWindow(QMainWindow):
     def project_changed_handler(self):
         """ Updates all the screens with the new project information """
         self.setup_window_title()
-        self.plan_overview_screen.load_project(self.project)
-        self.plan_details_screen.load_project(self.project)
+
+        for screen in self.selection_screens.values():
+            screen.update_project(self.project)
+        for screen in self.detail_screens.values():
+            screen.update_project(self.project)
 
     def create_new_project(self):
         """ Creates a new Research Project """

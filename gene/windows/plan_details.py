@@ -7,16 +7,16 @@ from PyQt5.QtWidgets import QLabel, QLineEdit, QTextEdit, QPushButton, QGroupBox
 from PyQt5.QtCore import pyqtSignal
 from gene.research import ResearchProject, ResearchPlan
 from .task_overview import TaskOverview
+from .base_screens import DetailSecreen
 
 
-class PlanDetails(QWidget):
+class PlanDetails(DetailSecreen):
     """ Displays all current Research Plans """
     close_clicked = pyqtSignal()
     plan_changed = pyqtSignal()
 
     def __init__(self):
         super(PlanDetails, self).__init__()
-        self.project = None
         self.index = 0
 
         form_layout = QFormLayout()
@@ -52,10 +52,6 @@ class PlanDetails(QWidget):
         layout.addLayout(button_box)
 
         self.setLayout(layout)
-
-    def load_project(self, project: ResearchProject):
-        """ Slot for when project changes """
-        self.project = project
 
     def select_plan(self, index: int):
         """ Slot for when the selected plan changes """
