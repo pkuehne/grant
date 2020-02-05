@@ -1,6 +1,7 @@
 """ Class for Tree Selection Screen """
 
 from PyQt5.QtGui import QStandardItemModel
+from PyQt5.QtGui import QStandardItem
 from PyQt5.QtWidgets import QTableView
 from PyQt5.QtWidgets import QAbstractItemView
 from PyQt5.QtWidgets import QVBoxLayout
@@ -30,3 +31,12 @@ class TreeSelectionScreen(SelectionScreen):
         layout.addWidget(self.plan_table)
 
         self.setLayout(layout)
+
+    def reload_screen(self):
+        """ Loads the screen """
+        self.plan_model.setRowCount(0)
+        for plan in self.project.plans:
+            row = []
+            row.append(QStandardItem(plan.title))
+            row.append(QStandardItem(str(len(plan.tasks))))
+            self.plan_model.appendRow(row)

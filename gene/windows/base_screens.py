@@ -19,6 +19,15 @@ class BaseScreen(QWidget):
 class SelectionScreen(BaseScreen):
     """ Basis of all selection screens on the left-hand side """
 
+    def update_project(self, project: ResearchProject):
+        """ Updates the project representation and reloads the screen """
+        super(SelectionScreen, self).update_project(project)
+        self.reload_screen()
+
+    def reload_screen(self):
+        """ Called when things change """
+        pass
+
 
 class DetailSecreen(BaseScreen):
     """ Basis of all detail screens on the right-hand side """
