@@ -16,7 +16,6 @@ class PlanDetails(DetailScreen):
 
         form_layout = QFormLayout()
         self.title = QLineEdit()
-        # self.title.editingFinished.connect(self.save_plan)
         form_layout.addRow(QLabel("Title:"), self.title)
 
         self.goal = QTextEdit()
@@ -33,17 +32,16 @@ class PlanDetails(DetailScreen):
 
         self.mapper = QDataWidgetMapper()
         self.mapper.setModel(self.data_model)
-        self.mapper.addMapping(self.goal, 0)
-        self.mapper.toLast()
+        self.mapper.addMapping(self.title, 0)
+        self.title.editingFinished.connect(self.mapper.submit)
+        self.mapper.toFirst()
 
     def set_selected_item(self, item):
         """ Receive selected item from main window """
         if self.project is None:
             return
-        print("Setting mapper model index " +
-              str(item.row()) + " " + str(item.column()))
-        # self.mapper.setCurrentModelIndex(item)
-        self.mapper.toLast()
+        self.mapper.setRootIndex(item.parent())
+        self.mapper.setCurrentModelIndex(item)
 
     def save_plan(self):
         """ Save the plan """

@@ -10,7 +10,6 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtCore import pyqtSignal
 from gene.research import ResearchProject
-from .plan_overview import PlanOverview
 from .plan_details import PlanDetails
 from .base_screens import DetailScreen
 from .tree_selection_screen import TreeSelectionScreen

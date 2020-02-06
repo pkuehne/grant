@@ -20,11 +20,11 @@ class TreeSelectionScreen(SelectionScreen):
 
         layout = QVBoxLayout()
         layout.addWidget(self.plan_table)
-
         self.setLayout(layout)
 
     def selection_changed(self, selected, _):
         """ Handle changed selection """
         if len(selected.indexes()) != 1:
             return
-        self.item_selected.emit(selected.indexes()[0])
+        index = selected.indexes()[0]
+        self.item_selected.emit(index)

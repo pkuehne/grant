@@ -117,11 +117,20 @@ class TreeModel(QAbstractItemModel):
         """ Return the data associated with the specific index for the role """
         if not index.isValid():
             return None
-        if role != Qt.DisplayRole:
+        if role not in [Qt.DisplayRole, Qt.EditRole]:
             return None
-
         node = index.internalPointer()
         return node.get_text()
+
+    def setData(self, index, value, _):  # pylint: disable=invalid-name
+        """ Updates the nodes values based on an edit """
+        if not index.isValid():
+            return False
+        node = index.internalPointer()
+        node.data.title = value
+
+        self.dataChanged.emit(index, index)
+        return True
 
     def headerData(self, section, orientation, role):  # pylint: disable=invalid-name, no-self-use
         """ Set the header information """
@@ -129,3 +138,9 @@ class TreeModel(QAbstractItemModel):
                 and section == 0:
             return "Research Project"
         return None
+
+    def flags(self, index):  # pylint: disable= no-self-use
+        """ Returns the flags for the given index """
+        if not index.isValid():
+            return Qt.NoItemFlags
+        return Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled
