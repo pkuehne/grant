@@ -1,6 +1,6 @@
 """ Widget to show Research Plans """
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
+from PyQt5.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton
 from PyQt5.QtWidgets import QTableView, QAbstractItemView
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtCore import pyqtSignal
@@ -67,7 +67,7 @@ class PlanOverview(DetailScreen):
 
         self.plan_model.setRowCount(0)
         for plan in self.project.plans:
-            row=[]
+            row = []
             row.append(QStandardItem(plan.title))
             row.append(QStandardItem(str(len(plan.tasks))))
             self.plan_model.appendRow(row)

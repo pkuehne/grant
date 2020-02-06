@@ -11,8 +11,8 @@ from gene.windows.base_screens import SelectionScreen
 class FilterSelectionScreen(SelectionScreen):
     """ Shows all plans and tasks in a tree view """
 
-    def __init__(self):
-        super(FilterSelectionScreen, self).__init__()
+    def __init__(self, model):
+        super(FilterSelectionScreen, self).__init__(model)
 
         self.plan_model = QStandardItemModel()
         self.plan_model.setHorizontalHeaderLabels(["Plan", "Open Tasks"])

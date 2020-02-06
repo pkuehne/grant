@@ -15,6 +15,7 @@ from .plan_details import PlanDetails
 from .base_screens import DetailScreen
 from .tree_selection_screen import TreeSelectionScreen
 from .filter_selection_screen import FilterSelectionScreen
+from .tree_model import TreeModel
 
 ABOUT_STRING = "Copyright (c) 2020 by Peter Kühne"
 TEST_DATA = """
@@ -42,8 +43,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.project = None
+        self.data_model = TreeModel()
         self.discard_dialog = None
-        self.screens = {}
         self.selection_screens = {}
         self.selection_stack = None
         self.detail_screens = {}
@@ -73,21 +74,24 @@ class MainWindow(QMainWindow):
         """ Sets up all widgets and window stuff """
         self.selection_stack = QStackedWidget()
 
-        self.selection_screens["tree"] = TreeSelectionScreen()
+        self.selection_screens["tree"] = TreeSelectionScreen(self.data_model)
         self.selection_stack.addWidget(self.selection_screens["tree"])
 
-        self.selection_screens["filter"] = FilterSelectionScreen()
+        self.selection_screens["filter"] = FilterSelectionScreen(
+            self.data_model)
         self.selection_stack.addWidget(self.selection_screens["filter"])
 
         def selection_changed(item):
-            print(item)
-            if "gedcom" in item:
-                self.detail_stack.setCurrentWidget(self.detail_screens["blank"])
+            node = item.internalPointer()
+            if node.type == "gedcom":
+                self.detail_stack.setCurrentWidget(
+                    self.detail_screens["blank"])
                 return
-            if "task" in item:
-                self.detail_stack.setCurrentWidget(self.detail_screens["blank"])
+            if node.type == "task":
+                self.detail_stack.setCurrentWidget(
+                    self.detail_screens["blank"])
                 return
-            if "plan" in item:
+            if node.type == "plan":
                 self.detail_stack.setCurrentWidget(self.detail_screens["plan"])
                 self.detail_screens["plan"].set_selected_item(item)
                 return
@@ -97,11 +101,9 @@ class MainWindow(QMainWindow):
 
         self.detail_stack = QStackedWidget()
 
-        self.detail_screens["blank"] = DetailScreen()
+        self.detail_screens["blank"] = DetailScreen(self.data_model)
         self.detail_stack.addWidget(self.detail_screens["blank"])
-        self.detail_screens["legacy"] = PlanOverview()
-        self.detail_stack.addWidget(self.detail_screens["legacy"])
-        self.detail_screens["plan"] = PlanDetails()
+        self.detail_screens["plan"] = PlanDetails(self.data_model)
         self.detail_stack.addWidget(self.detail_screens["plan"])
 
         self.detail_stack.setCurrentWidget(self.detail_screens["blank"])
@@ -182,6 +184,7 @@ class MainWindow(QMainWindow):
         """ Updates all the screens with the new project information """
         self.setup_window_title()
 
+        self.data_model.set_project(self.project)
         for screen in self.selection_screens.values():
             screen.update_project(self.project)
         for screen in self.detail_screens.values():
