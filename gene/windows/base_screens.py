@@ -1,6 +1,7 @@
 """ Bases for all other screens in the main window """
 
 from PyQt5.QtWidgets import QWidget
+from PyQt5.QtCore import pyqtSignal
 from gene.research import ResearchProject
 
 
@@ -18,6 +19,7 @@ class BaseScreen(QWidget):
 
 class SelectionScreen(BaseScreen):
     """ Basis of all selection screens on the left-hand side """
+    item_selected = pyqtSignal(dict)
 
     def update_project(self, project: ResearchProject):
         """ Updates the project representation and reloads the screen """
@@ -26,8 +28,10 @@ class SelectionScreen(BaseScreen):
 
     def reload_screen(self):
         """ Called when things change """
-        pass
 
 
-class DetailSecreen(BaseScreen):
+class DetailScreen(BaseScreen):
     """ Basis of all detail screens on the right-hand side """
+
+    def set_selected_item(self, item):
+        """ Called when the item to show has changed """

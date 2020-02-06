@@ -1,7 +1,6 @@
 """ Class for Tree Selection Screen """
 
 from PyQt5.QtGui import QStandardItemModel
-#from PyQt5.QtGui import QAbstractItemModel
 from PyQt5.QtGui import QStandardItem
 from PyQt5.QtWidgets import QTableView
 from PyQt5.QtWidgets import QAbstractItemView
@@ -9,11 +8,11 @@ from PyQt5.QtWidgets import QVBoxLayout
 from gene.windows.base_screens import SelectionScreen
 
 
-class TreeSelectionScreen(SelectionScreen):
+class FilterSelectionScreen(SelectionScreen):
     """ Shows all plans and tasks in a tree view """
 
     def __init__(self):
-        super(TreeSelectionScreen, self).__init__()
+        super(FilterSelectionScreen, self).__init__()
 
         self.plan_model = QStandardItemModel()
         self.plan_model.setHorizontalHeaderLabels(["Plan", "Open Tasks"])

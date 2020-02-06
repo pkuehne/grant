@@ -5,10 +5,10 @@ from PyQt5.QtWidgets import QTableView, QAbstractItemView
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtCore import pyqtSignal
 from gene.research import ResearchProject, ResearchPlan
-from gene.windows.base_screens import DetailSecreen
+from gene.windows.base_screens import DetailScreen
 
 
-class PlanOverview(DetailSecreen):
+class PlanOverview(DetailScreen):
     """ Displays all current Research Plans """
 
     plan_edited = pyqtSignal(int)

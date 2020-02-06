@@ -12,10 +12,25 @@ from PyQt5.QtCore import pyqtSignal
 from gene.research import ResearchProject
 from .plan_overview import PlanOverview
 from .plan_details import PlanDetails
-from .base_screens import DetailSecreen
+from .base_screens import DetailScreen
 from .tree_selection_screen import TreeSelectionScreen
 
 ABOUT_STRING = "Copyright (c) 2020 by Peter Kühne"
+TEST_DATA = """
+gedcom: none
+plans:
+- goal: To be a goood test plan
+  tasks:
+  - status: active
+    title: Task 1
+  - status: active
+    title: Task 2
+  title: Test Plan 1
+- goal: Another test plan
+  tasks: []
+  title: Test Plan 2
+version: '1.0'
+"""
 
 
 class MainWindow(QMainWindow):
@@ -38,6 +53,11 @@ class MainWindow(QMainWindow):
         self.setup_statusbar()
         self.setup_dialogs()
 
+        self.project = ResearchProject("")
+        self.project.from_py(yaml.safe_load(TEST_DATA))
+
+        self.project_changed.emit()
+
     def setup_window_title(self):
         """ Sets the window title from project name """
         title = "Gene - "
@@ -55,14 +75,29 @@ class MainWindow(QMainWindow):
         self.selection_screens["tree"] = TreeSelectionScreen()
         self.selection_stack.addWidget(self.selection_screens["tree"])
 
+        self.selection_screens["filter"] = TreeSelectionScreen()
+        self.selection_stack.addWidget(self.selection_screens["filter"])
+
+        def selection_changed(item):
+            print(item)
+            if "gedcom" in item:
+                pass
+            if "task" in item:
+                pass
+            if "plan" in item:
+                self.detail_stack.setCurrentWidget(self.detail_screens["plan"])
+                self.detail_screens["plan"].set_selected_item(item)
+            
+        self.selection_screens["tree"].item_selected.connect(selection_changed)
+
         self.detail_stack = QStackedWidget()
 
-        self.detail_screens["blank"] = DetailSecreen()
+        self.detail_screens["blank"] = DetailScreen()
         self.detail_stack.addWidget(self.detail_screens["blank"])
-        self.detail_screens["plan"] = PlanOverview()
+        self.detail_screens["legacy"] = PlanOverview()
+        self.detail_stack.addWidget(self.detail_screens["legacy"])
+        self.detail_screens["plan"] = PlanDetails()
         self.detail_stack.addWidget(self.detail_screens["plan"])
-        self.detail_screens["task"] = PlanDetails()
-        self.detail_stack.addWidget(self.detail_screens["task"])
 
         self.detail_stack.setCurrentWidget(self.detail_screens["blank"])
 
