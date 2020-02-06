@@ -7,7 +7,7 @@ from gene.windows.base_screens import BaseScreen
 def test_base_screen_has_no_project_by_default(qtbot):
     """ creating a base screen does not set a project """
     # Given
-    screen = BaseScreen()
+    screen = BaseScreen(None)
     qtbot.addWidget(screen)
 
     # When
@@ -19,7 +19,7 @@ def test_base_screen_has_no_project_by_default(qtbot):
 def test_update_project_sets_project(qtbot):
     """ update_project() slot sets the screen's project reference """
     # Given
-    screen = BaseScreen()
+    screen = BaseScreen(None)
     project = ResearchProject("")
     qtbot.addWidget(screen)
 

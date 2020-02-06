@@ -33,7 +33,7 @@ class PlanDetails(DetailScreen):
         self.mapper = QDataWidgetMapper()
         self.mapper.setModel(self.data_model)
         self.mapper.addMapping(self.title, 0)
-        self.title.editingFinished.connect(self.mapper.submit)
+        # self.title.editingFinished.connect(self.mapper.submit)
         self.mapper.toFirst()
 
     def set_selected_item(self, item):
@@ -42,10 +42,3 @@ class PlanDetails(DetailScreen):
             return
         self.mapper.setRootIndex(item.parent())
         self.mapper.setCurrentModelIndex(item)
-
-    def save_plan(self):
-        """ Save the plan """
-        plan = self.project.plans[self.index]
-        plan.title = self.title.text()
-        plan.goal = self.goal.document().toPlainText()
-        self.plan_changed.emit()
