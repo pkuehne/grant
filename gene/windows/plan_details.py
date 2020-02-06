@@ -2,8 +2,6 @@
 
 from PyQt5.QtWidgets import QVBoxLayout, QFormLayout
 from PyQt5.QtWidgets import QLabel, QLineEdit, QTextEdit, QGroupBox
-# from PyQt5.QtWidgets import QTableView, QAbstractItemView
-# from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtCore import pyqtSignal
 from gene.research import ResearchPlan
 from .base_screens import DetailScreen

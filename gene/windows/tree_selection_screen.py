@@ -10,7 +10,7 @@ from gene.windows.base_screens import SelectionScreen
 from gene.research import ResearchProject
 
 
-class TreeNode(object):
+class TreeNode:
     """ A wrapper class to normalize the parent/child relationship for node items """
 
     def __init__(self, node_type, data, parent, row):
@@ -26,8 +26,36 @@ class TreeNode(object):
             return [TreeNode("plan", plan, self, index)
                     for index, plan in enumerate(self.data)]
         if self.type == "plan":
-            return [TreeNode("task", task, self, index) for index, task, in enumerate(self.data.tasks)]
+            return [TreeNode("task", task, self, index)
+                    for index, task, in enumerate(self.data.tasks)]
         return []
+
+    def get_text(self):
+        """ Return a stringified representation for the given node """
+        if self.type == "gedcom":
+            return "Gedcom: " + self.data
+        if self.type == "filename":
+            return "Filename: " + self.data
+        if self.type == "plans":
+            return "Plans"
+        if self.type == "plan":
+            return self.data.title
+        if self.type == "task":
+            return self.data.title
+        return self.data
+
+    def get_selection_representation(self):
+        """ Return a way to identify the item selected """
+        item = {}
+
+        if self.type == "gedcom":
+            item["gedcom"] = True
+        if self.type == "plan":
+            item["plan"] = self.row
+        if self.type == "task":
+            item["plan"] = self.parent.row
+            item["task"] = self.row
+        return item
 
 
 class TreeModel(QAbstractItemModel):
@@ -93,21 +121,11 @@ class TreeModel(QAbstractItemModel):
         """ Return the data associated with the specific index for the role """
         if not index.isValid():
             return None
-        node = index.internalPointer()
         if role != Qt.DisplayRole:
             return None
 
-        if node.type == "gedcom":
-            return "Gedcom: " + node.data
-        if node.type == "filename":
-            return "Filename: " + node.data
-        if node.type == "plans":
-            return "Plans"
-        if node.type == "plan":
-            return node.data.title
-        if node.type == "task":
-            return node.data.title
-        return node.data
+        node = index.internalPointer()
+        return node.get_text()
 
     def headerData(self, section, orientation, role):
         """ Set the header information """
@@ -115,12 +133,6 @@ class TreeModel(QAbstractItemModel):
                 and section == 0:
             return "Research Project"
         return None
-
-    # def flags(self, index):
-    #     """ Set any flags on the model """
-    #     if not index.isValid():
-    #         return Qt.NoItemFlags
-    #     return Qt.NoItemFlags
 
 
 class TreeSelectionScreen(SelectionScreen):
@@ -150,14 +162,4 @@ class TreeSelectionScreen(SelectionScreen):
         if len(selected.indexes()) != 1:
             return
         node = selected.indexes()[0].internalPointer()
-        item = {}
-
-        if node.type == "gedcom":
-            item["gedcom"] = True
-        if node.type == "plan":
-            item["plan"] = node.row
-        if node.type == "task":
-            item["plan"] = node.parent.row
-            item["task"] = node.row
-
-        self.item_selected.emit(item)
+        self.item_selected.emit(node.get_selection_representation())
