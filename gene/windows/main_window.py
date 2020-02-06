@@ -14,6 +14,7 @@ from .plan_overview import PlanOverview
 from .plan_details import PlanDetails
 from .base_screens import DetailScreen
 from .tree_selection_screen import TreeSelectionScreen
+from .filter_selection_screen import FilterSelectionScreen
 
 ABOUT_STRING = "Copyright (c) 2020 by Peter Kühne"
 TEST_DATA = """
@@ -53,7 +54,7 @@ class MainWindow(QMainWindow):
         self.setup_statusbar()
         self.setup_dialogs()
 
-        self.project = ResearchProject("")
+        self.project = ResearchProject("test_data")
         self.project.from_py(yaml.safe_load(TEST_DATA))
 
         self.project_changed.emit()
@@ -75,19 +76,23 @@ class MainWindow(QMainWindow):
         self.selection_screens["tree"] = TreeSelectionScreen()
         self.selection_stack.addWidget(self.selection_screens["tree"])
 
-        self.selection_screens["filter"] = TreeSelectionScreen()
+        self.selection_screens["filter"] = FilterSelectionScreen()
         self.selection_stack.addWidget(self.selection_screens["filter"])
 
         def selection_changed(item):
             print(item)
             if "gedcom" in item:
-                pass
+                self.detail_stack.setCurrentWidget(self.detail_screens["blank"])
+                return
             if "task" in item:
-                pass
+                self.detail_stack.setCurrentWidget(self.detail_screens["blank"])
+                return
             if "plan" in item:
                 self.detail_stack.setCurrentWidget(self.detail_screens["plan"])
                 self.detail_screens["plan"].set_selected_item(item)
-            
+                return
+            self.detail_stack.setCurrentWidget(self.detail_screens["blank"])
+
         self.selection_screens["tree"].item_selected.connect(selection_changed)
 
         self.detail_stack = QStackedWidget()
