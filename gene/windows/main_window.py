@@ -12,6 +12,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSignal
 from gene.research import ResearchProject
 from .plan_details import PlanDetails
+from .task_details import TaskDetails
 from .base_screens import DetailScreen
 from .tree_selection_screen import TreeSelectionScreen
 from .filter_selection_screen import FilterSelectionScreen
@@ -90,7 +91,7 @@ class MainWindow(QMainWindow):
                 return
             if node.type == "task":
                 self.detail_stack.setCurrentWidget(
-                    self.detail_screens["blank"])
+                    self.detail_screens["task"])
                 return
             if node.type == "plan":
                 self.detail_stack.setCurrentWidget(self.detail_screens["plan"])
@@ -106,6 +107,8 @@ class MainWindow(QMainWindow):
         self.detail_stack.addWidget(self.detail_screens["blank"])
         self.detail_screens["plan"] = PlanDetails(self.data_model)
         self.detail_stack.addWidget(self.detail_screens["plan"])
+        self.detail_screens["task"] = TaskDetails(self.data_model)
+        self.detail_stack.addWidget(self.detail_screens["task"])
 
         self.detail_stack.setCurrentWidget(self.detail_screens["blank"])
 

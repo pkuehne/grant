@@ -162,7 +162,6 @@ class TreeModel(QAbstractItemModel):
     def parent(self, index):
         """ Return the parent index object for given item """
         if not index.isValid():
-            print("return invalid for invalid index")
             return QModelIndex()
         node = index.internalPointer()
         if node.parent is None:

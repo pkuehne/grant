@@ -94,7 +94,6 @@ class ResearchProject:
             plan = ResearchPlan()
             plan.from_py(plan_data)
             self.plans.append(plan)
-        print(self)
 
     def to_py(self):
         """ Converts to pythonic representation """

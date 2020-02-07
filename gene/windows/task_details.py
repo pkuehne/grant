@@ -7,21 +7,21 @@ from PyQt5.QtWidgets import QDataWidgetMapper
 from .base_screens import DetailScreen
 
 
-class PlanDetails(DetailScreen):
+class TaskDetails(DetailScreen):
     """ Displays all current Research Plans """
     plan_changed = pyqtSignal()
 
     def __init__(self, model):
-        super(PlanDetails, self).__init__(model)
+        super(TaskDetails, self).__init__(model)
 
         form_layout = QFormLayout()
         self.title = QLineEdit()
         form_layout.addRow(QLabel("Title:"), self.title)
 
-        self.goal = QTextEdit()
-        form_layout.addRow(QLabel("Goal:"), self.goal)
+        self.description = QTextEdit()
+        form_layout.addRow(QLabel("Description:"), self.description)
 
-        form_group = QGroupBox("Plan")
+        form_group = QGroupBox("Task")
         form_group.setLayout(form_layout)
 
         layout = QVBoxLayout()
@@ -32,7 +32,7 @@ class PlanDetails(DetailScreen):
         self.mapper = QDataWidgetMapper()
         self.mapper.setModel(self.data_model)
         self.mapper.addMapping(self.title, 0)
-        self.mapper.addMapping(self.goal, 1)
+        self.mapper.addMapping(self.description, 1)
         self.mapper.toFirst()
 
     def set_selected_item(self, item):
