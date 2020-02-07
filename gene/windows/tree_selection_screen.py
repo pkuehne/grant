@@ -17,6 +17,7 @@ class TreeSelectionScreen(SelectionScreen):
         self.plan_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.plan_table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.plan_table.selectionModel().selectionChanged.connect(self.selection_changed)
+        self.plan_table.hideColumn(1)
 
         layout = QVBoxLayout()
         layout.addWidget(self.plan_table)

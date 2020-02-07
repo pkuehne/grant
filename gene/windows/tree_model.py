@@ -39,7 +39,29 @@ class TreeNode:
             return self.data.title
         if self.type == "task":
             return self.data.title
-        return self.data
+        return ""
+
+    def set_text(self, value):
+        """ Updates the text property of the node """
+        if self.type == "plan":
+            self.data.title = value
+        if self.type == "task":
+            self.data.title = value
+
+    def get_description(self):
+        """ Return a description for the given node """
+        if self.type == "plan":
+            return self.data.goal
+        if self.type == "task":
+            return self.data.description
+        return ""
+
+    def set_description(self, value):
+        """ Updates the description property of the node """
+        if self.type == "plan":
+            self.data.goal = value
+        if self.type == "task":
+            self.data.description = value
 
     def get_icon(self):
         """ Returns a QIcon for this node """
@@ -54,19 +76,6 @@ class TreeNode:
         if self.type == "task":
             return QIcon("icons/task.ico")
         return QIcon()
-
-    def get_selection_representation(self):
-        """ Return a way to identify the item selected """
-        item = {}
-
-        if self.type == "gedcom":
-            item["gedcom"] = True
-        if self.type == "plan":
-            item["plan"] = self.row
-        if self.type == "task":
-            item["plan"] = self.parent.row
-            item["task"] = self.row
-        return item
 
 
 class TreeModel(QAbstractItemModel):
@@ -134,7 +143,11 @@ class TreeModel(QAbstractItemModel):
             return None
         node = index.internalPointer()
         if role in [Qt.DisplayRole, Qt.EditRole]:
-            return node.get_text()
+            if index.column() == 0:
+                return node.get_text()
+            if index.column() == 1:
+                return node.get_description()
+            return None
         if role == Qt.DecorationRole:
             return node.get_icon()
         return None
@@ -144,7 +157,11 @@ class TreeModel(QAbstractItemModel):
         if not index.isValid():
             return False
         node = index.internalPointer()
-        node.data.title = value
+
+        if index.column() == 0:
+            node.set_text(value)
+        if index.column() == 1:
+            node.set_description(value)
 
         self.dataChanged.emit(index, index)
         return True

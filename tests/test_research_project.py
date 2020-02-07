@@ -17,6 +17,21 @@ def test_has_gedcom_is_false_for_none():
     assert project.has_gedcom() is False
 
 
+def test_filename_is_set():
+    """ filename is set to parameter """
+    filename = "foo/bar.test"
+    project = ResearchProject(filename)
+
+    assert project.filename == filename
+
+
+def test_plans_is_set():
+    """ The plans field is available """
+    project = ResearchProject("")
+
+    assert project.plans == []
+
+
 def test_conversion_matches():
     """ Check that to/from conversion matches """
     project_data = {}

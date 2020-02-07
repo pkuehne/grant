@@ -1,9 +1,8 @@
 """ Tests for the Plan Details screen """
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel
 from gene.windows import PlanDetails
-from gene.research import ResearchProject, ResearchPlan
+from gene.research import ResearchProject
 
 
 def test_load_project_sets_project(qtbot):

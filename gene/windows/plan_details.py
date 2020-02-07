@@ -33,7 +33,7 @@ class PlanDetails(DetailScreen):
         self.mapper = QDataWidgetMapper()
         self.mapper.setModel(self.data_model)
         self.mapper.addMapping(self.title, 0)
-        # self.title.editingFinished.connect(self.mapper.submit)
+        self.mapper.addMapping(self.goal, 1)
         self.mapper.toFirst()
 
     def set_selected_item(self, item):
