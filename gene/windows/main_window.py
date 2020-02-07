@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from PyQt5.QtWidgets import QStackedWidget
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSignal
 from gene.research import ResearchProject
 from .plan_details import PlanDetails
@@ -16,7 +17,7 @@ from .tree_selection_screen import TreeSelectionScreen
 from .filter_selection_screen import FilterSelectionScreen
 from .tree_model import TreeModel
 
-ABOUT_STRING = "Copyright (c) 2020 by Peter Kühne"
+ABOUT_STRING = "Copyright (c) 2020 by Peter Kühne\nIcons from https://icons8.com"
 TEST_DATA = """
 gedcom: none
 plans:
@@ -71,6 +72,7 @@ class MainWindow(QMainWindow):
 
     def setup_window(self):
         """ Sets up all widgets and window stuff """
+        self.setWindowIcon(QIcon("icons/books.ico"))
         self.selection_stack = QStackedWidget()
 
         self.selection_screens["tree"] = TreeSelectionScreen(self.data_model)

@@ -3,6 +3,7 @@
 from PyQt5.QtCore import QAbstractItemModel
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 from gene.research import ResearchProject
 
 
@@ -29,7 +30,7 @@ class TreeNode:
     def get_text(self):
         """ Return a stringified representation for the given node """
         if self.type == "gedcom":
-            return "Gedcom: " + self.data
+            return "No gedcom file linked" if self.data == "none" else self.data
         if self.type == "filename":
             return "Filename: " + self.data
         if self.type == "plans":
@@ -39,6 +40,20 @@ class TreeNode:
         if self.type == "task":
             return self.data.title
         return self.data
+
+    def get_icon(self):
+        """ Returns a QIcon for this node """
+        if self.type == "gedcom":
+            return QIcon("icons/gedcom.ico")
+        if self.type == "filename":
+            return QIcon("icons/file.ico")
+        if self.type == "plans":
+            return QIcon("icons/plans.ico")
+        if self.type == "plan":
+            return QIcon("icons/plan.ico")
+        if self.type == "task":
+            return QIcon("icons/task.ico")
+        return QIcon()
 
     def get_selection_representation(self):
         """ Return a way to identify the item selected """
@@ -117,10 +132,12 @@ class TreeModel(QAbstractItemModel):
         """ Return the data associated with the specific index for the role """
         if not index.isValid():
             return None
-        if role not in [Qt.DisplayRole, Qt.EditRole]:
-            return None
         node = index.internalPointer()
-        return node.get_text()
+        if role in [Qt.DisplayRole, Qt.EditRole]:
+            return node.get_text()
+        if role == Qt.DecorationRole:
+            return node.get_icon()
+        return None
 
     def setData(self, index, value, _):  # pylint: disable=invalid-name
         """ Updates the nodes values based on an edit """
