@@ -1,4 +1,8 @@
 **/__pycache__
-.vscode
-test_data
+.vscode/
+.pytest_cache/
+test_data/
+build/
+dist/
+*.spec
 resources.py
