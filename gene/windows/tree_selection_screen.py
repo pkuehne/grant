@@ -3,6 +3,9 @@
 from PyQt5.QtWidgets import QTreeView
 from PyQt5.QtWidgets import QAbstractItemView
 from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QHBoxLayout
+from PyQt5.QtWidgets import QPushButton
+from PyQt5.QtGui import QIcon
 from gene.windows.base_screens import SelectionScreen
 
 
@@ -19,8 +22,27 @@ class TreeSelectionScreen(SelectionScreen):
         self.plan_table.selectionModel().selectionChanged.connect(self.selection_changed)
         self.plan_table.hideColumn(1)
 
+        self.button_add_plan = QPushButton()
+        self.button_add_plan.setText("Add Plan")
+        self.button_add_plan.setIcon(QIcon("icons/plan.ico"))
+        self.button_add_task = QPushButton()
+        self.button_add_task.setText("Add Task")
+        self.button_add_task.setIcon(QIcon("icons/task.ico"))
+        self.button_add_task.setDisabled(True)
+        self.button_delete_selection = QPushButton()
+        self.button_delete_selection.setText("Delete")
+        self.button_delete_selection.setIcon(QIcon("icons/delete.ico"))
+        self.button_delete_selection.setDisabled(True)
+
+        button_box = QHBoxLayout()
+        button_box.addWidget(self.button_add_plan)
+        button_box.addWidget(self.button_add_task)
+        button_box.addWidget(self.button_delete_selection)
+
         layout = QVBoxLayout()
         layout.addWidget(self.plan_table)
+        layout.addLayout(button_box)
+
         self.setLayout(layout)
 
     def selection_changed(self, selected, _):
@@ -29,3 +51,8 @@ class TreeSelectionScreen(SelectionScreen):
             return
         index = selected.indexes()[0]
         self.item_selected.emit(index)
+
+        node = index.internalPointer()
+        self.button_add_task.setEnabled(node.type == "plan")
+        self.button_delete_selection.setEnabled(
+            node.type == "plan" or node.type == "task")
