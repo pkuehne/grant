@@ -4,7 +4,7 @@ from PyQt5.QtCore import QAbstractItemModel
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
-from gene.research import ResearchProject
+from gene.research import ResearchProject, ResearchPlan, ResearchTask
 
 
 class TreeNode:
@@ -35,6 +35,16 @@ class TreeNode:
         if self.type == "plan":
             del self.data.tasks[index]
             del self.children[index]
+
+    def create_child(self):
+        """ Creates a new child depending on the type """
+        if self.type == "plans":
+            plan = ResearchPlan()
+            self.data.append(plan)
+        if self.type == "plan":
+            task = ResearchTask()
+            self.data.tasks.append(task)
+        self.children = self.get_children()
 
     def get_text(self):
         """ Return a stringified representation for the given node """
@@ -94,6 +104,9 @@ class TreeModel(QAbstractItemModel):
         QAbstractItemModel.__init__(self)
         self.project = None
         self.root_nodes = []
+        self.gedcom_index = QModelIndex()
+        self.filename_index = QModelIndex()
+        self.plans_index = QModelIndex()
 
     def set_project(self, project):
         """ Updates the internal project representation """
@@ -109,6 +122,10 @@ class TreeModel(QAbstractItemModel):
                 TreeNode("plans", self.project.plans, None, 2))
         self.endResetModel()
 
+        self.gedcom_index = self.index(0, 0, QModelIndex())
+        self.filename_index = self.index(1, 0, QModelIndex())
+        self.plans_index = self.index(2, 0, QModelIndex())
+
     def delete_node(self, index):
         """ Deletes the node at the given index """
         if not index.isValid():
@@ -120,6 +137,16 @@ class TreeModel(QAbstractItemModel):
         parent.delete_child(index.row())
 
         self.endRemoveRows()
+
+    def add_node(self, index):
+        """ Adds a new node at the given index """
+        node = index.internalPointer()
+
+        self.layoutAboutToBeChanged.emit()
+        self.beginInsertRows(index, len(node.children), len(node.children) + 1)
+        node.create_child()
+        self.endInsertRows()
+        self.layoutChanged.emit()
 
     def index(self, row, column, parent):
         """ Return index object for given item """

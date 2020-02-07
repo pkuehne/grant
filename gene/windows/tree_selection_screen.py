@@ -25,10 +25,12 @@ class TreeSelectionScreen(SelectionScreen):
         self.button_add_plan = QPushButton()
         self.button_add_plan.setText("Add Plan")
         self.button_add_plan.setIcon(QIcon("icons/plan.ico"))
+        self.button_add_plan.pressed.connect(self.add_plan)
         self.button_add_task = QPushButton()
         self.button_add_task.setText("Add Task")
         self.button_add_task.setIcon(QIcon("icons/task.ico"))
         self.button_add_task.setDisabled(True)
+        self.button_add_task.pressed.connect(self.add_task)
         self.button_delete_selection = QPushButton()
         self.button_delete_selection.setText("Delete")
         self.button_delete_selection.setIcon(QIcon("icons/delete.ico"))
@@ -63,3 +65,13 @@ class TreeSelectionScreen(SelectionScreen):
         if len(self.tree_view.selectedIndexes()) == 0:
             return
         self.data_model.delete_node(self.tree_view.selectedIndexes()[0])
+
+    def add_plan(self):
+        """ Create a new plan in the project """
+        self.data_model.add_node(self.data_model.plans_index)
+
+    def add_task(self):
+        """ Create a new task in the project """
+        if len(self.tree_view.selectedIndexes()) == 0:
+            return
+        self.data_model.add_node(self.tree_view.selectedIndexes()[0])

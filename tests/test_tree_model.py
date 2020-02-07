@@ -173,3 +173,39 @@ def test_delete_removes_plan():
 
     # Then
     assert len(project.plans) == 0
+
+
+def test_add_creates_plan():
+    """ Add should create a new plan in the underlying data structure """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+
+    model.set_project(project)
+    plans_index = model.index(2, 0, QModelIndex())
+
+    # When
+    model.add_node(plans_index)
+
+    # Then
+    assert len(project.plans) == 1
+
+
+def test_add_creates_task():
+    """ Add should create a new task in the underlying data structure """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    plan = ResearchPlan()
+    project.plans.append(plan)
+
+    model.set_project(project)
+    plans_index = model.index(2, 0, QModelIndex())
+    plan_index = model.index(0, 0, plans_index)
+
+    # When
+    model.add_node(plan_index)
+
+    # Then
+    assert len(project.plans) == 1
+    assert len(plan.tasks) == 1
