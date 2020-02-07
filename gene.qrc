@@ -1,0 +1,13 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+<qresource>
+<file>icons/books.ico</file>
+<file>icons/delete.ico</file>
+<file>icons/file.ico</file>
+<file>icons/gedcom.ico</file>
+<file>icons/list.ico</file>
+<file>icons/plan.ico</file>
+<file>icons/plans.ico</file>
+<file>icons/task.ico</file>
+</qresource>
+</RCC>

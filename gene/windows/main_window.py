@@ -73,7 +73,7 @@ class MainWindow(QMainWindow):
 
     def setup_window(self):
         """ Sets up all widgets and window stuff """
-        self.setWindowIcon(QIcon("icons/books.ico"))
+        self.setWindowIcon(QIcon(":/icons/books.ico"))
         self.selection_stack = QStackedWidget()
 
         self.selection_screens["tree"] = TreeSelectionScreen(self.data_model)

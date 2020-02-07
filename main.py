@@ -4,6 +4,7 @@ Main file
 import sys
 from PyQt5.QtWidgets import QApplication
 from gene.windows import MainWindow
+import resources  # pylint: disable=unused-import
 
 
 def main(argv):
