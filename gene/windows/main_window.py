@@ -92,6 +92,7 @@ class MainWindow(QMainWindow):
             if node.type == "task":
                 self.detail_stack.setCurrentWidget(
                     self.detail_screens["task"])
+                self.detail_screens["task"].set_selected_item(item)
                 return
             if node.type == "plan":
                 self.detail_stack.setCurrentWidget(self.detail_screens["plan"])

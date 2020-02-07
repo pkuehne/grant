@@ -82,6 +82,17 @@ class TreeNode:
         if self.type == "task":
             self.data.description = value
 
+    def get_status(self):
+        """ Return the status of the given node """
+        if self.type == "task":
+            return self.data.status
+        return ""
+
+    def set_status(self, value):
+        """ Update the status of the node """
+        if self.type == "task":
+            self.data.status = value
+
     def get_icon(self):
         """ Returns a QIcon for this node """
         if self.type == "gedcom":
@@ -196,6 +207,8 @@ class TreeModel(QAbstractItemModel):
                 return node.get_text()
             if index.column() == 1:
                 return node.get_description()
+            if index.column() == 2:
+                return node.get_status()
             return None
         if role == Qt.DecorationRole:
             return node.get_icon()
@@ -211,6 +224,8 @@ class TreeModel(QAbstractItemModel):
             node.set_text(value)
         if index.column() == 1:
             node.set_description(value)
+        if index.column() == 2:
+            node.set_status(value)
 
         self.dataChanged.emit(index, index)
         return True
