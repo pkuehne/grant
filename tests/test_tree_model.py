@@ -2,9 +2,9 @@
 
 from PyQt5.QtCore import QModelIndex
 
-from gene.windows.tree_model import TreeNode
-from gene.windows.tree_model import TreeModel
-from gene.research import ResearchProject, ResearchPlan, ResearchTask
+from grant.windows.tree_model import TreeNode
+from grant.windows.tree_model import TreeModel
+from grant.research import ResearchProject, ResearchPlan, ResearchTask
 
 
 def test_empty_icon_returned_for_unknown_node_type():

@@ -4,7 +4,7 @@ from PyQt5.QtCore import QAbstractItemModel
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
-from gene.research import ResearchProject, ResearchPlan, ResearchTask
+from grant.research import ResearchProject, ResearchPlan, ResearchTask
 
 
 class TreeNode:

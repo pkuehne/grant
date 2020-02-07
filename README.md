@@ -1,6 +1,6 @@
-# GENE - The genealogical research assistant
+# Grant - The Genealogical Research AssistaNT
 
-Gene is a tool for genealogists to organize their research. At its heart it is a todo app, like many others, but what sets Gene appart is that it is explicitly designed for genealogists. It can read and interact with gedcom files for example. Allowing you to link your research tasks to individuals, families, locations in your gedcom file. Search for all tasks associated with a particular individual and track your correspondence with archives or other researchers. Gene does all this without forcing you to adopt some proprietary file format. Each research file is stored in YAML, an easy-to-read, fully open file format. There is no lock-in with Gene.
+Grant is a tool for genealogists to organize their research. At its heart it is a todo app, like many others, but what sets Grant appart is that it is explicitly designed for genealogists. It can read and interact with gedcom files for example. Allowing you to link your research tasks to individuals, families, locations in your gedcom file. Search for all tasks associated with a particular individual and track your correspondence with archives or other researchers. Grant does all this without forcing you to adopt some proprietary file format. Each research file is stored in YAML, an easy-to-read, fully open file format. There is no lock-in with Grant.
 
 ## Features
 
@@ -21,5 +21,5 @@ If you are interested in running the source code directly, here are some handy t
 
 - To run the build: `python main.py`
 - To run the tests: `python -m pytest tests`
-- To generate the `resources.py` file: `pyrcc5 gene.qrc -o resources.py`
-- To create an executable: `pyinstaller --onefile --windowed --name gene main.py`
+- To generate the `resources.py` file: `pyrcc5 grant.qrc -o resources.py`
+- To create an executable: `pyinstaller --onefile --windowed --name grant main.py`

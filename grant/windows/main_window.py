@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSignal
-from gene.research import ResearchProject
+from grant.research import ResearchProject
 from .plan_details import PlanDetails
 from .task_details import TaskDetails
 from .base_screens import DetailScreen
@@ -63,12 +63,12 @@ class MainWindow(QMainWindow):
 
     def setup_window_title(self):
         """ Sets the window title from project name """
-        title = "Gene - "
+        title = "Grant - "
         if self.project is not None:
             title += os.path.splitext(
                 os.path.basename(self.project.filename))[0]
         else:
-            title += " The Genealogical Research Assistant"
+            title += " The Genealogical Research AssistaNT"
         self.setWindowTitle(title)
 
     def setup_window(self):
@@ -203,7 +203,7 @@ class MainWindow(QMainWindow):
                 return
 
         (file_name, _) = QFileDialog.getSaveFileName(
-            self, "Create a project", ".", "Gene Project (*.gra)")
+            self, "Create a project", ".", "Grant Project (*.gra)")
         if file_name == "":
             print("Cancelled creation")
             return
@@ -230,7 +230,7 @@ class MainWindow(QMainWindow):
             return
 
         (file_name, _) = QFileDialog.getSaveFileName(
-            self, "Save as ", ".", "Gene Project (*.gra)")
+            self, "Save as ", ".", "Grant Project (*.gra)")
         if file_name == "":
             print("Cancelled saving")
             return
@@ -248,7 +248,7 @@ class MainWindow(QMainWindow):
                 return
 
         (file_name, _) = QFileDialog.getOpenFileName(
-            self, "Open a project", ".", "Gene Project (*.gra)")
+            self, "Open a project", ".", "Grant Project (*.gra)")
         if file_name == "":
             print("Cancelled opening")
             return

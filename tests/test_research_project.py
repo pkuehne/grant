@@ -1,7 +1,7 @@
 """ Tests related to the ResearchProject class """
 
-from gene.research import ResearchProject
-from gene.research import ResearchTask
+from grant.research import ResearchProject
+from grant.research import ResearchTask
 
 
 def test_gedcom_is_none_by_default():

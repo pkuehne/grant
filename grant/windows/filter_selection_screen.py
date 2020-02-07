@@ -5,7 +5,7 @@ from PyQt5.QtGui import QStandardItem
 from PyQt5.QtWidgets import QTableView
 from PyQt5.QtWidgets import QAbstractItemView
 from PyQt5.QtWidgets import QVBoxLayout
-from gene.windows.base_screens import SelectionScreen
+from grant.windows.base_screens import SelectionScreen
 
 
 class FilterSelectionScreen(SelectionScreen):

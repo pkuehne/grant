@@ -1,7 +1,7 @@
 """ Tests for the base screens """
 
-from gene.research import ResearchProject
-from gene.windows.base_screens import BaseScreen
+from grant.research import ResearchProject
+from grant.windows.base_screens import BaseScreen
 
 
 def test_base_screen_has_no_project_by_default(qtbot):

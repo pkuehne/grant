@@ -3,7 +3,7 @@
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtCore import QModelIndex
-from gene.research import ResearchProject
+from grant.research import ResearchProject
 
 
 class BaseScreen(QWidget):
