@@ -15,12 +15,12 @@ class TreeSelectionScreen(SelectionScreen):
     def __init__(self, model):
         super(TreeSelectionScreen, self).__init__(model)
 
-        self.plan_table = QTreeView()
-        self.plan_table.setModel(self.data_model)
-        self.plan_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.plan_table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.plan_table.selectionModel().selectionChanged.connect(self.selection_changed)
-        self.plan_table.hideColumn(1)
+        self.tree_view = QTreeView()
+        self.tree_view.setModel(self.data_model)
+        self.tree_view.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.tree_view.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.tree_view.selectionModel().selectionChanged.connect(self.selection_changed)
+        self.tree_view.hideColumn(1)
 
         self.button_add_plan = QPushButton()
         self.button_add_plan.setText("Add Plan")
@@ -33,6 +33,7 @@ class TreeSelectionScreen(SelectionScreen):
         self.button_delete_selection.setText("Delete")
         self.button_delete_selection.setIcon(QIcon("icons/delete.ico"))
         self.button_delete_selection.setDisabled(True)
+        self.button_delete_selection.pressed.connect(self.delete_selection)
 
         button_box = QHBoxLayout()
         button_box.addWidget(self.button_add_plan)
@@ -40,7 +41,7 @@ class TreeSelectionScreen(SelectionScreen):
         button_box.addWidget(self.button_delete_selection)
 
         layout = QVBoxLayout()
-        layout.addWidget(self.plan_table)
+        layout.addWidget(self.tree_view)
         layout.addLayout(button_box)
 
         self.setLayout(layout)
@@ -56,3 +57,9 @@ class TreeSelectionScreen(SelectionScreen):
         self.button_add_task.setEnabled(node.type == "plan")
         self.button_delete_selection.setEnabled(
             node.type == "plan" or node.type == "task")
+
+    def delete_selection(self):
+        """ Deletes the selected row if valid """
+        if len(self.tree_view.selectedIndexes()) == 0:
+            return
+        self.data_model.delete_node(self.tree_view.selectedIndexes()[0])

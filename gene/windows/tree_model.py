@@ -27,6 +27,15 @@ class TreeNode:
                     for index, task, in enumerate(self.data.tasks)]
         return []
 
+    def delete_child(self, index):
+        """ Delete index from children """
+        if self.type == "plans":
+            del self.data[index]
+            del self.children[index]
+        if self.type == "plan":
+            del self.data.tasks[index]
+            del self.children[index]
+
     def get_text(self):
         """ Return a stringified representation for the given node """
         if self.type == "gedcom":
@@ -100,6 +109,18 @@ class TreeModel(QAbstractItemModel):
                 TreeNode("plans", self.project.plans, None, 2))
         self.endResetModel()
 
+    def delete_node(self, index):
+        """ Deletes the node at the given index """
+        if not index.isValid():
+            return
+        self.beginRemoveRows(index.parent(), index.row(), index.row())
+        node = index.internalPointer()
+        parent = node.parent
+
+        parent.delete_child(index.row())
+
+        self.endRemoveRows()
+
     def index(self, row, column, parent):
         """ Return index object for given item """
         if self.project is None:
@@ -107,6 +128,8 @@ class TreeModel(QAbstractItemModel):
         if not parent.isValid():
             return self.createIndex(row, column, self.root_nodes[row])
         node = parent.internalPointer()
+        if row >= len(node.children):
+            return QModelIndex()
         return self.createIndex(row, column, node.children[row])
 
     def parent(self, index):
