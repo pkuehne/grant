@@ -209,3 +209,20 @@ def test_add_creates_task():
     # Then
     assert len(project.plans) == 1
     assert len(plan.tasks) == 1
+
+
+def test_set_data_doesnot_fire_signal_if_no_change(qtbot):
+    """ When setting data, the dataChanged signal should only be emitted on actual changes """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    plan = ResearchPlan()
+    project.plans.append(plan)
+
+    model.set_project(project)
+    plans_index = model.index(2, 0, QModelIndex())
+    plan_index = model.index(0, 0, plans_index)
+
+    # When
+    with qtbot.assertNotEmitted(model.dataChanged):
+        model.setData(plan_index, plan.title, None)

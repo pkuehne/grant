@@ -220,14 +220,19 @@ class TreeModel(QAbstractItemModel):
             return False
         node = index.internalPointer()
 
+        prev = ""
         if index.column() == 0:
+            prev = node.get_text()
             node.set_text(value)
         if index.column() == 1:
+            prev = node.get_description()
             node.set_description(value)
         if index.column() == 2:
+            prev = node.get_status()
             node.set_status(value)
 
-        self.dataChanged.emit(index, index)
+        if prev != value:
+            self.dataChanged.emit(index, index)
         return True
 
     def headerData(self, section, orientation, role):  # pylint: disable=invalid-name, no-self-use
