@@ -12,10 +12,13 @@ class TaskLog:
 
 class ResearchTask:
     """ A single task """
+    default_task_title = "New Task"
+    default_status = "active"
 
     def __init__(self):
-        self.title = ""
-        self.status = "active"
+        self.title = self.default_task_title
+        self.description = "Add a more detailed description of the task"
+        self.status = self.default_status
         self.logs = []
 
     def __str__(self):
@@ -23,23 +26,26 @@ class ResearchTask:
 
     def from_py(self, data):
         """ Converts from pythonic to class """
-        self.title = data["title"]
-        self.status = data["status"]
+        self.title = data.get("title", self.default_task_title)
+        self.description = data.get("description", "")
+        self.status = data.get("status", self.default_status)
 
     def to_py(self):
         """ Converts from class to pythonic """
         data = {}
         data["title"] = self.title
+        data["description"] = self.description
         data["status"] = self.status
         return data
 
 
 class ResearchPlan:
     """ A collection of tasks with a common goal """
+    default_title = "New Plan"
 
     def __init__(self):
-        self.title = ""
-        self.goal = ""
+        self.title = self.default_title
+        self.goal = "Describe your goals for this plan..."
         self.tasks = []
 
     def __str__(self):
@@ -50,9 +56,9 @@ class ResearchPlan:
 
     def from_py(self, data):
         """ Converts from pythonic to class """
-        self.title = data["title"]
-        self.goal = data["goal"]
-        for task_data in data["tasks"]:
+        self.title = data.get("title", self.default_title)
+        self.goal = data.get("goal", "")
+        for task_data in data.get("tasks", []):
             task = ResearchTask()
             task.from_py(task_data)
             self.tasks.append(task)

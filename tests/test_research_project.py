@@ -1,6 +1,7 @@
 """ Tests related to the ResearchProject class """
 
 from gene.research import ResearchProject
+from gene.research import ResearchTask
 
 
 def test_gedcom_is_none_by_default():
@@ -32,7 +33,7 @@ def test_plans_is_set():
     assert project.plans == []
 
 
-def test_conversion_matches():
+def test_project_conversion_matches():
     """ Check that to/from conversion matches """
     project_data = {}
     project_data["gedcom"] = "foo"
@@ -42,3 +43,17 @@ def test_conversion_matches():
     project = ResearchProject("")
     project.from_py(project_data)
     assert project_data == project.to_py()
+
+
+def test_unset_task_fields_are_defaulted():
+    """ Check that when converting a task, any fields not set in py are defaulted """
+    # Given
+    task = ResearchTask()
+    task_data = {}
+
+    # When
+    task.from_py(task_data)
+
+    # Then
+    assert task.title != ""
+    assert task.status != ""

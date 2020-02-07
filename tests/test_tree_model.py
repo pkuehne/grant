@@ -65,7 +65,7 @@ def test_set_project_clears_existing_nodes():
     assert sum(1 for n in model.root_nodes if n.type == "filename") == 1
 
 
-def test_index_returns_empty_for_invalid_row(qtbot):
+def test_index_returns_empty_for_invalid_row():
     """ The start and end row removal signals should be emitted """
     # Given
     model = TreeModel()
