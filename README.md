@@ -19,7 +19,7 @@ Grant is a tool for genealogists to organize their research. At its heart it is 
 
 If you are interested in running the source code directly, here are some handy tips:
 
-- To run the build: `python main.py`
+- To run the build: `python grant.py`
 - To run the tests: `python -m pytest tests`
 - To generate the `resources.py` file: `pyrcc5 grant.qrc -o resources.py`
-- To create an executable: `pyinstaller --onefile --windowed --name grant main.py`
+- To create an executable: `pyinstaller --onefile --windowed grant.py`
