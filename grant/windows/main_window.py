@@ -50,6 +50,7 @@ class MainWindow(QMainWindow):
         self.selection_stack = None
         self.detail_screens = {}
         self.detail_stack = None
+        self.project_needs_saving = False
         self.setup_window()
         self.setup_window_title()
         self.setup_menubar()
@@ -67,6 +68,7 @@ class MainWindow(QMainWindow):
         if self.project is not None:
             title += os.path.splitext(
                 os.path.basename(self.project.filename))[0]
+            title += "*" if self.project_needs_saving else ""
         else:
             title += " The Genealogical Research AssistaNT"
         self.setWindowTitle(title)
@@ -123,6 +125,14 @@ class MainWindow(QMainWindow):
 
         self.project_changed.connect(self.project_changed_handler)
 
+        def model_changed():
+            print("model changed")
+            self.project_needs_saving = True
+            self.setup_window_title()
+        self.data_model.dataChanged.connect(model_changed)
+        self.data_model.layoutChanged.connect(model_changed)
+        self.data_model.rowsRemoved.connect(model_changed)
+
     def setup_dialogs(self):
         """ Create re-usable dialogs """
         self.discard_dialog = QMessageBox()
@@ -135,7 +145,7 @@ class MainWindow(QMainWindow):
 
     def setup_statusbar(self):
         """ Create status bar """
-        self.statusBar()
+        self.statusBar().showMessage("Ready...")
 
     def setup_menubar(self):
         """ Sets up the menu bar """
@@ -187,17 +197,18 @@ class MainWindow(QMainWindow):
 
     def project_changed_handler(self):
         """ Updates all the screens with the new project information """
-        self.setup_window_title()
-
         self.data_model.set_project(self.project)
         for screen in self.selection_screens.values():
             screen.update_project(self.project)
         for screen in self.detail_screens.values():
             screen.update_project(self.project)
 
+        self.project_needs_saving = False
+        self.setup_window_title()
+
     def create_new_project(self):
         """ Creates a new Research Project """
-        if self.project is not None:
+        if self.project_needs_saving:
             button = self.discard_dialog.exec_()
             if button == QMessageBox.Cancel:
                 return
@@ -222,6 +233,9 @@ class MainWindow(QMainWindow):
         with open(self.project.filename, 'w') as file:
             yaml.dump(self.project.to_py(), file)
         print("Saved project: " + self.project.filename)
+        self.project_needs_saving = False
+        self.setup_window_title()
+        self.statusBar().showMessage("Project saved...")
 
     def save_project_as(self):
         """ Saves the currently loaded project as a new name """
@@ -242,7 +256,7 @@ class MainWindow(QMainWindow):
 
     def open_project(self):
         """ Opens an existing project """
-        if self.project is not None:
+        if self.project_needs_saving:
             button = self.discard_dialog.exec_()
             if button == QMessageBox.Cancel:
                 return

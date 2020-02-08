@@ -155,7 +155,9 @@ class TreeModel(QAbstractItemModel):
 
         self.layoutAboutToBeChanged.emit()
         self.beginInsertRows(index, len(node.children), len(node.children) + 1)
+
         node.create_child()
+
         self.endInsertRows()
         self.layoutChanged.emit()
 
