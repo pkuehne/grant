@@ -42,4 +42,8 @@ class DetailScreen(BaseScreen):
     #     super(DetailScreen, self).__init__(model)
 
     def set_selected_item(self, item):
-        """ Called when the item to show has changed """
+        """ Receive selected item from main window """
+        if self.project is None:
+            return
+        self.mapper.setRootIndex(item.parent())
+        self.mapper.setCurrentModelIndex(item)

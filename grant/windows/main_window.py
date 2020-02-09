@@ -47,9 +47,8 @@ class MainWindow(QMainWindow):
         self.project = None
         self.data_model = TreeModel()
         self.discard_dialog = None
-        self.selection_screens = {}
         self.selection_stack = None
-        self.detail_screens = {}
+        self.screens = {}
         self.detail_stack = None
         self.project_needs_saving = False
         self.setup_window()
@@ -79,42 +78,42 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon(":/icons/books.ico"))
         self.selection_stack = QStackedWidget()
 
-        self.selection_screens["tree"] = TreeSelectionScreen(self.data_model)
-        self.selection_stack.addWidget(self.selection_screens["tree"])
+        self.screens["tree"] = TreeSelectionScreen(self.data_model)
+        self.selection_stack.addWidget(self.screens["tree"])
 
-        self.selection_screens["filter"] = FilterSelectionScreen(
+        self.screens["filter"] = FilterSelectionScreen(
             self.data_model)
-        self.selection_stack.addWidget(self.selection_screens["filter"])
+        self.selection_stack.addWidget(self.screens["filter"])
 
         def selection_changed(item):
             node = item.internalPointer()
             if node.type == "gedcom":
                 self.detail_stack.setCurrentWidget(
-                    self.detail_screens["blank"])
+                    self.screens["blank"])
                 return
             if node.type == "task":
                 self.detail_stack.setCurrentWidget(
-                    self.detail_screens["task"])
-                self.detail_screens["task"].set_selected_item(item)
+                    self.screens["task"])
+                self.screens["task"].set_selected_item(item)
                 return
             if node.type == "plan":
-                self.detail_stack.setCurrentWidget(self.detail_screens["plan"])
-                self.detail_screens["plan"].set_selected_item(item)
+                self.detail_stack.setCurrentWidget(self.screens["plan"])
+                self.screens["plan"].set_selected_item(item)
                 return
-            self.detail_stack.setCurrentWidget(self.detail_screens["blank"])
+            self.detail_stack.setCurrentWidget(self.screens["blank"])
 
-        self.selection_screens["tree"].item_selected.connect(selection_changed)
+        self.screens["tree"].item_selected.connect(selection_changed)
 
         self.detail_stack = QStackedWidget()
 
-        self.detail_screens["blank"] = DetailScreen(self.data_model)
-        self.detail_stack.addWidget(self.detail_screens["blank"])
-        self.detail_screens["plan"] = PlanDetails(self.data_model)
-        self.detail_stack.addWidget(self.detail_screens["plan"])
-        self.detail_screens["task"] = TaskDetails(self.data_model)
-        self.detail_stack.addWidget(self.detail_screens["task"])
+        self.screens["blank"] = DetailScreen(self.data_model)
+        self.detail_stack.addWidget(self.screens["blank"])
+        self.screens["plan"] = PlanDetails(self.data_model)
+        self.detail_stack.addWidget(self.screens["plan"])
+        self.screens["task"] = TaskDetails(self.data_model)
+        self.detail_stack.addWidget(self.screens["task"])
 
-        self.detail_stack.setCurrentWidget(self.detail_screens["blank"])
+        self.detail_stack.setCurrentWidget(self.screens["blank"])
 
         central_widget = QWidget()
         layout = QHBoxLayout()
@@ -127,7 +126,6 @@ class MainWindow(QMainWindow):
         self.project_changed.connect(self.project_changed_handler)
 
         def model_changed():
-            print("model changed")
             self.project_needs_saving = True
             self.setup_window_title()
         self.data_model.dataChanged.connect(model_changed)
@@ -200,9 +198,9 @@ class MainWindow(QMainWindow):
     def project_changed_handler(self):
         """ Updates all the screens with the new project information """
         self.data_model.set_project(self.project)
-        for screen in self.selection_screens.values():
+        for screen in self.screens.values():
             screen.update_project(self.project)
-        for screen in self.detail_screens.values():
+        for screen in self.screens.values():
             screen.update_project(self.project)
 
         self.project_needs_saving = False

@@ -44,10 +44,3 @@ class TaskDetails(DetailScreen):
         self.mapper.addMapping(self.description, 1)
         self.mapper.addMapping(self.status, 2, b"currentText")
         self.mapper.toFirst()
-
-    def set_selected_item(self, item):
-        """ Receive selected item from main window """
-        if self.project is None:
-            return
-        self.mapper.setRootIndex(item.parent())
-        self.mapper.setCurrentModelIndex(item)

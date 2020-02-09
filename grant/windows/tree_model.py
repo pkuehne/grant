@@ -201,7 +201,7 @@ class TreeModel(QAbstractItemModel):
 
     def data(self, index, role):  # pylint: disable= no-self-use
         """ Return the data associated with the specific index for the role """
-        if not index.isValid():
+        if not index.isValid() or index.column() > 2:
             return None
         node = index.internalPointer()
         if role in [Qt.DisplayRole, Qt.EditRole]:
@@ -211,14 +211,13 @@ class TreeModel(QAbstractItemModel):
                 return node.get_description()
             if index.column() == 2:
                 return node.get_status()
-            return None
         if role == Qt.DecorationRole:
             return node.get_icon()
         return None
 
     def setData(self, index, value, _):  # pylint: disable=invalid-name
         """ Updates the nodes values based on an edit """
-        if not index.isValid():
+        if not index.isValid() or index.column() > 2:
             return False
         node = index.internalPointer()
 

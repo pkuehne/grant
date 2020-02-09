@@ -34,10 +34,3 @@ class PlanDetails(DetailScreen):
         self.mapper.addMapping(self.title, 0)
         self.mapper.addMapping(self.goal, 1)
         self.mapper.toFirst()
-
-    def set_selected_item(self, item):
-        """ Receive selected item from main window """
-        if self.project is None:
-            return
-        self.mapper.setRootIndex(item.parent())
-        self.mapper.setCurrentModelIndex(item)
