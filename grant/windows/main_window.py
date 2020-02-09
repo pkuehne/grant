@@ -18,6 +18,7 @@ from .tree_selection_screen import TreeSelectionScreen
 from .filter_selection_screen import FilterSelectionScreen
 from .tree_model import TreeModel
 
+VERSION_NUMBER = "0.1"
 ABOUT_STRING = "Copyright (c) 2020 by Peter Kühne\nIcons from https://icons8.com"
 TEST_DATA = """
 gedcom: none
@@ -57,10 +58,10 @@ class MainWindow(QMainWindow):
         self.setup_statusbar()
         self.setup_dialogs()
 
-        self.project = ResearchProject("test_data")
-        self.project.from_py(yaml.safe_load(TEST_DATA))
-
-        self.project_changed.emit()
+        if os.getenv("GRANT_TEST", "") != "":
+            self.project = ResearchProject("test_data")
+            self.project.from_py(yaml.safe_load(TEST_DATA))
+            self.project_changed.emit()
 
     def setup_window_title(self):
         """ Sets the window title from project name """
@@ -187,8 +188,9 @@ class MainWindow(QMainWindow):
 
         def create_help_menu():
             about_action = QAction("&About", self)
+            about_text = "Version: " + VERSION_NUMBER + "\n\n" + ABOUT_STRING
             about_action.triggered.connect(lambda:
-                                           QMessageBox.about(self, "About", ABOUT_STRING))
+                                           QMessageBox.about(self, "About", about_text))
             help_menu = self.menuBar().addMenu("&Help")
             help_menu.addAction(about_action)
 

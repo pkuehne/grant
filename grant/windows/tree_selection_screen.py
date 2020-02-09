@@ -25,6 +25,7 @@ class TreeSelectionScreen(SelectionScreen):
         self.button_add_plan = QPushButton()
         self.button_add_plan.setText("Add Plan")
         self.button_add_plan.setIcon(QIcon(":/icons/plan.ico"))
+        self.button_add_plan.setDisabled(True)
         self.button_add_plan.pressed.connect(self.add_plan)
         self.button_add_task = QPushButton()
         self.button_add_task.setText("Add Task")
@@ -47,6 +48,10 @@ class TreeSelectionScreen(SelectionScreen):
         layout.addLayout(button_box)
 
         self.setLayout(layout)
+
+    def reload_screen(self):
+        """ Called when project changes """
+        self.button_add_plan.setDisabled(self.project is None)
 
     def selection_changed(self, selected, _):
         """ Handle changed selection """
