@@ -1,7 +1,7 @@
 """ Tests related to the ResearchProject class """
 
 from grant.research import ResearchProject
-from grant.research import ResearchTask
+from grant.research import ResearchPlan
 
 
 def test_gedcom_is_none_by_default():
@@ -45,15 +45,66 @@ def test_project_conversion_matches():
     assert project_data == project.to_py()
 
 
-def test_unset_task_fields_are_defaulted():
-    """ Check that when converting a task, any fields not set in py are defaulted """
+def test_add_plan_creates_and_returns():
+    """ add_plan() should return the newly created plan """
     # Given
-    task = ResearchTask()
-    task_data = {}
+    project = ResearchProject("")
 
     # When
-    task.from_py(task_data)
+    retval = project.add_plan()
 
     # Then
-    assert task.title != ""
-    assert task.status != ""
+    assert len(project.plans) == 1
+    assert retval is not None
+
+
+def test_delete_plan_does_nothing_if_no_plans():
+    """ delete_plan() does nothing if there are no plans """
+    # Given
+    project = ResearchProject("")
+
+    # When
+    project.delete_plan(1)
+
+    # Then
+    assert len(project.plans) == 0
+
+
+def test_delete_plan_deletes_the_specified_plan():
+    """ delete_plan() does nothing if there are no plans """
+    # Given
+    project = ResearchProject("")
+    plan_one = ResearchPlan()
+    plan_two = ResearchPlan()
+    plan_three = ResearchPlan()
+
+    project.plans.append(plan_one)
+    project.plans.append(plan_two)
+    project.plans.append(plan_three)
+
+    # When
+    project.delete_plan(1)
+
+    # Then
+    assert len(project.plans) == 2
+    assert project.plans[0] == plan_one
+    assert project.plans[1] == plan_three
+
+
+def test_delete_plan_does_nothing_if_index_out_of_bounds():
+    """ delete_plan() does nothing if the index is too large """
+    # Given
+    project = ResearchProject("")
+    plan_one = ResearchPlan()
+    plan_two = ResearchPlan()
+    plan_three = ResearchPlan()
+
+    project.plans.append(plan_one)
+    project.plans.append(plan_two)
+    project.plans.append(plan_three)
+
+    # When
+    project.delete_plan(5)
+
+    # Then
+    assert len(project.plans) == 3

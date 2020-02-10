@@ -4,7 +4,7 @@ from PyQt5.QtCore import QAbstractItemModel
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
-from grant.research import ResearchProject, ResearchPlan, ResearchTask
+from grant.research import ResearchProject
 
 
 class TreeNode:
@@ -21,7 +21,7 @@ class TreeNode:
         """ Return the sub-items (plans/tasks/etc) for the given node """
         if self.type == "plans":
             return [TreeNode("plan", plan, self, index)
-                    for index, plan in enumerate(self.data)]
+                    for index, plan in enumerate(self.data.plans)]
         if self.type == "plan":
             return [TreeNode("task", task, self, index)
                     for index, task, in enumerate(self.data.tasks)]
@@ -30,20 +30,18 @@ class TreeNode:
     def delete_child(self, index):
         """ Delete index from children """
         if self.type == "plans":
-            del self.data[index]
+            self.data.delete_plan(index)
             del self.children[index]
         if self.type == "plan":
-            del self.data.tasks[index]
+            self.data.delete_task(index)
             del self.children[index]
 
     def create_child(self):
         """ Creates a new child depending on the type """
         if self.type == "plans":
-            plan = ResearchPlan()
-            self.data.append(plan)
+            self.data.add_plan()
         if self.type == "plan":
-            task = ResearchTask()
-            self.data.tasks.append(task)
+            self.data.add_task()
         self.children = self.get_children()
 
     def get_text(self):
@@ -130,7 +128,7 @@ class TreeModel(QAbstractItemModel):
             self.root_nodes.append(
                 TreeNode("filename", self.project.filename, None, 1))
             self.root_nodes.append(
-                TreeNode("plans", self.project.plans, None, 2))
+                TreeNode("plans", self.project, None, 2))
         self.endResetModel()
 
         self.gedcom_index = self.index(0, 0, QModelIndex())

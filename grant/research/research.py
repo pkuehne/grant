@@ -1,15 +1,6 @@
 """ The Research-related classes """
 
 
-class TaskLog:
-    """ Audit log for a task """
-
-    def __init__(self):
-        self.action = ""
-        self.date = ""
-        self.text = ""
-
-
 class ResearchTask:
     """ A single task """
     default_task_title = "New Task"
@@ -73,6 +64,18 @@ class ResearchPlan:
             data["tasks"].append(task.to_py())
         return data
 
+    def add_task(self):
+        """ Create a new task and return it """
+        task = ResearchTask()
+        self.tasks.append(task)
+        return task
+
+    def delete_task(self, index):
+        """ Deletes the task at the given index """
+        if index > len(self.tasks) or len(self.tasks) == 0:
+            return
+        del self.tasks[index]
+
 
 class ResearchProject:
     """ All the research plans for a gedcom """
@@ -108,3 +111,15 @@ class ResearchProject:
     def has_gedcom(self):
         """ Whether a gedcom file is associated with this project """
         return self.gedcom != "none"
+
+    def add_plan(self):
+        """ Creates and returns a new plan """
+        plan = ResearchPlan()
+        self.plans.append(plan)
+        return plan
+
+    def delete_plan(self, index):
+        """ Delete plan at index """
+        if index > len(self.plans) or len(self.plans) == 0:
+            return
+        del self.plans[index]
