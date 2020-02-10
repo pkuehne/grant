@@ -34,16 +34,14 @@ class FilterSelectionScreen(SelectionScreen):
 
         self.setLayout(layout)
 
-    def reload_screen(self):
-        """ Loads the screen """
-        table_model = TableModel()
-        table_model.setSourceModel(self.data_model)
-        tasks_model = TasksModel()
-        tasks_model.setSourceModel(table_model)
-        self.table_view.setModel(tasks_model)
-
     def selection_changed(self, selected, _):
         """ Handle changed selection """
+        if len(selected.indexes()) != 1:
+            return
+        index = selected.indexes()[0]
+        flat_index = self.tasks_model.mapToSource(index)
+        tree_index = self.table_model.mapToSource(flat_index)
+        self.item_selected.emit(tree_index)
 
     def clear_selection(self):
         """ Called when screen is being switched to """

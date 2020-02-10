@@ -2,7 +2,7 @@
 
 from PyQt5.QtCore import QAbstractProxyModel
 from PyQt5.QtCore import QModelIndex
-from PyQt5.QtCore import Qt
+# from PyQt5.QtCore import Qt
 
 
 class TableModel(QAbstractProxyModel):
@@ -13,21 +13,27 @@ class TableModel(QAbstractProxyModel):
         self.row_map = {}
         self.index_map = {}
 
-    def build_map(self, model, parent, row):
+    def build_map(self, parent, row):
         """ Constructs and internal mapping of rows and indices """
         if row == 0:
             self.row_map = {}
             self.index_map = {}
-        rows = model.rowCount(parent)
+        rows = self.sourceModel().rowCount(parent)
         for child_row in range(rows):
-            index = model.index(child_row, 0, parent)
-            print('row', row, 'item', model.data(index, Qt.DisplayRole))
+            index = self.sourceModel().index(child_row, 0, parent)
+            # print('row', row, 'item', self.sourceModel().data(index, Qt.DisplayRole))
             self.row_map[index] = row
             self.index_map[row] = index
             row = row + 1
-            if model.hasChildren(index):
-                row = self.build_map(model, index, row)
+            if self.sourceModel().hasChildren(index):
+                row = self.build_map(index, row)
         return row
+
+    def reset_model(self):
+        """ Resets the model when the source is reset """
+        self.beginResetModel()
+        self.build_map(QModelIndex(), 0)
+        self.endResetModel()
 
     def sourceDataChanged(self, topLeft, bottomRight):  # pylint: disable=invalid-name
         """ remap source indices and emit dataChanged signal """
@@ -35,23 +41,24 @@ class TableModel(QAbstractProxyModel):
                               self.mapFromSource(bottomRight))
 
     def setSourceModel(self, model):  # pylint: disable=invalid-name
-        """ Build row/index map when source model is set """
+        """ Reset index/row maps and connect signals """
         QAbstractProxyModel.setSourceModel(self, model)
-        self.build_map(model, QModelIndex(), 0)
-        model.dataChanged.connect(self.sourceDataChanged)
+        self.reset_model()
+        self.sourceModel().dataChanged.connect(self.sourceDataChanged)
+        self.sourceModel().modelReset.connect(self.reset_model)
 
     def mapFromSource(self, index):  # pylint: disable=invalid-name
         """ map given index from Tree to Flat """
         if index not in self.row_map:
             return QModelIndex()
-        #print('mapping to row', self.row_map[index], flush = True)
+        # print('mapping to row', self.row_map[index], flush = True)
         return self.createIndex(self.row_map[index], index.column(), index.internalPointer())
 
     def mapToSource(self, index):  # pylint: disable=invalid-name
         """ map given index from flat table to tree """
         if not index.isValid() or index.row() not in self.index_map:
             return QModelIndex()
-        #print('mapping from row', index.row(), flush = True)
+        # print('mapping from row', index.row(), flush = True)
         return self.index_map[index.row()]
 
     def columnCount(self, index):  # pylint: disable=invalid-name
@@ -61,12 +68,12 @@ class TableModel(QAbstractProxyModel):
 
     def rowCount(self, index):  # pylint: disable=invalid-name
         """ Return row count of source model at this index """
-        #print('rows:', len(self.row_map), flush=True)
+        # print('rows:', len(self.row_map), flush=True)
         return len(self.row_map) if not index.isValid() else 0
 
     def index(self, row, column, parent):
         """ Return index into the flat table """
-        #print('index for:', row, column, flush=True)
+        # print('index for:', row, column, flush=True)
         if parent.isValid() or not self.index_map:
             return QModelIndex()
         return self.createIndex(row, column, self.index_map[row].internalPointer())

@@ -103,6 +103,7 @@ class MainWindow(QMainWindow):
             self.detail_stack.setCurrentWidget(self.screens["blank"])
 
         self.screens["tree"].item_selected.connect(selection_changed)
+        self.screens["filter"].item_selected.connect(selection_changed)
 
         self.detail_stack = QStackedWidget()
 
