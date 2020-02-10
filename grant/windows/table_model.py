@@ -14,14 +14,10 @@ class TableModel(QAbstractProxyModel):
         self.index_map = {}
 
     def build_map(self, parent, row):
-        """ Constructs and internal mapping of rows and indices """
-        if row == 0:
-            self.row_map = {}
-            self.index_map = {}
-        rows = self.sourceModel().rowCount(parent)
-        for child_row in range(rows):
+        """ Constructs an internal mapping of rows and indices """
+        row_count = self.sourceModel().rowCount(parent)
+        for child_row in range(row_count):
             index = self.sourceModel().index(child_row, 0, parent)
-            # print('row', row, 'item', self.sourceModel().data(index, Qt.DisplayRole))
             self.row_map[index] = row
             self.index_map[row] = index
             row = row + 1
@@ -32,6 +28,8 @@ class TableModel(QAbstractProxyModel):
     def reset_model(self):
         """ Resets the model when the source is reset """
         self.beginResetModel()
+        self.row_map = {}
+        self.index_map = {}
         self.build_map(QModelIndex(), 0)
         self.endResetModel()
 
@@ -51,29 +49,24 @@ class TableModel(QAbstractProxyModel):
         """ map given index from Tree to Flat """
         if index not in self.row_map:
             return QModelIndex()
-        # print('mapping to row', self.row_map[index], flush = True)
         return self.createIndex(self.row_map[index], index.column(), index.internalPointer())
 
     def mapToSource(self, index):  # pylint: disable=invalid-name
         """ map given index from flat table to tree """
         if not index.isValid() or index.row() not in self.index_map:
             return QModelIndex()
-        # print('mapping from row', index.row(), flush = True)
         return self.index_map[index.row()]
 
     def columnCount(self, index):  # pylint: disable=invalid-name
         """ Return column count of source model for this index """
-        return QAbstractProxyModel.sourceModel(self)\
-            .columnCount(self.mapToSource(index))
+        return self.sourceModel().columnCount(self.mapToSource(index))
 
     def rowCount(self, index):  # pylint: disable=invalid-name
         """ Return row count of source model at this index """
-        # print('rows:', len(self.row_map), flush=True)
         return len(self.row_map) if not index.isValid() else 0
 
     def index(self, row, column, parent):
         """ Return index into the flat table """
-        # print('index for:', row, column, flush=True)
         if parent.isValid() or not self.index_map:
             return QModelIndex()
         return self.createIndex(row, column, self.index_map[row].internalPointer())
