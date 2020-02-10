@@ -80,3 +80,7 @@ class TreeSelectionScreen(SelectionScreen):
         if len(self.tree_view.selectedIndexes()) == 0:
             return
         self.data_model.add_node(self.tree_view.selectedIndexes()[0])
+
+    def clear_selection(self):
+        """ Called when screen is being switched to """
+        self.tree_view.selectionModel().clearSelection()

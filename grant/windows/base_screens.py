@@ -34,6 +34,11 @@ class SelectionScreen(BaseScreen):
     def reload_screen(self):
         """ Called when things change """
 
+    def clear_selection(self):
+        """ Called when the selection needs to be cleared """
+        raise NotImplementedError(
+            "clear_selection() must be implemented in sub-classes")
+
 
 class DetailScreen(BaseScreen):
     """ Basis of all detail screens on the right-hand side """

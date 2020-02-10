@@ -184,6 +184,19 @@ class MainWindow(QMainWindow):
                 save_project_as_action.setDisabled(self.project is None)
             self.project_changed.connect(enable_on_project_load)
 
+        def create_view_menu():
+            view_project_action = QAction("Project &Overview", self)
+            view_project_action.triggered.connect(
+                lambda: self.change_selection_screen("tree"))
+
+            view_filter_action = QAction("Tasks Filter", self)
+            view_filter_action.triggered.connect(
+                lambda: self.change_selection_screen("filter"))
+
+            view_menu = self.menuBar().addMenu("&View")
+            view_menu.addAction(view_project_action)
+            view_menu.addAction(view_filter_action)
+
         def create_help_menu():
             about_action = QAction("&About", self)
             about_text = "Version: " + VERSION_NUMBER + "\n\n" + ABOUT_STRING
@@ -193,6 +206,7 @@ class MainWindow(QMainWindow):
             help_menu.addAction(about_action)
 
         create_file_menu()
+        create_view_menu()
         create_help_menu()
 
     def project_changed_handler(self):
@@ -205,6 +219,12 @@ class MainWindow(QMainWindow):
 
         self.project_needs_saving = False
         self.setup_window_title()
+
+    def change_selection_screen(self, name):
+        """ Change the selection to the specified screen """
+        self.selection_stack.setCurrentWidget(self.screens[name])
+        self.screens[name].clear_selection()
+        self.detail_stack.setCurrentWidget(self.screens["blank"])
 
     def create_new_project(self):
         """ Creates a new Research Project """
