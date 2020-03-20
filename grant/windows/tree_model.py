@@ -80,6 +80,16 @@ class TreeNode:
         if self.type == "task":
             self.data.description = value
 
+    def get_result(self):
+        """ Return the value for the result """
+        if self.type != "task":
+            return ""
+        if self.data.result is None:
+            return "Open"
+        if self.data.result.is_nil():
+            return "Nil"
+        return "Results"
+
     def get_icon(self):
         """ Returns a QIcon for this node """
         if self.type == "gedcom":
@@ -197,7 +207,7 @@ class TreeModel(QAbstractItemModel):
             if index.column() == 1:
                 return node.get_description()
             if index.column() == 2:
-                return ""
+                return node.get_result()
         if role == Qt.DecorationRole:
             return node.get_icon()
         return None

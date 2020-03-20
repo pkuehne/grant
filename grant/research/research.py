@@ -50,8 +50,10 @@ class ResearchTask:
         """ Converts from pythonic to class """
         self.source = data.get("source", "")
         self.description = data.get("description", "")
-        self.result = ResearchResult()
-        self.result.from_py(data.get("result", None))
+        result = data.get("result", None)
+        if result is not None:
+            self.result = ResearchResult()
+            self.result.from_py(result)
 
     def to_py(self):
         """ Converts from class to pythonic """
