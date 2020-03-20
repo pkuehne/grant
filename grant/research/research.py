@@ -37,13 +37,11 @@ class ResearchResult:
 
 class ResearchTask:
     """ A single task """
-    default_status = "active"
 
     def __init__(self):
         self.source = ""
         self.description = ""
         self.result = None
-        self.status = self.default_status
 
     def __str__(self):
         return "Research Task: " + self.description
@@ -54,7 +52,6 @@ class ResearchTask:
         self.description = data.get("description", "")
         self.result = ResearchResult()
         self.result.from_py(data.get("result", None))
-        self.status = data.get("status", self.default_status)
 
     def to_py(self):
         """ Converts from class to pythonic """
@@ -62,7 +59,6 @@ class ResearchTask:
         data["source"] = self.source
         data["description"] = self.description
         data["result"] = self.result.to_py()
-        data["status"] = self.status
         return data
 
     def is_open(self):

@@ -14,7 +14,7 @@ def test_unset_fields_are_defaulted():
 
     # Then
     assert task.source == ""
-    assert task.status != ""
+    assert task.description == ""
 
 
 def test_default_task_is_open():

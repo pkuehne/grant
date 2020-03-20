@@ -25,14 +25,12 @@ gedcom: none
 plans:
 - goal: Identify any bastard children
   tasks:
-  - status: active
-    source: Granthill Church Books, Baptisms 1810-1837
+  - source: Granthill Church Books, Baptisms 1810-1837
     description: Check for any bastards born at this time to a Maria
     result:
         nil: true
         summary: "nothing found"
-  - status: active
-    source: Granthill CHurch Books, Baptisms 1838-1855
+  - source: Granthill CHurch Books, Baptisms 1838-1855
     description: Check for any bastards born at this time to a Maria
     result:
   ancestor: William Fitzhugh (1801-1854)
