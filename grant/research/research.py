@@ -1,33 +1,73 @@
 """ The Research-related classes """
+#from datetime import datetime
+
+
+class ResearchResult:
+    """ Result of a Task """
+
+    def __init__(self):
+        self.date = None
+        self.document = ""
+        self.summary = ""
+        self.nil = True
+
+    def is_nil(self):
+        """ Negative result? """
+        return self.nil is True
+
+    def from_py(self, data):
+        """ converts from pythonic to class """
+        if data is None:
+            return
+        self.date = data.get("date", None)
+
+        self.document = data.get("document", "")
+        self.summary = data.get("summary", "")
+        self.nil = data.get("nil", True)
+
+    def to_py(self):
+        """ Converts from class to pythonic """
+        data = {}
+        data["date"] = self.date
+        data["document"] = self.document
+        data["summary"] = self.summary
+        data["nil"] = self.nil
+        return data
 
 
 class ResearchTask:
     """ A single task """
-    default_task_title = "New Task"
     default_status = "active"
 
     def __init__(self):
-        self.title = self.default_task_title
-        self.description = "Add a more detailed description of the task"
+        self.source = ""
+        self.description = ""
+        self.result = None
         self.status = self.default_status
-        self.logs = []
 
     def __str__(self):
-        return "Research Task: " + self.title
+        return "Research Task: " + self.description
 
     def from_py(self, data):
         """ Converts from pythonic to class """
-        self.title = data.get("title", self.default_task_title)
+        self.source = data.get("source", "")
         self.description = data.get("description", "")
+        self.result = ResearchResult()
+        self.result.from_py(data.get("result", None))
         self.status = data.get("status", self.default_status)
 
     def to_py(self):
         """ Converts from class to pythonic """
         data = {}
-        data["title"] = self.title
+        data["source"] = self.source
         data["description"] = self.description
+        data["result"] = self.result.to_py()
         data["status"] = self.status
         return data
+
+    def is_open(self):
+        """ Whether the task is still open """
+        return self.result is None
 
 
 class ResearchPlan:
@@ -48,10 +88,6 @@ class ResearchPlan:
     def from_py(self, data):
         """ Converts from pythonic to class """
         self.ancestor = data.get("ancestor", None)
-        if self.ancestor is None:
-            # This used to tbe the title field
-            self.ancestor = data.get("title", self.default_ancestor)
-
         self.goal = data.get("goal", "")
         for task_data in data.get("tasks", []):
             task = ResearchTask()

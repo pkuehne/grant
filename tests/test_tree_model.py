@@ -300,12 +300,12 @@ def test_data_returns_none_for_invalid_index():
 
 
 def test_data_returns_string_for_valid_index():
-    """ When getting data, title is returned for valid index """
+    """ When getting data, ancestor is returned for valid index """
     # Given
     model = TreeModel()
     project = ResearchProject("")
     plan = ResearchPlan()
-    plan.title = "Foo"
+    plan.ancestor = "Foo"
     project.plans.append(plan)
 
     model.set_project(project)
@@ -324,7 +324,7 @@ def test_data_returns_none_for_invalid_column():
     model = TreeModel()
     project = ResearchProject("")
     plan = ResearchPlan()
-    plan.title = "Foo"
+    plan.ancestor = "Foo"
     project.plans.append(plan)
 
     model.set_project(project)
@@ -343,7 +343,7 @@ def test_data_returns_qicon_for_decoration_role():
     model = TreeModel()
     project = ResearchProject("")
     plan = ResearchPlan()
-    plan.title = "Foo"
+    plan.ancestor = "Foo"
     project.plans.append(plan)
 
     model.set_project(project)
@@ -362,7 +362,7 @@ def test_data_returns_none_for_invalid_role():
     model = TreeModel()
     project = ResearchProject("")
     plan = ResearchPlan()
-    plan.title = "Foo"
+    plan.ancestor = "Foo"
     project.plans.append(plan)
 
     model.set_project(project)

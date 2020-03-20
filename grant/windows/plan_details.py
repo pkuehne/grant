@@ -15,8 +15,8 @@ class PlanDetails(DetailScreen):
         super(PlanDetails, self).__init__(model)
 
         form_layout = QFormLayout()
-        self.title = QLineEdit()
-        form_layout.addRow(QLabel("Ancestor:"), self.title)
+        self.ancestor = QLineEdit()
+        form_layout.addRow(QLabel("Ancestor:"), self.ancestor)
 
         self.goal = QTextEdit()
         form_layout.addRow(QLabel("Goal:"), self.goal)
@@ -31,6 +31,6 @@ class PlanDetails(DetailScreen):
 
         self.mapper = QDataWidgetMapper()
         self.mapper.setModel(self.data_model)
-        self.mapper.addMapping(self.title, 0)
+        self.mapper.addMapping(self.ancestor, 0)
         self.mapper.addMapping(self.goal, 1)
         self.mapper.toFirst()

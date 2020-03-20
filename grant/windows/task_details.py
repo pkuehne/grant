@@ -20,8 +20,8 @@ class TaskDetails(DetailScreen):
             ["active", "completed", "abandoned"])
 
         form_layout = QFormLayout()
-        self.title = QLineEdit()
-        form_layout.addRow(QLabel("Title:"), self.title)
+        self.source = QLineEdit()
+        form_layout.addRow(QLabel("Source:"), self.source)
 
         self.description = QTextEdit()
         form_layout.addRow(QLabel("Description:"), self.description)
@@ -40,7 +40,7 @@ class TaskDetails(DetailScreen):
 
         self.mapper = QDataWidgetMapper()
         self.mapper.setModel(self.data_model)
-        self.mapper.addMapping(self.title, 0)
+        self.mapper.addMapping(self.source, 0)
         self.mapper.addMapping(self.description, 1)
         self.mapper.addMapping(self.status, 2, b"currentText")
         self.mapper.toFirst()

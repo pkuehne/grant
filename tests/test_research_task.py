@@ -13,5 +13,17 @@ def test_unset_fields_are_defaulted():
     task.from_py(task_data)
 
     # Then
-    assert task.title != ""
+    assert task.source == ""
     assert task.status != ""
+
+
+def test_default_task_is_open():
+    """ Check that by default there is no result for a task """
+    # Given
+    task = ResearchTask()
+
+    # When
+    result = task.is_open()
+
+    # Then
+    assert result is True

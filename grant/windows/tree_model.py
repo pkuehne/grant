@@ -55,7 +55,7 @@ class TreeNode:
         if self.type == "plan":
             return self.data.ancestor
         if self.type == "task":
-            return self.data.title
+            return self.data.source
         return ""
 
     def set_text(self, value):
@@ -63,7 +63,7 @@ class TreeNode:
         if self.type == "plan":
             self.data.ancestor = value
         if self.type == "task":
-            self.data.title = value
+            self.data.source = value
 
     def get_description(self):
         """ Return a description for the given node """
