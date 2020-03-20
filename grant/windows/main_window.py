@@ -23,16 +23,16 @@ ABOUT_STRING = "Copyright (c) 2020 by Peter Kühne\nIcons from https://icons8.co
 TEST_DATA = """
 gedcom: none
 plans:
-- goal: To be a goood test plan
+- goal: Identify any bastard children
   tasks:
   - status: active
     title: Task 1
   - status: active
     title: Task 2
-  title: Test Plan 1
+  ancestor: William Fitzhugh (1801-1854)
 - goal: Another test plan
   tasks: []
-  title: Test Plan 2
+  ancestor: Guillaume Demarre (1765-1808)
 version: '1.0'
 """
 

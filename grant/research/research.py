@@ -32,22 +32,26 @@ class ResearchTask:
 
 class ResearchPlan:
     """ A collection of tasks with a common goal """
-    default_title = "New Plan"
+    default_ancestor = "My Ancestor"
 
     def __init__(self):
-        self.title = self.default_title
+        self.ancestor = self.default_ancestor
         self.goal = "Describe your goals for this plan..."
         self.tasks = []
 
     def __str__(self):
-        retval = "Research Plan: " + self.title
+        retval = "Research Plan: " + self.ancestor
         for task in self.tasks:
             retval = retval + "\n\t\t" + str(task)
         return retval
 
     def from_py(self, data):
         """ Converts from pythonic to class """
-        self.title = data.get("title", self.default_title)
+        self.ancestor = data.get("ancestor", None)
+        if self.ancestor is None:
+            # This used to tbe the title field
+            self.ancestor = data.get("title", self.default_ancestor)
+
         self.goal = data.get("goal", "")
         for task_data in data.get("tasks", []):
             task = ResearchTask()
@@ -57,7 +61,7 @@ class ResearchPlan:
     def to_py(self):
         """ Converts from class to pythonic """
         data = {}
-        data["title"] = self.title
+        data["ancestor"] = self.ancestor
         data["goal"] = self.goal
         data["tasks"] = []
         for task in self.tasks:

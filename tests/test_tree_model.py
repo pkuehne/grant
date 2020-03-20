@@ -226,7 +226,7 @@ def test_setdata_doesnot_fire_signal_if_no_change(qtbot):
 
     # When
     with qtbot.assertNotEmitted(model.dataChanged):
-        retval = model.setData(plan_index, plan.title, None)
+        retval = model.setData(plan_index, plan.ancestor, None)
 
     assert retval is True
 
@@ -315,7 +315,7 @@ def test_data_returns_string_for_valid_index():
     retval = model.data(plan_index, Qt.DisplayRole)
 
     # Then
-    assert retval is plan.title
+    assert retval is plan.ancestor
 
 
 def test_data_returns_none_for_invalid_column():

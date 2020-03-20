@@ -16,7 +16,7 @@ class PlanDetails(DetailScreen):
 
         form_layout = QFormLayout()
         self.title = QLineEdit()
-        form_layout.addRow(QLabel("Title:"), self.title)
+        form_layout.addRow(QLabel("Ancestor:"), self.title)
 
         self.goal = QTextEdit()
         form_layout.addRow(QLabel("Goal:"), self.goal)

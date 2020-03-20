@@ -14,7 +14,33 @@ def test_unset_fields_are_defaulted():
     plan.from_py(plan_data)
 
     # Then
-    assert plan.title != ""
+    assert plan.ancestor != ""
+
+
+def test_use_ancestor_field_if_ancestor_and_title_set():
+    """ Backwards compatibility check, the ancestor field should be used over the title """
+    # Given
+    plan = ResearchPlan()
+    plan_data = {"title": "Foo", "ancestor": "Bar"}
+
+    # When
+    plan.from_py(plan_data)
+
+    # Then
+    assert plan.ancestor == plan_data["ancestor"]
+
+
+def test_use_title_field_if_ancestor_not_set():
+    """ Backwards compatibility check, the ancestor field used to be called title """
+    # Given
+    plan = ResearchPlan()
+    plan_data = {"title": "Foo"}
+
+    # When
+    plan.from_py(plan_data)
+
+    # Then
+    assert plan.ancestor == plan_data["title"]
 
 
 def test_add_task_creates_and_returns():

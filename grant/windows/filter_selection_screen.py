@@ -16,6 +16,8 @@ class FilterSelectionScreen(SelectionScreen):
     def __init__(self, model):
         super(FilterSelectionScreen, self).__init__(model)
 
+        # filter_box = QVBoxLayout()
+
         self.table_model = TableModel()
         self.table_model.setSourceModel(self.data_model)
         self.tasks_model = TasksModel()
