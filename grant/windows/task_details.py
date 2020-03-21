@@ -1,12 +1,14 @@
 """ Detail View for a plan """
 
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QFormLayout
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QLabel, QLineEdit, QTextEdit, QGroupBox
-from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QDataWidgetMapper
+from PyQt5.QtWidgets import QAction
 from .base_screens import DetailScreen
 
 
@@ -34,10 +36,16 @@ class TaskDetails(DetailScreen):
 
         result_box = QHBoxLayout()
         self.result = QLineEdit()
-        self.result.setEnabled(False)
+        self.result.setReadOnly(True)
+        self.more_action = QAction(QIcon(":/icons/more.ico"), "more")
+        self.result.addAction(self.more_action, self.result.TrailingPosition)
         result_box.addWidget(self.result)
-        self.result_edit = QPushButton("Edit")
-        result_box.addWidget(self.result_edit)
+
+        self.result_nil = QPushButton("Nil")
+        result_box.addWidget(self.result_nil)
+        self.result_found = QPushButton("Found")
+        result_box.addWidget(self.result_found)
+
         form_layout.addRow(QLabel("Results:"), result_box)
 
         form_group = QGroupBox("Task")
@@ -54,3 +62,12 @@ class TaskDetails(DetailScreen):
         self.mapper.addMapping(self.description, 1)
         self.mapper.addMapping(self.result, 2)
         self.mapper.toFirst()
+        self.mapper.currentIndexChanged.connect(self.item_selected)
+
+    def item_selected(self, index: int):
+        """ Triggered when the selected item changes """
+        task = self.data_model.index(
+            index, 0, self.mapper.rootIndex()).internalPointer().data
+        self.result.setVisible(task.result is not None)
+        self.result_nil.setVisible(task.result is None)
+        self.result_found.setVisible(task.result is None)
