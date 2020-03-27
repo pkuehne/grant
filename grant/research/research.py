@@ -5,11 +5,11 @@
 class ResearchResult:
     """ Result of a Task """
 
-    def __init__(self):
+    def __init__(self, success: bool):
         self.date = None
         self.document = ""
         self.summary = ""
-        self.nil = True
+        self.nil = not success
 
     def is_nil(self):
         """ Negative result? """
@@ -63,7 +63,7 @@ class ResearchTask:
         self.description = data.get("description", "")
         result = data.get("result", None)
         if result is not None:
-            self.result = ResearchResult()
+            self.result = ResearchResult(False)
             self.result.from_py(result)
 
     def to_py(self):
@@ -71,7 +71,7 @@ class ResearchTask:
         data = {}
         data["source"] = self.source
         data["description"] = self.description
-        data["result"] = self.result.to_py()
+        data["result"] = None if self.result is None else self.result.to_py()
         return data
 
     def is_open(self):

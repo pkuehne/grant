@@ -4,9 +4,9 @@ from grant.research import ResearchResult
 
 
 def test_default_result_is_nil():
-    """ Check that when converting a task, any fields not set in py are defaulted """
+    """ Passing success as false, sets result to be nil """
     # Given
-    result = ResearchResult()
+    result = ResearchResult(False)
 
     # When
     retval = result.is_nil()
@@ -15,10 +15,22 @@ def test_default_result_is_nil():
     assert retval is True
 
 
+def test_true_result_is_not_nil():
+    """ Passing success as false, sets result to be nil """
+    # Given
+    result = ResearchResult(True)
+
+    # When
+    retval = result.is_nil()
+
+    # Then
+    assert retval is False
+
+
 def test_string_representation_includes_nil_for_nil_result():
     """ If a result is nil, it should include nil in the string """
     # Given
-    result = ResearchResult()
+    result = ResearchResult(False)
 
     # When
     string = str(result)
@@ -30,8 +42,7 @@ def test_string_representation_includes_nil_for_nil_result():
 def test_string_representation_does_not_include_nil_for_success_result():
     """ If a result is not nil, it should not include nil in the string """
     # Given
-    result = ResearchResult()
-    result.nil = False
+    result = ResearchResult(True)
 
     # When
     string = str(result)
@@ -43,7 +54,7 @@ def test_string_representation_does_not_include_nil_for_success_result():
 def test_string_representation_includes_summary_for_nil_results():
     """ If a result is nil, it should include the summary in the string """
     # Given
-    result = ResearchResult()
+    result = ResearchResult(True)
     result.summary = "Summary"
 
     # When
@@ -56,8 +67,7 @@ def test_string_representation_includes_summary_for_nil_results():
 def test_string_representation_includes_summary_for_success_results():
     """ If a result is not nil, it should include the summary in the string """
     # Given
-    result = ResearchResult()
-    result.nil = False
+    result = ResearchResult(True)
     result.summary = "Summary"
 
     # When

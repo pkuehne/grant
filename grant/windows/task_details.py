@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QLabel, QLineEdit, QTextEdit, QGroupBox
 from PyQt5.QtWidgets import QDataWidgetMapper
 from PyQt5.QtWidgets import QAction
+from PyQt5.QtWidgets import QInputDialog
 from .base_screens import DetailScreen
 from ..research import ResearchResult
 
@@ -43,10 +44,10 @@ class TaskDetails(DetailScreen):
         result_box.addWidget(self.result)
 
         self.result_nil = QPushButton("Nil")
-        self.result_nil.pressed.connect(self.record_nil_result)
+        self.result_nil.pressed.connect(lambda: self.record_result(False))
         result_box.addWidget(self.result_nil)
         self.result_success = QPushButton("Success")
-        self.result_success.pressed.connect(self.record_success_result)
+        self.result_success.pressed.connect(lambda: self.record_result(True))
         result_box.addWidget(self.result_success)
 
         form_layout.addRow(QLabel("Results:"), result_box)
@@ -75,19 +76,15 @@ class TaskDetails(DetailScreen):
         self.result_nil.setVisible(task.result is None)
         self.result_success.setVisible(task.result is None)
 
-    def record_nil_result(self):
-        """ Record a nil result """
+    def record_result(self, success: bool):
+        """ Records a result """
         task = self.data_model.index(
             self.mapper.currentIndex(), 0, self.mapper.rootIndex()).internalPointer().data
 
-        task.result = ResearchResult()
-        self.mapper.setCurrentIndex(self.mapper.currentIndex())
+        task.result = ResearchResult(success)
+        summary, ok_pressed = QInputDialog.getText(self,
+                                                   "Summary", "Enter a summary of your findings")
+        if ok_pressed:
+            task.result.summary = summary
 
-    def record_success_result(self):
-        """ Record a nil result """
-        task = self.data_model.index(
-            self.mapper.currentIndex(), 0, self.mapper.rootIndex()).internalPointer().data
-
-        task.result = ResearchResult()
-        task.result.nil = False
         self.mapper.setCurrentIndex(self.mapper.currentIndex())
