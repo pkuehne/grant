@@ -84,11 +84,7 @@ class TreeNode:
         """ Return the value for the result """
         if self.type != "task":
             return ""
-        if self.data.result is None:
-            return "Open"
-        if self.data.result.is_nil():
-            return "Nil"
-        return "Results"
+        return str(self.data.result)
 
     def get_icon(self):
         """ Returns a QIcon for this node """

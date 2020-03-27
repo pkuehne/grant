@@ -34,6 +34,17 @@ class ResearchResult:
         data["nil"] = self.nil
         return data
 
+    def __str__(self):
+        """ String representation """
+        data = ""
+        if self.is_nil():
+            data = "nil"
+        else:
+            data = "success"
+
+        data += " - " + self.summary if self.summary != "" else ""
+        return data
+
 
 class ResearchTask:
     """ A single task """

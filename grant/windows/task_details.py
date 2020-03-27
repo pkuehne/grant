@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QLabel, QLineEdit, QTextEdit, QGroupBox
 from PyQt5.QtWidgets import QDataWidgetMapper
 from PyQt5.QtWidgets import QAction
 from .base_screens import DetailScreen
+from ..research import ResearchResult
 
 
 class TaskDetails(DetailScreen):
@@ -42,9 +43,11 @@ class TaskDetails(DetailScreen):
         result_box.addWidget(self.result)
 
         self.result_nil = QPushButton("Nil")
+        self.result_nil.pressed.connect(self.record_nil_result)
         result_box.addWidget(self.result_nil)
-        self.result_found = QPushButton("Found")
-        result_box.addWidget(self.result_found)
+        self.result_success = QPushButton("Success")
+        self.result_success.pressed.connect(self.record_success_result)
+        result_box.addWidget(self.result_success)
 
         form_layout.addRow(QLabel("Results:"), result_box)
 
@@ -70,4 +73,21 @@ class TaskDetails(DetailScreen):
             index, 0, self.mapper.rootIndex()).internalPointer().data
         self.result.setVisible(task.result is not None)
         self.result_nil.setVisible(task.result is None)
-        self.result_found.setVisible(task.result is None)
+        self.result_success.setVisible(task.result is None)
+
+    def record_nil_result(self):
+        """ Record a nil result """
+        task = self.data_model.index(
+            self.mapper.currentIndex(), 0, self.mapper.rootIndex()).internalPointer().data
+
+        task.result = ResearchResult()
+        self.mapper.setCurrentIndex(self.mapper.currentIndex())
+
+    def record_success_result(self):
+        """ Record a nil result """
+        task = self.data_model.index(
+            self.mapper.currentIndex(), 0, self.mapper.rootIndex()).internalPointer().data
+
+        task.result = ResearchResult()
+        task.result.nil = False
+        self.mapper.setCurrentIndex(self.mapper.currentIndex())
