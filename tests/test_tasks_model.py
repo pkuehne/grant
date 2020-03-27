@@ -1,6 +1,6 @@
 """ Tests for the TasksModel """
 
-from grant.windows.tasks_model import TasksModel
+from grant.models.tasks_model import TasksModel
 
 
 def test_create():

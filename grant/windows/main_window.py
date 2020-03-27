@@ -11,12 +11,12 @@ from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSignal
 from grant.research import ResearchProject
+from grant.models.tree_model import TreeModel
 from .plan_details import PlanDetails
 from .task_details import TaskDetails
 from .base_screens import DetailScreen
 from .tree_selection_screen import TreeSelectionScreen
 from .filter_selection_screen import FilterSelectionScreen
-from .tree_model import TreeModel
 
 VERSION_NUMBER = "0.1"
 ABOUT_STRING = "Copyright (c) 2020 by Peter Kühne\nIcons from https://icons8.com"

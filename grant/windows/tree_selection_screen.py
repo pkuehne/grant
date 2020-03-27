@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtGui import QIcon
-from grant.windows.base_screens import SelectionScreen
+from .base_screens import SelectionScreen
 
 
 class TreeSelectionScreen(SelectionScreen):

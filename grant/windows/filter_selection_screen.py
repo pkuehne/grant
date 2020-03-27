@@ -5,9 +5,9 @@
 from PyQt5.QtWidgets import QTableView
 from PyQt5.QtWidgets import QAbstractItemView
 from PyQt5.QtWidgets import QVBoxLayout
-from grant.windows.base_screens import SelectionScreen
-from grant.windows.tasks_model import TasksModel
-from grant.windows.table_model import TableModel
+from grant.models.tasks_model import TasksModel
+from grant.models.table_model import TableModel
+from .base_screens import SelectionScreen
 
 
 class FilterSelectionScreen(SelectionScreen):

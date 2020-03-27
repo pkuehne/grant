@@ -10,8 +10,8 @@ from PyQt5.QtWidgets import QLabel, QLineEdit, QTextEdit, QGroupBox
 from PyQt5.QtWidgets import QDataWidgetMapper
 from PyQt5.QtWidgets import QAction
 from PyQt5.QtWidgets import QInputDialog
+from grant.research import ResearchResult
 from .base_screens import DetailScreen
-from ..research import ResearchResult
 
 
 class TaskDetails(DetailScreen):
