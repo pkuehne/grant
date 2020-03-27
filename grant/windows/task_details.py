@@ -81,10 +81,10 @@ class TaskDetails(DetailScreen):
         task = self.data_model.index(
             self.mapper.currentIndex(), 0, self.mapper.rootIndex()).internalPointer().data
 
-        task.result = ResearchResult(success)
         summary, ok_pressed = QInputDialog.getText(self,
                                                    "Summary", "Enter a summary of your findings")
         if ok_pressed:
+            task.result = ResearchResult(success)
             task.result.summary = summary
 
         self.mapper.setCurrentIndex(self.mapper.currentIndex())
