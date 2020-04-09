@@ -8,6 +8,17 @@ from PyQt5.QtCore import Qt
 class TasksModel(QSortFilterProxyModel):
     """ Filters the input TreeModel to a table model of only the tasks """
 
+    def __init__(self):
+        super(TasksModel, self).__init__()
+        self.text_filter = ""
+        self.result_filter = ""
+
+    def set_text_filter(self, text):
+        """ Sets the filter for the text column """
+        print("Setting text filter to ", text)
+        self.text_filter = text
+        self.invalidateFilter()
+
     def filterAcceptsRow(self, row, parent):  # pylint: disable=invalid-name
         """ Whether this row is part of the filtered view """
 
@@ -16,8 +27,10 @@ class TasksModel(QSortFilterProxyModel):
             return True
 
         node = index.internalPointer()
+        if node.type != "task":
+            return False
 
-        return node.type == "task"
+        return self.text_filter in node.get_text()
 
     def setSourceModel(self, model):  # pylint: disable=invalid-name
         """ Connect to source model signals """

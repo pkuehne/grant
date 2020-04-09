@@ -5,6 +5,10 @@
 from PyQt5.QtWidgets import QTableView
 from PyQt5.QtWidgets import QAbstractItemView
 from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QFormLayout
+from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QLineEdit
+from PyQt5.QtWidgets import QComboBox
 from grant.models.tasks_model import TasksModel
 from grant.models.table_model import TableModel
 from .base_screens import SelectionScreen
@@ -16,12 +20,18 @@ class FilterSelectionScreen(SelectionScreen):
     def __init__(self, model):
         super(FilterSelectionScreen, self).__init__(model)
 
-        # filter_box = QVBoxLayout()
-
         self.table_model = TableModel()
         self.table_model.setSourceModel(self.data_model)
         self.tasks_model = TasksModel()
         self.tasks_model.setSourceModel(self.table_model)
+
+        filter_widgets = QFormLayout()
+        self.text_filter = QLineEdit()
+        self.text_filter.textChanged.connect(
+            lambda: self.tasks_model.set_text_filter(self.text_filter.text()))
+        filter_widgets.addRow(QLabel("Text:"), self.text_filter)
+        self.result_filter = QComboBox()
+        filter_widgets.addRow(QLabel("Result:"), self.result_filter)
 
         self.table_view = QTableView()
         self.table_view.setModel(self.tasks_model)
@@ -32,6 +42,7 @@ class FilterSelectionScreen(SelectionScreen):
         self.table_view.selectionModel().selectionChanged.connect(self.selection_changed)
 
         layout = QVBoxLayout()
+        layout.addLayout(filter_widgets)
         layout.addWidget(self.table_view)
 
         self.setLayout(layout)
