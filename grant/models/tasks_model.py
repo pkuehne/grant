@@ -30,3 +30,20 @@ class TasksModel(QSortFilterProxyModel):
                 and section == 0:
             return "Task List"
         return None
+
+    def data(self, proxy_index, role):  # pylint: disable= no-self-use
+        """ Return the data associated with the specific index for the role """
+        index = self.mapToSource(proxy_index)
+        if not index.isValid() or index.column() > 2:
+            return None
+        node = index.internalPointer()
+        if role in [Qt.DisplayRole]:
+            if index.column() == 0:
+                return node.get_text()
+            if index.column() == 1:
+                return node.get_description()
+            if index.column() == 2:
+                return node.get_result()
+        if role == Qt.FontRole:
+            return node.get_font()
+        return None

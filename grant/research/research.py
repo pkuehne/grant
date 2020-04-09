@@ -1,12 +1,12 @@
 """ The Research-related classes """
-#from datetime import datetime
+from datetime import datetime
 
 
 class ResearchResult:
     """ Result of a Task """
 
     def __init__(self, success: bool):
-        self.date = None
+        self.date = datetime.now()
         self.document = ""
         self.summary = ""
         self.nil = not success
@@ -20,7 +20,6 @@ class ResearchResult:
         if data is None:
             return
         self.date = data.get("date", None)
-
         self.document = data.get("document", "")
         self.summary = data.get("summary", "")
         self.nil = data.get("nil", True)

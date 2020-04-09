@@ -3,6 +3,7 @@
 from PyQt5.QtCore import QAbstractItemModel
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
 from PyQt5.QtGui import QIcon
 from grant.research import ResearchProject
 
@@ -99,6 +100,15 @@ class TreeNode:
         if self.type == "task":
             return QIcon(":/icons/task.ico")
         return QIcon()
+
+    def get_font(self):
+        """ Returns the font to display the item in """
+        font = QFont()
+        if self.type != "task":
+            return font
+        if self.data.result is not None and self.data.result.is_nil():
+            font.setStrikeOut(True)
+        return font
 
 
 class TreeModel(QAbstractItemModel):
@@ -206,6 +216,8 @@ class TreeModel(QAbstractItemModel):
                 return node.get_result()
         if role == Qt.DecorationRole:
             return node.get_icon()
+        if role == Qt.FontRole:
+            return node.get_font()
         return None
 
     def setData(self, index, value, _):  # pylint: disable=invalid-name

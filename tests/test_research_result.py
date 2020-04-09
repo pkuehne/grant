@@ -3,7 +3,16 @@
 from grant.research import ResearchResult
 
 
-def test_default_result_is_nil():
+def test_date_is_defaulted():
+    """ A date should be set when the object is constructed """
+    # Given
+    result = ResearchResult(False)
+
+    # Then
+    assert result.date is not None
+
+
+def test_false_result_is_nil():
     """ Passing success as false, sets result to be nil """
     # Given
     result = ResearchResult(False)

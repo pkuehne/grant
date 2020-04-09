@@ -6,7 +6,7 @@ from PyQt5.QtGui import QIcon
 
 from grant.models.tree_model import TreeNode
 from grant.models.tree_model import TreeModel
-from grant.research import ResearchProject, ResearchPlan, ResearchTask
+from grant.research import ResearchProject, ResearchPlan, ResearchTask, ResearchResult
 
 
 def test_empty_icon_returned_for_unknown_node_type():
@@ -373,3 +373,27 @@ def test_data_returns_none_for_invalid_role():
 
     # Then
     assert retval is None
+
+
+def test_get_font_returns_strikeout_for_task_with_result():
+    """ A task with a nil result should show up as strike-out """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    plan = ResearchPlan()
+    task = ResearchTask()
+    task.result = ResearchResult(False)
+    plan.tasks.append(task)
+    project.plans.append(plan)
+
+    model.set_project(project)
+
+    plans_index = model.index(2, 0, QModelIndex())
+    plan_index = model.index(0, 0, plans_index)
+    task_index = model.index(0, 0, plan_index)
+
+    # When
+    font = model.data(task_index, Qt.FontRole)
+
+    # Then
+    assert font.strikeOut() is True
