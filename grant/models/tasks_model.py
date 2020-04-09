@@ -15,9 +15,23 @@ class TasksModel(QSortFilterProxyModel):
 
     def set_text_filter(self, text):
         """ Sets the filter for the text column """
-        print("Setting text filter to ", text)
         self.text_filter = text
         self.invalidateFilter()
+
+    def set_result_filter(self, result):
+        """ Sets the filter for the result column """
+        self.result_filter = result
+        self.invalidateFilter()
+
+    def match_result_filter(self, node):
+        """ Determines whether the node matches the result filter """
+        if self.result_filter == "":
+            return True
+
+        if self.result_filter == "open" and node.data.result is None:
+            return True
+
+        return self.result_filter in str(node.get_result())
 
     def filterAcceptsRow(self, row, parent):  # pylint: disable=invalid-name
         """ Whether this row is part of the filtered view """
@@ -30,7 +44,10 @@ class TasksModel(QSortFilterProxyModel):
         if node.type != "task":
             return False
 
-        return self.text_filter in node.get_text()
+        result = True
+        result = result and self.text_filter in node.get_text()
+        result = result and self.match_result_filter(node)
+        return result
 
     def setSourceModel(self, model):  # pylint: disable=invalid-name
         """ Connect to source model signals """
