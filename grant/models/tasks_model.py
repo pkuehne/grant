@@ -3,6 +3,7 @@
 from PyQt5.QtCore import QSortFilterProxyModel
 from PyQt5.QtCore import Qt
 # from PyQt5.QtCore import QModelIndex
+from grant.models.task_matcher import TaskMatcher
 
 
 class TasksModel(QSortFilterProxyModel):
@@ -10,44 +11,21 @@ class TasksModel(QSortFilterProxyModel):
 
     def __init__(self):
         super(TasksModel, self).__init__()
-        self.text_filter = ""
-        self.result_filter = ""
-
-    def set_text_filter(self, text):
-        """ Sets the filter for the text column """
-        self.text_filter = text
-        self.invalidateFilter()
-
-    def set_result_filter(self, result):
-        """ Sets the filter for the result column """
-        self.result_filter = result
-        self.invalidateFilter()
-
-    def match_result_filter(self, node):
-        """ Determines whether the node matches the result filter """
-        if self.result_filter == "":
-            return True
-
-        if self.result_filter == "open" and node.data.result is None:
-            return True
-
-        return self.result_filter in str(node.get_result())
+        self.task_matcher = TaskMatcher()
+        self.task_matcher.filters_updated.connect(self.invalidateFilter)
 
     def filterAcceptsRow(self, row, parent):  # pylint: disable=invalid-name
         """ Whether this row is part of the filtered view """
 
         index = self.sourceModel().index(row, 0, parent)
         if not index.isValid():
-            return True
+            return False
 
         node = index.internalPointer()
         if node.type != "task":
             return False
 
-        result = True
-        result = result and self.text_filter in node.get_text()
-        result = result and self.match_result_filter(node)
-        return result
+        return self.task_matcher.match(node.data)
 
     def setSourceModel(self, model):  # pylint: disable=invalid-name
         """ Connect to source model signals """

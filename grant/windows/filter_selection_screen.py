@@ -28,14 +28,15 @@ class FilterSelectionScreen(SelectionScreen):
 
         filter_widgets = QFormLayout()
         self.text_filter = QLineEdit()
-        self.text_filter.textChanged.connect(self.tasks_model.set_text_filter)
+        self.text_filter.textChanged.connect(
+            self.tasks_model.task_matcher.text_filter)
         filter_widgets.addRow(QLabel("Text:"), self.text_filter)
         result_model = QStringListModel(
             ["", "open", "success", "nil"])
         self.result_filter = QComboBox()
         self.result_filter.setModel(result_model)
         self.result_filter.currentTextChanged.connect(
-            self.tasks_model.set_result_filter)
+            self.tasks_model.task_matcher.result_filter)
         filter_widgets.addRow(QLabel("Result:"), self.result_filter)
 
         self.table_view = QTableView()
