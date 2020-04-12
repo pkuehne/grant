@@ -3,112 +3,8 @@
 from PyQt5.QtCore import QAbstractItemModel
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
-from PyQt5.QtGui import QIcon
 from grant.research import ResearchProject
-
-
-class TreeNode:
-    """ A wrapper class to normalize the parent/child relationship for node items """
-
-    def __init__(self, node_type, data, parent, row):
-        self.type = node_type
-        self.data = data
-        self.parent = parent
-        self.row = row
-        self.children = self.get_children()
-
-    def get_children(self):
-        """ Return the sub-items (plans/tasks/etc) for the given node """
-        if self.type == "plans":
-            return [TreeNode("plan", plan, self, index)
-                    for index, plan in enumerate(self.data.plans)]
-        if self.type == "plan":
-            return [TreeNode("task", task, self, index)
-                    for index, task, in enumerate(self.data.tasks)]
-        return []
-
-    def delete_child(self, index):
-        """ Delete index from children """
-        if self.type == "plans":
-            self.data.delete_plan(index)
-            del self.children[index]
-        if self.type == "plan":
-            self.data.delete_task(index)
-            del self.children[index]
-
-    def create_child(self):
-        """ Creates a new child depending on the type """
-        if self.type == "plans":
-            self.data.add_plan()
-        if self.type == "plan":
-            self.data.add_task()
-        self.children = self.get_children()
-
-    def get_text(self):
-        """ Return a stringified representation for the given node """
-        if self.type == "gedcom":
-            return "No gedcom file linked" if self.data == "none" else self.data
-        if self.type == "filename":
-            return "Filename: " + self.data
-        if self.type == "plans":
-            return "Plans"
-        if self.type == "plan":
-            return self.data.ancestor
-        if self.type == "task":
-            return self.data.source
-        return ""
-
-    def set_text(self, value):
-        """ Updates the text property of the node """
-        if self.type == "plan":
-            self.data.ancestor = value
-        if self.type == "task":
-            self.data.source = value
-
-    def get_description(self):
-        """ Return a description for the given node """
-        if self.type == "plan":
-            return self.data.goal
-        if self.type == "task":
-            return self.data.description
-        return ""
-
-    def set_description(self, value):
-        """ Updates the description property of the node """
-        if self.type == "plan":
-            self.data.goal = value
-        if self.type == "task":
-            self.data.description = value
-
-    def get_result(self):
-        """ Return the value for the result """
-        if self.type != "task":
-            return ""
-        return str(self.data.result)
-
-    def get_icon(self):
-        """ Returns a QIcon for this node """
-        if self.type == "gedcom":
-            return QIcon(":/icons/gedcom.ico")
-        if self.type == "filename":
-            return QIcon(":/icons/file.ico")
-        if self.type == "plans":
-            return QIcon(":/icons/plans.ico")
-        if self.type == "plan":
-            return QIcon(":/icons/plan.ico")
-        if self.type == "task":
-            return QIcon(":/icons/task.ico")
-        return QIcon()
-
-    def get_font(self):
-        """ Returns the font to display the item in """
-        font = QFont()
-        if self.type != "task":
-            return font
-        if self.data.result is not None and self.data.result.is_nil():
-            font.setStrikeOut(True)
-        return font
+from grant.models.tree_node import TreeNode
 
 
 class TreeModel(QAbstractItemModel):
@@ -202,18 +98,23 @@ class TreeModel(QAbstractItemModel):
         """ Number of columns to display """
         return 1
 
+    def data_column(self, node, column):
+        """ Returns the data that this node should show in the given column """
+        if column == 0:
+            return node.get_text()
+        if column == 1:
+            return node.get_description()
+        if column == 2:
+            return node.get_result()
+        return None
+
     def data(self, index, role):  # pylint: disable= no-self-use
         """ Return the data associated with the specific index for the role """
         if not index.isValid() or index.column() > 2:
             return None
         node = index.internalPointer()
         if role in [Qt.DisplayRole, Qt.EditRole]:
-            if index.column() == 0:
-                return node.get_text()
-            if index.column() == 1:
-                return node.get_description()
-            if index.column() == 2:
-                return node.get_result()
+            return self.data_column(node, index.column())
         if role == Qt.DecorationRole:
             return node.get_icon()
         if role == Qt.FontRole:
