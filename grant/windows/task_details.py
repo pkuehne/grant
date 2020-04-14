@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QAction
 from PyQt5.QtWidgets import QInputDialog
 from grant.research import ResearchResult
 from .base_screens import DetailScreen
+from .result_dialog import ResultDialog
 
 
 class TaskDetails(DetailScreen):
@@ -40,6 +41,7 @@ class TaskDetails(DetailScreen):
         self.result = QLineEdit()
         self.result.setReadOnly(True)
         self.more_action = QAction(QIcon(":/icons/more.ico"), "more")
+        self.more_action.triggered.connect(self.show_result_dialog)
         self.result.addAction(self.more_action, self.result.TrailingPosition)
         result_box.addWidget(self.result)
 
@@ -88,3 +90,13 @@ class TaskDetails(DetailScreen):
             task.result.summary = summary
 
         self.mapper.setCurrentIndex(self.mapper.currentIndex())
+
+    def show_result_dialog(self):
+        """ Opens the result dialog """
+        index = self.data_model.index(
+            self.mapper.currentIndex(), 0, self.mapper.rootIndex())
+        task = index.internalPointer().data
+
+        dialog = ResultDialog(task.result)
+        if dialog.exec():
+            self.data_model.update_result(index, dialog.result)
