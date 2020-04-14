@@ -18,6 +18,18 @@ def test_default_matches_all():
     assert result is True
 
 
+def test_validate_argument():
+    """ A None type argument should not match """
+    # Given
+    matcher = TaskMatcher()
+
+    # When
+    result = matcher.match(None)
+
+    # Then
+    assert result is False
+
+
 def test_text_filter_successful_match():
     """ The text_filter should match tasks containing the text """
     # Given

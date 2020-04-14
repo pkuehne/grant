@@ -35,6 +35,9 @@ class TaskMatcher(QObject):
 
     def match(self, task):
         """ Checks the task against the given filters """
+        if task is None:
+            return False
+            
         result = True
         result = result and self._text_filter in task.source
         result = result and self.match_result_filter(task)
