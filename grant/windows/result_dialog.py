@@ -24,7 +24,7 @@ class ResultDialog(QDialog):
 
         self.status = QComboBox()
         status_model = QStringListModel(
-            ["", "success", "nil"])
+            ["<remove>", "success", "nil"])
         self.status.setModel(status_model)
         form_layout.addRow(QLabel("Result:"), self.status)
         self.summary = QTextEdit()
@@ -57,7 +57,7 @@ class ResultDialog(QDialog):
 
     def ok_pressed(self):
         """ Triggered when the OK button is pressed """
-        if self.status.currentText() == "":
+        if self.status.currentText() == "<remove>":
             self.result = None
         else:
             success = self.status.currentText() == "success"
