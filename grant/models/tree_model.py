@@ -135,9 +135,8 @@ class TreeModel(QAbstractItemModel):
             prev = node.get_description()
             node.set_description(value)
         if index.column() == 2:
-            # prev = node.get_status()
-            # node.set_status(value)
-            pass
+            prev = node.get_result()
+            node.set_result(value)
 
         if prev != value:
             self.dataChanged.emit(index, index)
@@ -156,14 +155,14 @@ class TreeModel(QAbstractItemModel):
             return Qt.NoItemFlags
         return Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled
 
-    def update_result(self, index, result):
-        """ Sets the result for a given task """
-        if not index.isValid() or index.column() > 2:
-            return False
-        node: TreeNode = index.internalPointer()
+    # def update_result(self, index, result):
+    #     """ Sets the result for a given task """
+    #     if not index.isValid() or index.column() > 2:
+    #         return False
+    #     node: TreeNode = index.internalPointer()
 
-        if not node.type == "task":
-            return False
+    #     if not node.type == "task":
+    #         return False
 
-        node.data.result = result
-        self.dataChanged.emit(index, index)
+    #     node.data.result = result
+    #     self.dataChanged.emit(index, index)

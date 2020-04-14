@@ -3,6 +3,7 @@
 from PyQt5.QtGui import QFont
 from PyQt5.QtGui import QIcon
 
+
 class TreeNode:
     """ A wrapper class to normalize the parent/child relationship for node items """
 
@@ -80,7 +81,12 @@ class TreeNode:
         """ Return the value for the result """
         if self.type != "task":
             return ""
-        return str(self.data.result)
+        return self.data.result
+
+    def set_result(self, value):
+        """ Updates the result for a task """
+        if self.type == "task":
+            self.data.result = value
 
     def get_icon(self):
         """ Returns a QIcon for this node """

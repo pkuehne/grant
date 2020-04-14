@@ -1,11 +1,13 @@
 """ The Research-related classes """
 from datetime import datetime
+from PyQt5.QtCore import QObject
 
 
-class ResearchResult:
+class ResearchResult(QObject):
     """ Result of a Task """
 
     def __init__(self, success: bool):
+        super().__init__()
         self.date = datetime.now()
         self.document = ""
         self.summary = ""
