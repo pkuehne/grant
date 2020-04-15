@@ -62,8 +62,5 @@ class ResultWidget(QWidget):
 
     def show_result_dialog(self):
         """ Opens the result dialog """
-        dialog = ResultDialog(self._result)
-        dialog.summary.setFocus()
-        if dialog.exec():
-            self.result = dialog.result
-            self.result_changed.emit()
+        self.result = ResultDialog.get_result(self.result, self)
+        self.result_changed.emit()
