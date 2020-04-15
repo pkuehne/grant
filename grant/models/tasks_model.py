@@ -29,8 +29,9 @@ class TasksModel(QSortFilterProxyModel):
 
     def setSourceModel(self, model):  # pylint: disable=invalid-name
         """ Connect to source model signals """
-        QSortFilterProxyModel.setSourceModel(self, model)
+        super().setSourceModel(model)
         self.sourceModel().modelReset.connect(self.invalidate)
+        self.sourceModel().dataChanged.connect(self.invalidate)
 
     def headerData(self, section, orientation, role):  # pylint: disable=invalid-name, no-self-use
         """ Set the header information """
