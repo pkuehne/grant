@@ -6,3 +6,6 @@ build/
 dist/
 *.spec
 resources.py
+.coverage
+cov_html
+cov.xml

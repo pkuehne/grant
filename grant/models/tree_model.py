@@ -154,15 +154,3 @@ class TreeModel(QAbstractItemModel):
         if not index.isValid():
             return Qt.NoItemFlags
         return Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled
-
-    # def update_result(self, index, result):
-    #     """ Sets the result for a given task """
-    #     if not index.isValid() or index.column() > 2:
-    #         return False
-    #     node: TreeNode = index.internalPointer()
-
-    #     if not node.type == "task":
-    #         return False
-
-    #     node.data.result = result
-    #     self.dataChanged.emit(index, index)
