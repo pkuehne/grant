@@ -1,9 +1,9 @@
 """ Contains the MainWindow implementation """
 
-import sys
+# import sys
 import os
 import yaml
-from PyQt5.QtWidgets import QMainWindow, QAction
+from PyQt5.QtWidgets import QMainWindow  # , QAction
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
 from PyQt5.QtWidgets import QStackedWidget
 from PyQt5.QtWidgets import QWidget
@@ -17,9 +17,8 @@ from .task_details import TaskDetails
 from .base_screens import DetailScreen
 from .tree_selection_screen import TreeSelectionScreen
 from .filter_selection_screen import FilterSelectionScreen
+from .main_window_menu_bar import MenuBar
 
-VERSION_NUMBER = "0.1"
-ABOUT_STRING = "Copyright (c) 2020 by Peter Kühne\nIcons from https://icons8.com"
 TEST_DATA = """
 gedcom: none
 plans:
@@ -153,66 +152,28 @@ class MainWindow(QMainWindow):
 
     def setup_menubar(self):
         """ Sets up the menu bar """
-        def create_file_menu():
-            create_new_action = QAction("&New Project", self)
-            create_new_action.setShortcut("CTRL+N")
-            create_new_action.triggered.connect(self.create_new_project)
+        self.menu_bar = MenuBar(self)
+        self.setMenuBar(self.menu_bar)
+        self.menu_bar.file_create_new_action.triggered.connect(
+            self.create_new_project)
+        self.menu_bar.file_open_project_action.triggered.connect(
+            self.open_project)
+        self.menu_bar.file_save_project_action.triggered.connect(
+            self.save_project)
+        self.menu_bar.file_save_project_as_action.triggered.connect(
+            self.save_project_as)
 
-            open_project_action = QAction("&Open Project", self)
-            open_project_action.setShortcut("CTRL+O")
-            open_project_action.triggered.connect(self.open_project)
+        self.menu_bar.view_project_action.triggered.connect(
+            lambda: self.change_selection_screen("tree"))
+        self.menu_bar.view_filter_action.triggered.connect(
+            lambda: self.change_selection_screen("filter"))
 
-            save_project_action = QAction("&Save Project", self)
-            save_project_action.setShortcut("CTRL+S")
-            save_project_action.triggered.connect(self.save_project)
-            save_project_action.setDisabled(True)
-
-            save_project_as_action = QAction("Save &As ...", self)
-            save_project_as_action.setShortcut("CTRL+A")
-            save_project_as_action.triggered.connect(self.save_project_as)
-            save_project_as_action.setDisabled(True)
-
-            quit_action = QAction("&Quit", self)
-            quit_action.setShortcut("CTRL+Q")
-            quit_action.triggered.connect(sys.exit)
-
-            file_menu = self.menuBar().addMenu("&File")
-            file_menu.addAction(create_new_action)
-            file_menu.addAction(open_project_action)
-            file_menu.addAction(save_project_action)
-            file_menu.addAction(save_project_as_action)
-            file_menu.addSeparator()
-            file_menu.addAction(quit_action)
-
-            def enable_on_project_load():
-                save_project_action.setDisabled(self.project is None)
-                save_project_as_action.setDisabled(self.project is None)
-            self.project_changed.connect(enable_on_project_load)
-
-        def create_view_menu():
-            view_project_action = QAction("Project &Overview", self)
-            view_project_action.triggered.connect(
-                lambda: self.change_selection_screen("tree"))
-
-            view_filter_action = QAction("Tasks Filter", self)
-            view_filter_action.triggered.connect(
-                lambda: self.change_selection_screen("filter"))
-
-            view_menu = self.menuBar().addMenu("&View")
-            view_menu.addAction(view_project_action)
-            view_menu.addAction(view_filter_action)
-
-        def create_help_menu():
-            about_action = QAction("&About", self)
-            about_text = "Version: " + VERSION_NUMBER + "\n\n" + ABOUT_STRING
-            about_action.triggered.connect(lambda:
-                                           QMessageBox.about(self, "About", about_text))
-            help_menu = self.menuBar().addMenu("&Help")
-            help_menu.addAction(about_action)
-
-        create_file_menu()
-        create_view_menu()
-        create_help_menu()
+        def enable_on_project_load():
+            self.menu_bar.file_save_project_action.setDisabled(
+                self.project is None)
+            self.menu_bar.file_save_project_as_action.setDisabled(
+                self.project is None)
+        self.project_changed.connect(enable_on_project_load)
 
     def project_changed_handler(self):
         """ Updates all the screens with the new project information """
