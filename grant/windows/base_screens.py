@@ -50,5 +50,9 @@ class DetailScreen(BaseScreen):
         """ Receive selected item from main window """
         if self.project is None:
             return
+
+        if not hasattr(self, "mapper"):
+            return
+
         self.mapper.setRootIndex(item.parent())
         self.mapper.setCurrentModelIndex(item)

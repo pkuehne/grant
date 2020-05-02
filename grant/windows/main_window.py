@@ -5,19 +5,20 @@ import os
 import yaml
 from PyQt5.QtWidgets import QMainWindow  # , QAction
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
-from PyQt5.QtWidgets import QStackedWidget
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWidgets import QHBoxLayout
+# from PyQt5.QtWidgets import QStackedWidget
+# from PyQt5.QtWidgets import QWidget
+# from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import pyqtSignal
 from grant.research import ResearchProject
 from grant.models.tree_model import TreeModel
-from .plan_details import PlanDetails
-from .task_details import TaskDetails
-from .base_screens import DetailScreen
-from .tree_selection_screen import TreeSelectionScreen
-from .filter_selection_screen import FilterSelectionScreen
+# from .plan_details import PlanDetails
+# from .task_details import TaskDetails
+# from .base_screens import DetailScreen
+# from .tree_selection_screen import TreeSelectionScreen
+# from .filter_selection_screen import FilterSelectionScreen
 from .main_window_menu_bar import MenuBar
+from .main_screen import MainScreen
 
 TEST_DATA = """
 gedcom: none
@@ -49,10 +50,8 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.project = None
         self.data_model = TreeModel()
+        self.main_screen = None
         self.discard_dialog = None
-        self.selection_stack = None
-        self.screens = {}
-        self.detail_stack = None
         self.project_needs_saving = False
         self.setup_window()
         self.setup_window_title()
@@ -79,53 +78,9 @@ class MainWindow(QMainWindow):
     def setup_window(self):
         """ Sets up all widgets and window stuff """
         self.setWindowIcon(QIcon(":/icons/books.ico"))
-        self.selection_stack = QStackedWidget()
 
-        self.screens["tree"] = TreeSelectionScreen(self.data_model)
-        self.selection_stack.addWidget(self.screens["tree"])
-
-        self.screens["filter"] = FilterSelectionScreen(
-            self.data_model)
-        self.selection_stack.addWidget(self.screens["filter"])
-
-        def selection_changed(item):
-            node = item.internalPointer()
-            if node.type == "gedcom":
-                self.detail_stack.setCurrentWidget(
-                    self.screens["blank"])
-                return
-            if node.type == "task":
-                self.detail_stack.setCurrentWidget(
-                    self.screens["task"])
-                self.screens["task"].set_selected_item(item)
-                return
-            if node.type == "plan":
-                self.detail_stack.setCurrentWidget(self.screens["plan"])
-                self.screens["plan"].set_selected_item(item)
-                return
-            self.detail_stack.setCurrentWidget(self.screens["blank"])
-
-        self.screens["tree"].item_selected.connect(selection_changed)
-        self.screens["filter"].item_selected.connect(selection_changed)
-
-        self.detail_stack = QStackedWidget()
-
-        self.screens["blank"] = DetailScreen(self.data_model)
-        self.detail_stack.addWidget(self.screens["blank"])
-        self.screens["plan"] = PlanDetails(self.data_model)
-        self.detail_stack.addWidget(self.screens["plan"])
-        self.screens["task"] = TaskDetails(self.data_model)
-        self.detail_stack.addWidget(self.screens["task"])
-
-        self.detail_stack.setCurrentWidget(self.screens["blank"])
-
-        central_widget = QWidget()
-        layout = QHBoxLayout()
-        layout.addWidget(self.selection_stack)
-        layout.addWidget(self.detail_stack)
-        central_widget.setLayout(layout)
-
-        self.setCentralWidget(central_widget)
+        self.main_screen = MainScreen(self, self.data_model)
+        self.setCentralWidget(self.main_screen)
 
         self.project_changed.connect(self.project_changed_handler)
 
@@ -164,9 +119,9 @@ class MainWindow(QMainWindow):
             self.save_project_as)
 
         self.menu_bar.view_project_action.triggered.connect(
-            lambda: self.change_selection_screen("tree"))
+            lambda: self.main_screen.change_selection_screen("tree"))
         self.menu_bar.view_filter_action.triggered.connect(
-            lambda: self.change_selection_screen("filter"))
+            lambda: self.main_screen.change_selection_screen("filter"))
 
         def enable_on_project_load():
             self.menu_bar.file_save_project_action.setDisabled(
@@ -178,19 +133,10 @@ class MainWindow(QMainWindow):
     def project_changed_handler(self):
         """ Updates all the screens with the new project information """
         self.data_model.set_project(self.project)
-        for screen in self.screens.values():
-            screen.update_project(self.project)
-        for screen in self.screens.values():
-            screen.update_project(self.project)
+        self.main_screen.set_project(self.project)
 
         self.project_needs_saving = False
         self.setup_window_title()
-
-    def change_selection_screen(self, name):
-        """ Change the selection to the specified screen """
-        self.selection_stack.setCurrentWidget(self.screens[name])
-        self.screens[name].clear_selection()
-        self.detail_stack.setCurrentWidget(self.screens["blank"])
 
     def create_new_project(self):
         """ Creates a new Research Project """

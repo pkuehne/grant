@@ -1,7 +1,9 @@
 """ Tests for the base screens """
 
+from unittest import mock
+from PyQt5.QtCore import QModelIndex
 from grant.research import ResearchProject
-from grant.windows.base_screens import BaseScreen
+from grant.windows.base_screens import BaseScreen, DetailScreen
 
 
 def test_base_screen_has_no_project_by_default(qtbot):
@@ -29,3 +31,40 @@ def test_update_project_sets_project(qtbot):
     # Then
     assert screen.project is not None
     assert screen.project == project
+
+
+def test_setting_selected_item_on_detail_screen_checks_for_mapper(qtbot):
+    """ Detail screens may not have a mapper, so check before using it """
+    # Given
+    screen = DetailScreen(None)
+    screen.project = ResearchProject("")
+    qtbot.addWidget(screen)
+
+    # When
+    screen.set_selected_item(QModelIndex())
+
+
+def test_setting_selected_item_on_detail_screen_updates_mapper(qtbot):
+    """ Mapper should be set for Detail screen """
+    # Given
+    screen = DetailScreen(None)
+    screen.project = ResearchProject("")
+    screen.mapper = mock.MagicMock()
+    qtbot.addWidget(screen)
+
+    # When
+    screen.set_selected_item(QModelIndex())
+    screen.mapper.setRootIndex.assert_called()
+
+
+def test_setting_selected_item_on_detail_screen_requires_project_set(qtbot):
+    """ Mapper should be set for Detail screen """
+    # Given
+    screen = DetailScreen(None)
+    screen.project = None
+    screen.mapper = mock.MagicMock()
+    qtbot.addWidget(screen)
+
+    # When
+    screen.set_selected_item(QModelIndex())
+    screen.mapper.setRootIndex.assert_not_called()
