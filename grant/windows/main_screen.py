@@ -59,24 +59,24 @@ class MainScreen(QWidget):
         layout.addWidget(self.detail_stack)
         self.setLayout(layout)
 
-    def set_detail_screen(self, name: str, item):
-        """ Sets the current detail screen """
-        self.detail_stack.setCurrentWidget(self.screens[name])
-        self.screens[name].set_selected_item(item)
-
     def selection_changed(self, item):
         """ Called when the selection from a selection screen changes """
         node = item.internalPointer()
         if node.type == "gedcom":
-            self.set_detail_screen("blank", item)
+            self.change_detail_screen("blank", item)
             return
         if node.type == "task":
-            self.set_detail_screen("task", item)
+            self.change_detail_screen("task", item)
             return
         if node.type == "plan":
-            self.set_detail_screen("plan", item)
+            self.change_detail_screen("plan", item)
             return
-        self.set_detail_screen("blank", item)
+        self.change_detail_screen("blank", item)
+
+    def change_detail_screen(self, name: str, item):
+        """ Sets the current detail screen """
+        self.detail_stack.setCurrentWidget(self.screens[name])
+        self.screens[name].set_selected_item(item)
 
     def change_selection_screen(self, name):
         """ Change the selection to the specified screen """
@@ -87,7 +87,5 @@ class MainScreen(QWidget):
     def set_project(self, project):
         """ Updates all the screens with the new project information """
         self.data_model.set_project(project)
-        for screen in self.screens.values():
-            screen.update_project(project)
         for screen in self.screens.values():
             screen.update_project(project)
