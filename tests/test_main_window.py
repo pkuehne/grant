@@ -1,28 +1,7 @@
 """ Tests for the MainWindow """
 
 from grant.windows.main_window import MainWindow
-
-
-def test_statusbar_is_initialized(qtbot):
-    """ Statusbar should not be empty """
-    # Given
-    window = MainWindow()
-    window.show()
-    qtbot.addWidget(window)
-
-    # Then
-    assert window.statusBar().currentMessage() != ""
-
-
-def test_project_doesnt_need_saving_by_default(qtbot):
-    """ Statusbar should not be empty """
-    # Given
-    window = MainWindow()
-    window.show()
-    qtbot.addWidget(window)
-
-    # Then
-    assert window.project_needs_saving is False
+from grant.research import ResearchProject
 
 
 def test_sample_data_is_loaded_when_os_variable_set(qtbot, monkeypatch):
@@ -36,4 +15,56 @@ def test_sample_data_is_loaded_when_os_variable_set(qtbot, monkeypatch):
     window.show()
 
     # Then
-    assert window.project is not None
+    assert window.project_manager.project is not None
+
+
+def test_menu_title_contains_splash_text_instead_of_project(qtbot):
+    """ When no project is set, the splash text should be shown """
+    # Given
+    window = MainWindow()
+    qtbot.addWidget(window)
+    window.project_manager.project = None
+
+    # When
+    window.setup_window_title()
+
+    # Then
+    assert "Grant" in window.windowTitle()
+    assert "Genealogical Research AssistaNT" in window.windowTitle()
+
+
+def test_menu_title_contains_project_name(qtbot):
+    """ When a project is set, the filename should be shown """
+    # Given
+    filename = "foo"
+    window = MainWindow()
+    qtbot.addWidget(window)
+    window.project_manager.project = ResearchProject(
+        "/home/bar/test/" + filename + ".gra")
+
+    # When
+    window.setup_window_title()
+
+    # Then
+    assert "Grant" in window.windowTitle()
+    assert filename in window.windowTitle()
+    assert "*" not in window.windowTitle()
+
+
+def test_menu_title_contains_asterisk_if_unsaved(qtbot):
+    """ When a project is set and unsaved, an asterisk should be shown """
+    # Given
+    filename = "foo"
+    window = MainWindow()
+    qtbot.addWidget(window)
+    window.project_manager.project = ResearchProject(
+        "/home/bar/test/" + filename + ".gra")
+    window.project_manager.needs_saving = True
+
+    # When
+    window.setup_window_title()
+
+    # Then
+    assert "Grant" in window.windowTitle()
+    assert filename in window.windowTitle()
+    assert "*" in window.windowTitle()

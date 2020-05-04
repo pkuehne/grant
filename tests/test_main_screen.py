@@ -10,15 +10,6 @@ from grant.windows.base_screens import DetailScreen
 from grant.research import ResearchProject
 
 
-class TestScreen(DetailScreen):
-    """ Test screen """
-
-    def __init__(self):
-        super().__init__()
-        self.set_selected_item = mock.MagicMock()
-        self.clear_selection = mock.MagicMock()
-
-
 def test_selection_change_picks_blank_detail_screen(qtbot):
     """ When changing the selection screen, the blank details screen should be loaded """
     # Given
