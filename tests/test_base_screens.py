@@ -1,9 +1,10 @@
 """ Tests for the base screens """
 
 from unittest import mock
+import pytest
 from PyQt5.QtCore import QModelIndex
 from grant.research import ResearchProject
-from grant.windows.base_screens import BaseScreen, DetailScreen
+from grant.windows.base_screens import BaseScreen, DetailScreen, SelectionScreen
 
 
 def test_base_screen_has_no_project_by_default(qtbot):
@@ -68,3 +69,14 @@ def test_setting_selected_item_on_detail_screen_requires_project_set(qtbot):
     # When
     screen.set_selected_item(QModelIndex())
     screen.mapper.setRootIndex.assert_not_called()
+
+
+def test_derived_screens_must_implement_clear_selection(qtbot):
+    """ The clear_selection function should not be called directly """
+    # Given
+    screen = SelectionScreen(None)
+    qtbot.addWidget(screen)
+
+    # When
+    with pytest.raises(NotImplementedError):
+        screen.clear_selection()

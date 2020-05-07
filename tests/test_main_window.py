@@ -1,5 +1,6 @@
 """ Tests for the MainWindow """
 
+from PyQt5.QtCore import QModelIndex
 from grant.windows.main_window import MainWindow
 from grant.research import ResearchProject
 
@@ -68,3 +69,18 @@ def test_menu_title_contains_asterisk_if_unsaved(qtbot):
     assert "Grant" in window.windowTitle()
     assert filename in window.windowTitle()
     assert "*" in window.windowTitle()
+
+
+def test_model_data_change_sets_dirty_flag(qtbot):
+    """
+    When the main model's underlying data changes, the dirty flag should be set on the project file
+    """
+    # Given
+    window = MainWindow()
+    qtbot.addWidget(window)
+
+    # When
+    window.data_model.dataChanged.emit(QModelIndex(), QModelIndex())
+
+    # Then
+    assert window.project_manager.needs_saving is True
