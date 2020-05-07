@@ -84,3 +84,32 @@ def test_string_representation_includes_summary_for_success_results():
 
     # Then
     assert result.summary in string
+
+
+def test_from_py_does_nothing_if_none_passed():
+    """ If None is passed to the from_py function, nothing should happen """
+    # Given
+    result = ResearchResult(True)
+
+    # When
+    result.from_py(None)
+
+    assert result is not None
+
+
+def test_to_py_encodes_data_fields():
+    """ to_py should encode the class in a python data structure """
+    # Given
+    result = ResearchResult(True)
+    result.summary = "SUMMARY"
+    result.document = "DOCUMENT"
+
+    # When
+    data = result.to_py()
+
+    # Then
+    assert data["date"] is not None
+    assert data["summary"] == result.summary
+    assert data["document"] == result.document
+    assert data["nil"] == result.is_nil()
+    assert len(data.keys()) == 4  # To verify nothing else was added

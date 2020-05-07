@@ -91,8 +91,6 @@ class ResearchPlan:
 
     def __str__(self):
         retval = "Research Plan: " + self.ancestor
-        for task in self.tasks:
-            retval = retval + "\n\t\t" + str(task)
         return retval
 
     def from_py(self, data):

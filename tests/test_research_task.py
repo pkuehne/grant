@@ -27,3 +27,33 @@ def test_default_task_is_open():
 
     # Then
     assert result is True
+
+
+def test_string_repr_includes_description():
+    """ The str() representation should include the description """
+    # Given
+    task = ResearchTask()
+    task.description = "DESCRIPTION"
+
+    # When
+    string = str(task)
+
+    # Then
+    assert task.description in string
+
+
+def test_to_py_sets_fields():
+    """ The to_py() function should create a python data structure of the class fields """
+    # Given
+    task = ResearchTask()
+    task.source = "SOURCE"
+    task.description = "DESCRIPTION"
+
+    # When
+    data = task.to_py()
+
+    # Then
+    assert data["description"] == task.description
+    assert data["source"] == task.source
+    assert data["result"] == task.result
+    assert len(data.keys()) == 3  # To verify nothing else was added

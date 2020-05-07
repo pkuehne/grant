@@ -80,3 +80,32 @@ def test_delete_task_does_nothing_if_index_out_of_bounds():
 
     # Then
     assert len(plan.tasks) == 3
+
+
+def test_string_repr_includes_ancestor():
+    """ The str() representation should include the ancestor """
+    # Given
+    plan = ResearchPlan()
+    plan.ancestor = "ANCESTOR"
+
+    # When
+    string = str(plan)
+
+    # Then
+    assert plan.ancestor in string
+
+
+def test_to_py_sets_fields():
+    """ The to_py() function should create a python data structure of the class fields """
+    # Given
+    plan = ResearchPlan()
+    plan.ancestor = "ANCESTOR"
+
+    # When
+    data = plan.to_py()
+
+    # Then
+    assert data["ancestor"] == plan.ancestor
+    assert data["goal"] == plan.goal
+    assert data["tasks"] == plan.tasks
+    assert len(data.keys()) == 3  # To verify nothing else was added
