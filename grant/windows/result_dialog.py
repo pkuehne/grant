@@ -53,7 +53,7 @@ class ResultDialog(QDialog):
             self.summary.setText(self.result.summary)
             self.document.setText(self.result.document)
         else:
-            self.result.setCurrentText("")
+            self.status.setCurrentText("<remove>")
 
     def ok_pressed(self):
         """ Triggered when the OK button is pressed """
