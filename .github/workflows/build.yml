@@ -32,7 +32,7 @@ jobs:
           pip install -r requirements.txt
       - name: Run unit tests
         run: |
-          pytest
+          pytest --cov =grant--cov-fail-under=90 tests/
       - name: Check for issues
         run: |
           pylint -E grant
