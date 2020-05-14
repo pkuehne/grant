@@ -63,7 +63,8 @@ class TreeSelectionScreen(SelectionScreen):
         node = index.internalPointer()
         self.button_add_task.setEnabled(node.type == "plan")
         self.button_delete_selection.setEnabled(
-            node.type == "plan" or node.type == "task")
+            node.type == "plan" or node.type == "task"
+        )
 
     def delete_selection(self):
         """ Deletes the selected row if valid """

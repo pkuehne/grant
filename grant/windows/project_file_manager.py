@@ -10,6 +10,7 @@ from grant.research import ResearchProject
 
 class ProjectFileManager(QObject):
     """ Wraps file actions on project """
+
     project_changed = pyqtSignal()
     project_saved = pyqtSignal()
 
@@ -26,10 +27,10 @@ class ProjectFileManager(QObject):
         self.discard_dialog = QMessageBox()
         self.discard_dialog.setIcon(QMessageBox.Warning)
         self.discard_dialog.setText(
-            "This will discard your current project without saving")
+            "This will discard your current project without saving"
+        )
         self.discard_dialog.setWindowTitle("Are you sure?")
-        self.discard_dialog.setStandardButtons(
-            QMessageBox.Ok | QMessageBox.Cancel)
+        self.discard_dialog.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
 
     def save_project(self):
         """ Saves the currently loaded project """
@@ -37,7 +38,7 @@ class ProjectFileManager(QObject):
             print("No project to save")
             return
 
-        with open(self.project.filename, 'w') as file:
+        with open(self.project.filename, "w") as file:
             yaml.dump(self.project.to_py(), file)
         print("Saved project: " + self.project.filename)
         self.needs_saving = False
@@ -50,7 +51,8 @@ class ProjectFileManager(QObject):
             return
 
         (file_name, _) = QFileDialog.getSaveFileName(
-            self.parent(), "Save as ", ".", "Grant Project (*.gra)")
+            self.parent(), "Save as ", ".", "Grant Project (*.gra)"
+        )
         if file_name == "":
             print("Cancelled saving")
             return
@@ -68,7 +70,8 @@ class ProjectFileManager(QObject):
                 return
 
         (file_name, _) = QFileDialog.getSaveFileName(
-            self.parent(), "Create a project", ".", "Grant Project (*.gra)")
+            self.parent(), "Create a project", ".", "Grant Project (*.gra)"
+        )
         if file_name == "":
             print("Cancelled creation")
             return
@@ -86,7 +89,8 @@ class ProjectFileManager(QObject):
                 return
 
         (file_name, _) = QFileDialog.getOpenFileName(
-            self.parent(), "Open a project", ".", "Grant Project (*.gra)")
+            self.parent(), "Open a project", ".", "Grant Project (*.gra)"
+        )
         if file_name == "":
             print("Cancelled opening")
             return

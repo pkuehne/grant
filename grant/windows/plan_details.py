@@ -9,6 +9,7 @@ from .base_screens import DetailScreen
 
 class PlanDetails(DetailScreen):
     """ Displays all current Research Plans """
+
     plan_changed = pyqtSignal()
 
     def __init__(self, model):

@@ -32,8 +32,7 @@ class MainScreen(QWidget):
         self.screens["tree"] = TreeSelectionScreen(self.data_model)
         self.selection_stack.addWidget(self.screens["tree"])
 
-        self.screens["filter"] = FilterSelectionScreen(
-            self.data_model)
+        self.screens["filter"] = FilterSelectionScreen(self.data_model)
         self.selection_stack.addWidget(self.screens["filter"])
 
         self.screens["tree"].item_selected.connect(self.selection_changed)

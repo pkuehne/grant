@@ -21,6 +21,7 @@ class BaseScreen(QWidget):
 
 class SelectionScreen(BaseScreen):
     """ Basis of all selection screens on the left-hand side """
+
     item_selected = pyqtSignal(QModelIndex)
 
     # def __init__(self, model):
@@ -37,7 +38,8 @@ class SelectionScreen(BaseScreen):
     def clear_selection(self):
         """ Called when the selection needs to be cleared """
         raise NotImplementedError(
-            "clear_selection() must be implemented in sub-classes")
+            "clear_selection() must be implemented in sub-classes"
+        )
 
 
 class DetailScreen(BaseScreen):

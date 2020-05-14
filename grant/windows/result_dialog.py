@@ -23,8 +23,7 @@ class ResultDialog(QDialog):
         form_layout = QFormLayout()
 
         self.status = QComboBox()
-        status_model = QStringListModel(
-            ["<remove>", "success", "nil"])
+        status_model = QStringListModel(["<remove>", "success", "nil"])
         self.status.setModel(status_model)
         form_layout.addRow(QLabel("Result:"), self.status)
         self.summary = QTextEdit()
@@ -48,8 +47,7 @@ class ResultDialog(QDialog):
         self.setLayout(main_layout)
 
         if self.result is not None:
-            self.status.setCurrentText(
-                "nil" if self.result.is_nil() else "success")
+            self.status.setCurrentText("nil" if self.result.is_nil() else "success")
             self.summary.setText(self.result.summary)
             self.document.setText(self.result.document)
         else:

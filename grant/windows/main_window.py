@@ -4,6 +4,7 @@ import os
 import yaml
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtGui import QIcon
+
 # from PyQt5.QtCore import pyqtSignal
 from grant.research import ResearchProject
 from grant.models.tree_model import TreeModel
@@ -54,7 +55,8 @@ class MainWindow(QMainWindow):
         title = "Grant - "
         if self.project_manager.project is not None:
             title += os.path.splitext(
-                os.path.basename(self.project_manager.project.filename))[0]
+                os.path.basename(self.project_manager.project.filename)
+            )[0]
             title += "*" if self.project_manager.needs_saving else ""
         else:
             title += " The Genealogical Research AssistaNT"
@@ -67,13 +69,13 @@ class MainWindow(QMainWindow):
         self.main_screen = MainScreen(self, self.data_model)
         self.setCentralWidget(self.main_screen)
 
-        self.project_manager.project_changed.connect(
-            self.project_changed_handler)
+        self.project_manager.project_changed.connect(self.project_changed_handler)
         self.project_manager.project_saved.connect(self.setup_window_title)
 
         def model_changed():
             self.project_manager.needs_saving = True
             self.setup_window_title()
+
         self.data_model.dataChanged.connect(model_changed)
         self.data_model.layoutChanged.connect(model_changed)
         self.data_model.rowsRemoved.connect(model_changed)
@@ -83,24 +85,33 @@ class MainWindow(QMainWindow):
         self.menu_bar = MenuBar(self)
         self.setMenuBar(self.menu_bar)
         self.menu_bar.file_create_new_action.triggered.connect(
-            self.project_manager.create_new_project)
+            self.project_manager.create_new_project
+        )
         self.menu_bar.file_open_project_action.triggered.connect(
-            self.project_manager.open_project)
+            self.project_manager.open_project
+        )
         self.menu_bar.file_save_project_action.triggered.connect(
-            self.project_manager.save_project)
+            self.project_manager.save_project
+        )
         self.menu_bar.file_save_project_as_action.triggered.connect(
-            self.project_manager.save_project_as)
+            self.project_manager.save_project_as
+        )
 
         self.menu_bar.view_project_action.triggered.connect(
-            lambda: self.main_screen.change_selection_screen("tree"))
+            lambda: self.main_screen.change_selection_screen("tree")
+        )
         self.menu_bar.view_filter_action.triggered.connect(
-            lambda: self.main_screen.change_selection_screen("filter"))
+            lambda: self.main_screen.change_selection_screen("filter")
+        )
 
         def enable_on_project_load():
             self.menu_bar.file_save_project_action.setDisabled(
-                self.project_manager.project is None)
+                self.project_manager.project is None
+            )
             self.menu_bar.file_save_project_as_action.setDisabled(
-                self.project_manager.project is None)
+                self.project_manager.project is None
+            )
+
         self.project_manager.project_changed.connect(enable_on_project_load)
 
     def project_changed_handler(self):

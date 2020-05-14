@@ -6,6 +6,7 @@ from PyQt5.QtCore import QObject
 
 class TaskMatcher(QObject):
     """ Allows the setting of various filters and then matches a task against them """
+
     filters_updated = pyqtSignal()
 
     def __init__(self):
@@ -37,7 +38,7 @@ class TaskMatcher(QObject):
         """ Checks the task against the given filters """
         if task is None:
             return False
-            
+
         result = True
         result = result and self._text_filter in task.source
         result = result and self.match_result_filter(task)

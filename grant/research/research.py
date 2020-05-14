@@ -82,6 +82,7 @@ class ResearchTask:
 
 class ResearchPlan:
     """ A collection of tasks with a common goal """
+
     default_ancestor = "My Ancestor"
 
     def __init__(self):

@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QMessageBox
 
 class MenuBar(QMenuBar):
     """ MainWindow MenuBar """
+
     about_string = "Copyright (c) 2020 by Peter Kühne\nIcons from https://icons8.com"
     version_number = "0.1"
 
@@ -58,8 +59,11 @@ class MenuBar(QMenuBar):
     def setup_help_menu(self):
         """ Create the Help menu """
         self.help_about_action = QAction("&About", self)
-        about_text = "Version: " + MenuBar.version_number + "\n\n" + MenuBar.about_string
-        self.help_about_action.triggered.connect(lambda:
-                                                 QMessageBox.about(self, "About", about_text))
+        about_text = (
+            "Version: " + MenuBar.version_number + "\n\n" + MenuBar.about_string
+        )
+        self.help_about_action.triggered.connect(
+            lambda: QMessageBox.about(self, "About", about_text)
+        )
         help_menu = self.addMenu("&Help")
         help_menu.addAction(self.help_about_action)

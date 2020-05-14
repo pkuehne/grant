@@ -2,6 +2,7 @@
 
 from PyQt5.QtCore import QSortFilterProxyModel
 from PyQt5.QtCore import Qt
+
 # from PyQt5.QtCore import QModelIndex
 from grant.models.task_matcher import TaskMatcher
 
@@ -33,10 +34,11 @@ class TasksModel(QSortFilterProxyModel):
         self.sourceModel().modelReset.connect(self.invalidate)
         self.sourceModel().dataChanged.connect(self.invalidate)
 
-    def headerData(self, section, orientation, role):  # pylint: disable=invalid-name, no-self-use
+    def headerData(
+        self, section, orientation, role
+    ):  # pylint: disable=invalid-name, no-self-use
         """ Set the header information """
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole \
-                and section == 0:
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole and section == 0:
             return "Task List"
         return None
 

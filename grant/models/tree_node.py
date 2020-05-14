@@ -17,11 +17,15 @@ class TreeNode:
     def get_children(self):
         """ Return the sub-items (plans/tasks/etc) for the given node """
         if self.type == "plans":
-            return [TreeNode("plan", plan, self, index)
-                    for index, plan in enumerate(self.data.plans)]
+            return [
+                TreeNode("plan", plan, self, index)
+                for index, plan in enumerate(self.data.plans)
+            ]
         if self.type == "plan":
-            return [TreeNode("task", task, self, index)
-                    for index, task, in enumerate(self.data.tasks)]
+            return [
+                TreeNode("task", task, self, index)
+                for index, task, in enumerate(self.data.tasks)
+            ]
         return []
 
     def delete_child(self, index):

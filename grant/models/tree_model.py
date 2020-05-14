@@ -24,12 +24,9 @@ class TreeModel(QAbstractItemModel):
         self.project: ResearchProject = project
         if self.project is not None:
             self.root_nodes.clear()
-            self.root_nodes.append(
-                TreeNode("gedcom", self.project.gedcom, None, 0))
-            self.root_nodes.append(
-                TreeNode("filename", self.project.filename, None, 1))
-            self.root_nodes.append(
-                TreeNode("plans", self.project, None, 2))
+            self.root_nodes.append(TreeNode("gedcom", self.project.gedcom, None, 0))
+            self.root_nodes.append(TreeNode("filename", self.project.filename, None, 1))
+            self.root_nodes.append(TreeNode("plans", self.project, None, 2))
         self.endResetModel()
 
         self.gedcom_index = self.index(0, 0, QModelIndex())
@@ -142,10 +139,11 @@ class TreeModel(QAbstractItemModel):
             self.dataChanged.emit(index, index)
         return True
 
-    def headerData(self, section, orientation, role):  # pylint: disable=invalid-name, no-self-use
+    def headerData(
+        self, section, orientation, role
+    ):  # pylint: disable=invalid-name, no-self-use
         """ Set the header information """
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole \
-                and section == 0:
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole and section == 0:
             return "Research Project"
         return None
 

@@ -2,6 +2,7 @@
 
 from PyQt5.QtCore import QAbstractProxyModel
 from PyQt5.QtCore import QModelIndex
+
 # from PyQt5.QtCore import Qt
 
 
@@ -35,8 +36,9 @@ class TableModel(QAbstractProxyModel):
 
     def sourceDataChanged(self, topLeft, bottomRight):  # pylint: disable=invalid-name
         """ remap source indices and emit dataChanged signal """
-        self.dataChanged.emit(self.mapFromSource(topLeft),
-                              self.mapFromSource(bottomRight))
+        self.dataChanged.emit(
+            self.mapFromSource(topLeft), self.mapFromSource(bottomRight)
+        )
 
     def setSourceModel(self, model):  # pylint: disable=invalid-name
         """ Reset index/row maps and connect signals """
@@ -49,7 +51,9 @@ class TableModel(QAbstractProxyModel):
         """ map given index from Tree to Flat """
         if index not in self.row_map:
             return QModelIndex()
-        return self.createIndex(self.row_map[index], index.column(), index.internalPointer())
+        return self.createIndex(
+            self.row_map[index], index.column(), index.internalPointer()
+        )
 
     def mapToSource(self, index):  # pylint: disable=invalid-name
         """ map given index from flat table to tree """
