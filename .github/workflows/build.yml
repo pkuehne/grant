@@ -11,6 +11,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: [3.8]
         include:
           - os: ubuntu-latest
             coverage: linux-cov.xml
@@ -21,7 +23,7 @@ jobs:
           - os: windows-latest
             coverage: windows-cov.xml
             executable: grant-windows-amd64.exe
-        python-version: [3.8]
+        
     env:
       DISPLAY: ":99.0"
     steps:
@@ -56,13 +58,13 @@ jobs:
         run: |
           pyinstaller --onefile --windowed --name ${{matrix.executable}} grant.py 
       - uses: actions/upload-artifact@v2
+        name: Upload coverage report for ${{matrix.os}}
         with:
-          name: ${{matrix.coverage}}
-          path: .
+          path: ${{matrix.coverage}}
       - uses: actions/upload-artifact@v2
+        name: Upload executable for ${{matrix.os}}
         with:
-          name: ${{matrix.executable}}
-          path: ./dist/
+          path: ./dist/${{matrix.executable}}
         
         
         
