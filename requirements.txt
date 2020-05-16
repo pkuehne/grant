@@ -1,6 +1,7 @@
 pyqt5
 pytest
 pytest-qt
+pytest-cov
 pyyaml
 pyinstaller
 pylint
