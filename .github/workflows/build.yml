@@ -44,7 +44,7 @@ jobs:
           pip install pytest-cov
       - name: Run unit tests
         run: |
-          pytest --cov=grant --cov-report xml:${{matrix.coverage}} --cov-fail-under=90 tests/
+          pytest --cov=grant --cov-report xml:cov.xml --cov-fail-under=90 tests/
       - name: Check for issues
         run: |
           pylint -E grant
@@ -60,10 +60,12 @@ jobs:
       - uses: actions/upload-artifact@v2
         name: Upload coverage report for ${{matrix.os}}
         with:
-          path: ${{matrix.coverage}}
+          name: ${{matrix.coverage}}
+          path: cov.xml
       - uses: actions/upload-artifact@v2
         name: Upload executable for ${{matrix.os}}
         with:
+          name: ${{matrix.executable}}
           path: ./dist/${{matrix.executable}}
         
         
