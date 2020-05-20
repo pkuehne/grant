@@ -24,7 +24,7 @@ Try try it out, head to the [Releases](https://github.com/pkuehne/grant/releases
 
 If you are interested in running the source code directly, here are some handy tips:
 
-- To run the build: `python grant.py`
+- To run the build: `python main.py`
 - To run the tests: `python -m pytest tests`
 - To generate the `resources.py` file: `pyrcc5 grant.qrc -o resources.py`
-- To create an executable: `pyinstaller --onefile --windowed grant.py`
+- To create an executable: `pyinstaller --onefile --windowed main.py`
