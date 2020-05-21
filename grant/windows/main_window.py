@@ -64,7 +64,7 @@ class MainWindow(QMainWindow):
 
     def setup_window(self):
         """ Sets up all widgets and window stuff """
-        self.setWindowIcon(QIcon(":/icons/books.ico"))
+        self.setWindowIcon(QIcon(":/icons/grant.ico"))
 
         self.main_screen = MainScreen(self, self.data_model)
         self.setCentralWidget(self.main_screen)
