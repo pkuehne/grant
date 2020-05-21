@@ -1,7 +1,7 @@
 <!DOCTYPE RCC>
 <RCC version="1.0">
 <qresource>
-<file>icons/books.ico</file>
+<file>icons/grant.ico</file>
 <file>icons/delete.ico</file>
 <file>icons/file.ico</file>
 <file>icons/gedcom.ico</file>
