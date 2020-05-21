@@ -15,6 +15,7 @@ class MenuBar(QMenuBar):
     def __init__(self, parent):
         super().__init__(parent)
         self.setup_file_menu()
+        self.setup_gedcom_menu()
         self.setup_view_menu()
         self.setup_help_menu()
 
@@ -45,6 +46,17 @@ class MenuBar(QMenuBar):
         file_menu.addAction(self.file_save_project_as_action)
         file_menu.addSeparator()
         file_menu.addAction(self.file_quit_action)
+
+    def setup_gedcom_menu(self):
+        """ Create the gedcom menu """
+        self.gedcom_link_action = QAction("&Link Gedcom File", self)
+        self.gedcom_link_action.setDisabled(True)
+        self.gedcom_unlink_action = QAction("&Unlink Gedcom File", self)
+        self.gedcom_unlink_action.setDisabled(True)
+
+        gedcom_menu = self.addMenu("&Gedcom")
+        gedcom_menu.addAction(self.gedcom_link_action)
+        gedcom_menu.addAction(self.gedcom_unlink_action)
 
     def setup_view_menu(self):
         """ Create the View menu """

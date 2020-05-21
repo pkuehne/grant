@@ -111,6 +111,12 @@ class MainWindow(QMainWindow):
             self.menu_bar.file_save_project_as_action.setDisabled(
                 self.project_manager.project is None
             )
+            self.menu_bar.gedcom_link_action.setDisabled(
+                self.project_manager.project is None
+            )
+            self.menu_bar.gedcom_unlink_action.setDisabled(
+                self.project_manager.project is None
+            )
 
         self.project_manager.project_changed.connect(enable_on_project_load)
 

@@ -1,0 +1,41 @@
+0 HEAD
+1 SOUR Gramps
+2 VERS GrampsAIO64-5.1.2-1
+2 NAME Gramps
+1 DATE 21 MAY 2020
+2 TIME 14:40:48
+1 SUBM @SUBM@
+1 FILE C:\Development\grant\test_data\test.ged
+1 COPR Copyright (c) 2020 .
+1 GEDC
+2 VERS 5.5.1
+2 FORM LINEAGE-LINKED
+1 CHAR UTF-8
+1 LANG English
+0 @SUBM@ SUBM
+1 NAME
+1 ADDR
+0 @I0000@ INDI
+1 NAME Adam Brian Charles /Dawson/
+2 GIVN Adam Brian Charles
+2 SURN Dawson
+2 NPFX Reverend
+1 SEX M
+1 BIRT
+2 DATE 1801
+1 DEAT
+2 DATE 1851
+1 NOTE @N0000@
+1 CHAN
+2 DATE 21 MAY 2020
+3 TIME 13:39:11
+0 @I0001@ INDI
+1 NAME Alina Belle Caroline /Dawson/
+2 GIVN Alina Belle Caroline
+2 SURN Dawson
+1 SEX F
+1 CHAN
+2 DATE 21 MAY 2020
+3 TIME 13:38:00
+0 @N0000@ NOTE Add a few more people with interesting names
+0 TRLR
