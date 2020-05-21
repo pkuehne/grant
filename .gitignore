@@ -4,6 +4,7 @@
 test_data/
 build/
 dist/
+develop/
 *.spec
 resources.py
 .coverage

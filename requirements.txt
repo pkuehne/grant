@@ -6,3 +6,4 @@ pyyaml
 pyinstaller
 pylint
 black
+python-gedcom
