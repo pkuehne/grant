@@ -1,53 +1,45 @@
 """ Test for the Tree Model """
 
+import pytest
 from PyQt5.QtCore import QModelIndex
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
+from grant.models.tree_node import TreeNode
+from grant.models.tree_model import TreeModel
+from grant.research import ResearchProject, ResearchPlan, ResearchTask, ResearchResult
 
-from grant.windows.tree_model import TreeNode
-from grant.windows.tree_model import TreeModel
-from grant.research import ResearchProject, ResearchPlan, ResearchTask
 
-
-def test_empty_icon_returned_for_unknown_node_type():
-    """ Return an empty QIcon if the type is invalid """
+def test_model_checker(qtmodeltester):
+    """ Checks the model for basic issues """
     # Given
-    node = TreeNode("foo", None, None, 0)
+    model = TreeModel()
 
-    # When
-    icon = node.get_icon()
-
-    # Then
-    assert icon.isNull()
+    qtmodeltester.check(model)
 
 
-def test_new_model_is_empty_by_default():
+def test_new_model_is_empty_by_default(qtmodeltester):
     """ Empty model should not have a project set and no nodes """
     # Given
     model = TreeModel()
 
     # Then
+    qtmodeltester.check(model)
     assert model.project is None
     assert model.root_nodes == []
 
 
-def test_set_project_calls_begin_end_reset(qtbot):
+@pytest.mark.parametrize("project", [ResearchProject(""), None])
+def test_set_project_calls_begin_end_reset(project, qtbot, qtmodeltester):
     """ beginReset and endReset should be emitted """
     # Given
     model = TreeModel()
-    project = ResearchProject("")
 
     # When
     with qtbot.waitSignals([model.modelAboutToBeReset, model.modelReset]):
         model.set_project(project)
 
-
-def test_set_project_calls_begin_end_reset_when_project_is_none(qtbot):
-    """ Ensure that model is reset even when unsetting the project """
-    # Given
-    model = TreeModel()
-
-    # When
-    with qtbot.waitSignals([model.modelAboutToBeReset, model.modelReset]):
-        model.set_project(None)
+    # Then
+    qtmodeltester.check(model)
 
 
 def test_set_project_clears_existing_nodes():
@@ -211,7 +203,7 @@ def test_add_creates_task():
     assert len(plan.tasks) == 1
 
 
-def test_set_data_doesnot_fire_signal_if_no_change(qtbot):
+def test_setdata_doesnot_fire_signal_if_no_change(qtbot):
     """ When setting data, the dataChanged signal should only be emitted on actual changes """
     # Given
     model = TreeModel()
@@ -220,9 +212,178 @@ def test_set_data_doesnot_fire_signal_if_no_change(qtbot):
     project.plans.append(plan)
 
     model.set_project(project)
-    plans_index = model.index(2, 0, QModelIndex())
-    plan_index = model.index(0, 0, plans_index)
+    plan_index = model.index(0, 0, model.plans_index)
 
     # When
     with qtbot.assertNotEmitted(model.dataChanged):
-        model.setData(plan_index, plan.title, None)
+        retval = model.setData(plan_index, plan.ancestor, None)
+
+    assert retval is True
+
+
+def test_setdata_fires_signal_on_change(qtbot):
+    """ When setting data, the dataChanged signal is emitted on changes """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    plan = ResearchPlan()
+    project.plans.append(plan)
+
+    model.set_project(project)
+    plan_index = model.index(0, 0, model.plans_index)
+
+    # When
+    with qtbot.waitSignal(model.dataChanged):
+        retval = model.setData(plan_index, "Foo", None)
+
+    assert retval is True
+
+
+def test_setdata_returns_false_on_invalid_index():
+    """ When setting data, false is returned for invalid index """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    plan = ResearchPlan()
+    project.plans.append(plan)
+
+    model.set_project(project)
+
+    # When
+    retval = model.setData(QModelIndex(), "Foo", None)
+
+    assert retval is False
+
+
+def test_setdata_returns_false_on_invalid_column():
+    """ When setting data, false is returned for invalid column """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    plan = ResearchPlan()
+    project.plans.append(plan)
+
+    model.set_project(project)
+    plan_index = model.index(0, 5, model.plans_index)
+
+    # When
+    retval = model.setData(plan_index, "Foo", None)
+
+    assert retval is False
+
+
+def test_data_returns_none_for_invalid_index():
+    """ When getting data, nothing is returned for invalid index """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    plan = ResearchPlan()
+    project.plans.append(plan)
+
+    model.set_project(project)
+
+    # When
+    retval = model.data(QModelIndex(), Qt.DisplayRole)
+
+    # Then
+    assert retval is None
+
+
+def test_data_returns_string_for_valid_index():
+    """ When getting data, ancestor is returned for valid index """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    plan = ResearchPlan()
+    plan.ancestor = "Foo"
+    project.plans.append(plan)
+
+    model.set_project(project)
+    plan_index = model.index(0, 0, model.plans_index)
+
+    # When
+    retval = model.data(plan_index, Qt.DisplayRole)
+
+    # Then
+    assert retval is plan.ancestor
+
+
+def test_data_returns_none_for_invalid_column():
+    """ When getting data, invalid column returns None """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    plan = ResearchPlan()
+    plan.ancestor = "Foo"
+    project.plans.append(plan)
+
+    model.set_project(project)
+    plan_index = model.index(0, 5, model.plans_index)
+
+    # When
+    retval = model.data(plan_index, Qt.DisplayRole)
+
+    # Then
+    assert retval is None
+
+
+def test_data_returns_qicon_for_decoration_role():
+    """ When getting data, decoration role returns an icon """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    plan = ResearchPlan()
+    plan.ancestor = "Foo"
+    project.plans.append(plan)
+
+    model.set_project(project)
+    plan_index = model.index(0, 0, model.plans_index)
+
+    # When
+    retval = model.data(plan_index, Qt.DecorationRole)
+
+    # Then
+    assert isinstance(retval, QIcon)
+
+
+def test_data_returns_none_for_invalid_role():
+    """ When getting data, invalid role returns None """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    plan = ResearchPlan()
+    plan.ancestor = "Foo"
+    project.plans.append(plan)
+
+    model.set_project(project)
+    plan_index = model.index(0, 0, model.plans_index)
+
+    # When
+    retval = model.data(plan_index, Qt.UserRole)
+
+    # Then
+    assert retval is None
+
+
+def test_get_font_returns_strikeout_for_task_with_result():
+    """ A task with a nil result should show up as strike-out """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    plan = ResearchPlan()
+    task = ResearchTask()
+    task.result = ResearchResult(False)
+    plan.tasks.append(task)
+    project.plans.append(plan)
+
+    model.set_project(project)
+
+    plans_index = model.index(2, 0, QModelIndex())
+    plan_index = model.index(0, 0, plans_index)
+    task_index = model.index(0, 0, plan_index)
+
+    # When
+    font = model.data(task_index, Qt.FontRole)
+
+    # Then
+    assert font.strikeOut() is True

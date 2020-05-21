@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtGui import QIcon
-from grant.windows.base_screens import SelectionScreen
+from .base_screens import SelectionScreen
 
 
 class TreeSelectionScreen(SelectionScreen):
@@ -63,7 +63,8 @@ class TreeSelectionScreen(SelectionScreen):
         node = index.internalPointer()
         self.button_add_task.setEnabled(node.type == "plan")
         self.button_delete_selection.setEnabled(
-            node.type == "plan" or node.type == "task")
+            node.type == "plan" or node.type == "task"
+        )
 
     def delete_selection(self):
         """ Deletes the selected row if valid """
@@ -80,3 +81,7 @@ class TreeSelectionScreen(SelectionScreen):
         if len(self.tree_view.selectedIndexes()) == 0:
             return
         self.data_model.add_node(self.tree_view.selectedIndexes()[0])
+
+    def clear_selection(self):
+        """ Called when screen is being switched to """
+        self.tree_view.selectionModel().clearSelection()

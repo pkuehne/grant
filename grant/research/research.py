@@ -1,62 +1,102 @@
 """ The Research-related classes """
+from datetime import datetime
+from PyQt5.QtCore import QObject
 
 
-class TaskLog:
-    """ Audit log for a task """
+class ResearchResult(QObject):
+    """ Result of a Task """
 
-    def __init__(self):
-        self.action = ""
-        self.date = ""
-        self.text = ""
+    def __init__(self, success: bool):
+        super().__init__()
+        self.date = datetime.now()
+        self.document = ""
+        self.summary = ""
+        self.nil = not success
 
-
-class ResearchTask:
-    """ A single task """
-    default_task_title = "New Task"
-    default_status = "active"
-
-    def __init__(self):
-        self.title = self.default_task_title
-        self.description = "Add a more detailed description of the task"
-        self.status = self.default_status
-        self.logs = []
-
-    def __str__(self):
-        return "Research Task: " + self.title
+    def is_nil(self):
+        """ Negative result? """
+        return self.nil is True
 
     def from_py(self, data):
-        """ Converts from pythonic to class """
-        self.title = data.get("title", self.default_task_title)
-        self.description = data.get("description", "")
-        self.status = data.get("status", self.default_status)
+        """ converts from pythonic to class """
+        if data is None:
+            return
+        self.date = data.get("date", None)
+        self.document = data.get("document", "")
+        self.summary = data.get("summary", "")
+        self.nil = data.get("nil", True)
 
     def to_py(self):
         """ Converts from class to pythonic """
         data = {}
-        data["title"] = self.title
-        data["description"] = self.description
-        data["status"] = self.status
+        data["date"] = self.date
+        data["document"] = self.document
+        data["summary"] = self.summary
+        data["nil"] = self.nil
         return data
+
+    def __str__(self):
+        """ String representation """
+        data = ""
+        if self.is_nil():
+            data = "nil"
+        else:
+            data = "success"
+
+        data += " - " + self.summary if self.summary != "" else ""
+        return data
+
+
+class ResearchTask:
+    """ A single task """
+
+    def __init__(self):
+        self.source = ""
+        self.description = ""
+        self.result = None
+
+    def __str__(self):
+        return "Research Task: " + self.description
+
+    def from_py(self, data):
+        """ Converts from pythonic to class """
+        self.source = data.get("source", "")
+        self.description = data.get("description", "")
+        result = data.get("result", None)
+        if result is not None:
+            self.result = ResearchResult(False)
+            self.result.from_py(result)
+
+    def to_py(self):
+        """ Converts from class to pythonic """
+        data = {}
+        data["source"] = self.source
+        data["description"] = self.description
+        data["result"] = None if self.result is None else self.result.to_py()
+        return data
+
+    def is_open(self):
+        """ Whether the task is still open """
+        return self.result is None
 
 
 class ResearchPlan:
     """ A collection of tasks with a common goal """
-    default_title = "New Plan"
+
+    default_ancestor = "My Ancestor"
 
     def __init__(self):
-        self.title = self.default_title
+        self.ancestor = self.default_ancestor
         self.goal = "Describe your goals for this plan..."
         self.tasks = []
 
     def __str__(self):
-        retval = "Research Plan: " + self.title
-        for task in self.tasks:
-            retval = retval + "\n\t\t" + str(task)
+        retval = "Research Plan: " + self.ancestor
         return retval
 
     def from_py(self, data):
         """ Converts from pythonic to class """
-        self.title = data.get("title", self.default_title)
+        self.ancestor = data.get("ancestor", None)
         self.goal = data.get("goal", "")
         for task_data in data.get("tasks", []):
             task = ResearchTask()
@@ -66,12 +106,24 @@ class ResearchPlan:
     def to_py(self):
         """ Converts from class to pythonic """
         data = {}
-        data["title"] = self.title
+        data["ancestor"] = self.ancestor
         data["goal"] = self.goal
         data["tasks"] = []
         for task in self.tasks:
             data["tasks"].append(task.to_py())
         return data
+
+    def add_task(self):
+        """ Create a new task and return it """
+        task = ResearchTask()
+        self.tasks.append(task)
+        return task
+
+    def delete_task(self, index):
+        """ Deletes the task at the given index """
+        if index > len(self.tasks) or len(self.tasks) == 0:
+            return
+        del self.tasks[index]
 
 
 class ResearchProject:
@@ -108,3 +160,15 @@ class ResearchProject:
     def has_gedcom(self):
         """ Whether a gedcom file is associated with this project """
         return self.gedcom != "none"
+
+    def add_plan(self):
+        """ Creates and returns a new plan """
+        plan = ResearchPlan()
+        self.plans.append(plan)
+        return plan
+
+    def delete_plan(self, index):
+        """ Delete plan at index """
+        if index > len(self.plans) or len(self.plans) == 0:
+            return
+        del self.plans[index]

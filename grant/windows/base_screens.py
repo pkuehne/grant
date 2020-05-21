@@ -21,6 +21,7 @@ class BaseScreen(QWidget):
 
 class SelectionScreen(BaseScreen):
     """ Basis of all selection screens on the left-hand side """
+
     item_selected = pyqtSignal(QModelIndex)
 
     # def __init__(self, model):
@@ -34,6 +35,12 @@ class SelectionScreen(BaseScreen):
     def reload_screen(self):
         """ Called when things change """
 
+    def clear_selection(self):
+        """ Called when the selection needs to be cleared """
+        raise NotImplementedError(
+            "clear_selection() must be implemented in sub-classes"
+        )
+
 
 class DetailScreen(BaseScreen):
     """ Basis of all detail screens on the right-hand side """
@@ -42,4 +49,12 @@ class DetailScreen(BaseScreen):
     #     super(DetailScreen, self).__init__(model)
 
     def set_selected_item(self, item):
-        """ Called when the item to show has changed """
+        """ Receive selected item from main window """
+        if self.project is None:
+            return
+
+        if not hasattr(self, "mapper"):
+            return
+
+        self.mapper.setRootIndex(item.parent())
+        self.mapper.setCurrentModelIndex(item)

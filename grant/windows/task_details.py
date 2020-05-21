@@ -1,34 +1,28 @@
 """ Detail View for a plan """
 
-from PyQt5.QtWidgets import QVBoxLayout, QFormLayout
+from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QFormLayout
 from PyQt5.QtWidgets import QLabel, QLineEdit, QTextEdit, QGroupBox
-from PyQt5.QtWidgets import QComboBox
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtCore import QStringListModel
 from PyQt5.QtWidgets import QDataWidgetMapper
 from .base_screens import DetailScreen
+from .result_widget import ResultWidget
 
 
 class TaskDetails(DetailScreen):
     """ Displays all current Research Plans """
-    plan_changed = pyqtSignal()
 
     def __init__(self, model):
-        super(TaskDetails, self).__init__(model)
-
-        self.status_model = QStringListModel(
-            ["active", "completed", "abandoned"])
+        super().__init__(model)
 
         form_layout = QFormLayout()
-        self.title = QLineEdit()
-        form_layout.addRow(QLabel("Title:"), self.title)
+        self.source = QLineEdit()
+        form_layout.addRow(QLabel("Source:"), self.source)
 
         self.description = QTextEdit()
         form_layout.addRow(QLabel("Description:"), self.description)
 
-        self.status = QComboBox()
-        self.status.setModel(self.status_model)
-        form_layout.addRow(QLabel("Status:"), self.status)
+        self.result = ResultWidget()
+        form_layout.addRow(QLabel("Results:"), self.result)
 
         form_group = QGroupBox("Task")
         form_group.setLayout(form_layout)
@@ -40,14 +34,8 @@ class TaskDetails(DetailScreen):
 
         self.mapper = QDataWidgetMapper()
         self.mapper.setModel(self.data_model)
-        self.mapper.addMapping(self.title, 0)
+        self.mapper.addMapping(self.source, 0)
         self.mapper.addMapping(self.description, 1)
-        self.mapper.addMapping(self.status, 2, b"currentText")
+        self.mapper.addMapping(self.result, 2)
+        self.result.result_changed.connect(self.mapper.submit)
         self.mapper.toFirst()
-
-    def set_selected_item(self, item):
-        """ Receive selected item from main window """
-        if self.project is None:
-            return
-        self.mapper.setRootIndex(item.parent())
-        self.mapper.setCurrentModelIndex(item)

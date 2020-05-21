@@ -1,11 +1,18 @@
 """ Class for Tree Selection Screen """
 
-from PyQt5.QtGui import QStandardItemModel
-from PyQt5.QtGui import QStandardItem
+# from PyQt5.QtGui import QStandardItemModel
+# from PyQt5.QtGui import QStandardItem
+from PyQt5.QtCore import QStringListModel
 from PyQt5.QtWidgets import QTableView
 from PyQt5.QtWidgets import QAbstractItemView
 from PyQt5.QtWidgets import QVBoxLayout
-from grant.windows.base_screens import SelectionScreen
+from PyQt5.QtWidgets import QFormLayout
+from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QLineEdit
+from PyQt5.QtWidgets import QComboBox
+from grant.models.tasks_model import TasksModel
+from grant.models.table_model import TableModel
+from .base_screens import SelectionScreen
 
 
 class FilterSelectionScreen(SelectionScreen):
@@ -14,33 +21,48 @@ class FilterSelectionScreen(SelectionScreen):
     def __init__(self, model):
         super(FilterSelectionScreen, self).__init__(model)
 
-        self.plan_model = QStandardItemModel()
-        self.plan_model.setHorizontalHeaderLabels(["Plan", "Open Tasks"])
-        self.plan_table = QTableView()
-        self.plan_table.setModel(self.plan_model)
-        self.plan_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.plan_table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.plan_table.verticalHeader().hide()
-        self.plan_table.selectionModel().selectionChanged.connect(self.selection_changed)
+        self.table_model = TableModel()
+        self.table_model.setSourceModel(self.data_model)
+        self.tasks_model = TasksModel()
+        self.tasks_model.setSourceModel(self.table_model)
+
+        filter_widgets = QFormLayout()
+        self.text_filter = QLineEdit()
+        self.text_filter.textChanged.connect(self.tasks_model.task_matcher.text_filter)
+        filter_widgets.addRow(QLabel("Text:"), self.text_filter)
+        result_model = QStringListModel(["", "open", "success", "nil"])
+        self.result_filter = QComboBox()
+        self.result_filter.setModel(result_model)
+        self.result_filter.currentTextChanged.connect(
+            self.tasks_model.task_matcher.result_filter
+        )
+        filter_widgets.addRow(QLabel("Result:"), self.result_filter)
+
+        self.table_view = QTableView()
+        self.table_view.setModel(self.tasks_model)
+        self.table_view.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table_view.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table_view.verticalHeader().hide()
+        self.table_view.horizontalHeader().setStretchLastSection(True)
+        self.table_view.selectionModel().selectionChanged.connect(
+            self.selection_changed
+        )
 
         layout = QVBoxLayout()
-        layout.addWidget(self.plan_table)
+        layout.addLayout(filter_widgets)
+        layout.addWidget(self.table_view)
 
         self.setLayout(layout)
 
-    def reload_screen(self):
-        """ Loads the screen """
-        self.plan_model.setRowCount(0)
-        for plan in self.project.plans:
-            row = []
-            row.append(QStandardItem(plan.title))
-            row.append(QStandardItem(str(len(plan.tasks))))
-            self.plan_model.appendRow(row)
-
     def selection_changed(self, selected, _):
         """ Handle changed selection """
-        item = {
-            # "plan": self.plan_table.selectionModel().selectedIndexes()[0].row()
-            "plan": selected.indexes()[0].row()
-        }
-        self.item_selected.emit(item)
+        if len(selected.indexes()) != 1:
+            return
+        index = selected.indexes()[0]
+        flat_index = self.tasks_model.mapToSource(index)
+        tree_index = self.table_model.mapToSource(flat_index)
+        self.item_selected.emit(tree_index)
+
+    def clear_selection(self):
+        """ Called when screen is being switched to """
+        self.table_view.selectionModel().clearSelection()
