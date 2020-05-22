@@ -8,12 +8,13 @@ from PyQt5.QtGui import QIcon
 # from PyQt5.QtCore import pyqtSignal
 from grant.research import ResearchProject
 from grant.models.tree_model import TreeModel
+from grant.windows.gedcom_manager import GedcomManager
 from .main_window_menu_bar import MenuBar
 from .main_screen import MainScreen
 from .project_file_manager import ProjectFileManager
 
 TEST_DATA = """
-gedcom: none
+gedcom:
 plans:
 - goal: Identify any bastard children
   tasks:
@@ -41,6 +42,7 @@ class MainWindow(QMainWindow):
         self.data_model = TreeModel()
         self.main_screen = None
         self.project_manager = ProjectFileManager(self)
+        self.gedcom_manager = GedcomManager(self)
         self.setup_window()
         self.setup_window_title()
         self.setup_menubar()
@@ -124,5 +126,11 @@ class MainWindow(QMainWindow):
         """ Updates all the screens with the new project information """
         self.data_model.set_project(self.project_manager.project)
         self.main_screen.set_project(self.project_manager.project)
-
+        if (
+            self.project_manager.project is None
+            or self.project_manager.project.gedcom == ""
+        ):
+            self.gedcom_manager.clear_link()
+        else:
+            self.gedcom_manager.load_link(self.project_manager.project.gedcom)
         self.setup_window_title()

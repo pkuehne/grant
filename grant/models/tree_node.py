@@ -48,7 +48,7 @@ class TreeNode:
     def get_text(self):
         """ Return a stringified representation for the given node """
         if self.type == "gedcom":
-            return "No gedcom file linked" if self.data == "none" else self.data
+            return "No gedcom file linked" if self.data == "" else self.data
         if self.type == "filename":
             return "Filename: " + self.data
         if self.type == "plans":

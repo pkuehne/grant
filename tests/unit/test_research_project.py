@@ -4,16 +4,16 @@ from grant.research import ResearchProject
 from grant.research import ResearchPlan
 
 
-def test_gedcom_is_none_by_default():
+def test_gedcom_is_empty_by_default():
     """ Gedcom is None by default """
     project = ResearchProject("")
-    assert project.gedcom == "none"
+    assert project.gedcom == ""
 
 
-def test_has_gedcom_is_false_for_none():
+def test_has_gedcom_is_false_for_empty():
     """ If there is no associated gedcom, has_gedcom should return false """
     project = ResearchProject("")
-    project.gedcom = "none"
+    project.gedcom = ""
 
     assert project.has_gedcom() is False
 
@@ -108,3 +108,18 @@ def test_delete_plan_does_nothing_if_index_out_of_bounds():
 
     # Then
     assert len(project.plans) == 3
+
+
+def test_versioning_loads_gedcom_none_as_empty():
+    """
+    Backwards Compatibility
+    When loading a project, a gedcom value of "none" should be saved as "" instead
+    """
+    project_data = {}
+    project_data["gedcom"] = "none"
+    project_data["version"] = "1.0"
+    project_data["plans"] = []
+
+    project = ResearchProject("")
+    project.from_py(project_data)
+    assert project.gedcom == ""

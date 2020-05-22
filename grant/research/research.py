@@ -131,7 +131,7 @@ class ResearchProject:
 
     def __init__(self, filename):
         self.version = "1.0"
-        self.gedcom = "none"
+        self.gedcom = ""
         self.filename = filename
         self.plans = []
 
@@ -141,7 +141,9 @@ class ResearchProject:
     def from_py(self, data):
         """ Converts from pythonic datastructures to class """
         self.version = data["version"]
-        self.gedcom = data["gedcom"]
+        self.gedcom = data.get("gedcom", "")
+        if self.gedcom == "none":
+            self.gedcom = ""  # backwards compatibility check
         for plan_data in data["plans"]:
             plan = ResearchPlan()
             plan.from_py(plan_data)
@@ -159,7 +161,7 @@ class ResearchProject:
 
     def has_gedcom(self):
         """ Whether a gedcom file is associated with this project """
-        return self.gedcom != "none"
+        return self.gedcom != ""
 
     def add_plan(self):
         """ Creates and returns a new plan """

@@ -6,7 +6,8 @@ import pytest
 from PyQt5.QtCore import QModelIndex
 from grant.windows.main_screen import MainScreen
 from grant.models.tree_model import TreeModel
-from grant.windows.base_screens import DetailScreen
+
+# from grant.windows.base_screens import DetailScreen
 from grant.research import ResearchProject
 
 
@@ -49,7 +50,10 @@ def test_detail_change_sets_screen(qtbot):
     assert screen.detail_stack.currentWidget() == screen.screens["blank"]
 
 
-@pytest.mark.parametrize("node_type, screen_name", [("gedcom", "blank"), ("plan", "plan"), ("task", "task"), ("Foo", "blank")])
+@pytest.mark.parametrize(
+    "node_type, screen_name",
+    [("gedcom", "blank"), ("plan", "plan"), ("task", "task"), ("Foo", "blank")],
+)
 def test_selection_changed_handler_updates_detail_screen(qtbot, node_type, screen_name):
     """ Given a particular node type, what detail screen is being shown """
     # Given
