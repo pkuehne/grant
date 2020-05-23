@@ -126,6 +126,7 @@ class ProjectFileManager(QObject):
             return
 
         self.project.gedcom = file_name
+        self.needs_saving = True
         self.project_changed.emit()
 
     def unlink_gedcom_file(self):
@@ -141,4 +142,5 @@ class ProjectFileManager(QObject):
             return
 
         self.project.gedcom = ""
+        self.needs_saving = True
         self.project_changed.emit()

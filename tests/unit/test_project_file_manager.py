@@ -322,6 +322,7 @@ def test_link_gedcom_discard_ok_proceeds(monkeypatch, qtbot):
 
     # Then
     assert manager.project.gedcom == file_name
+    assert manager.needs_saving is True
 
 
 def test_link_gedcom_sets_selected_link(monkeypatch, qtbot):
@@ -340,6 +341,7 @@ def test_link_gedcom_sets_selected_link(monkeypatch, qtbot):
 
     # Then
     assert manager.project.gedcom == file_name
+    assert manager.needs_saving is True
 
 
 def test_link_gedcom_does_nothing_on_cancel(monkeypatch, qtbot):
@@ -359,7 +361,7 @@ def test_link_gedcom_does_nothing_on_cancel(monkeypatch, qtbot):
     assert manager.project.gedcom == ""
 
 
-def test_unlink_gedcom_does_nothing_if_no_project_set(monkeypatch, qtbot):
+def test_unlink_gedcom_does_nothing_if_no_project_set(qtbot):
     """ If the project is None, no gedcom link should be removed """
     # Given
     manager = ProjectFileManager()
@@ -373,7 +375,7 @@ def test_unlink_gedcom_does_nothing_if_no_project_set(monkeypatch, qtbot):
     assert manager.project is None
 
 
-def test_unlink_gedcom_does_nothing_if_no_gedcom_link_set(monkeypatch, qtbot):
+def test_unlink_gedcom_does_nothing_if_no_gedcom_link_set(qtbot):
     """ If there is no gedcom link, nothing should happen """
     # Given
     manager = ProjectFileManager()
@@ -418,3 +420,4 @@ def test_unlink_discard_ok_removes_link(monkeypatch, qtbot):
 
     # Then
     assert manager.project.gedcom == ""
+    assert manager.needs_saving is True
