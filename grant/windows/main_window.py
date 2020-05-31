@@ -7,8 +7,8 @@ from PyQt5.QtGui import QIcon
 
 # from PyQt5.QtCore import pyqtSignal
 from grant.research import ResearchProject
-from grant.models.tree_model import TreeModel
 from grant.windows.gedcom_manager import GedcomManager
+from grant.windows.data_context import DataContext
 from .main_window_menu_bar import MenuBar
 from .main_screen import MainScreen
 from .project_file_manager import ProjectFileManager
@@ -39,7 +39,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.data_model = TreeModel()
+        self.data_context = DataContext()
         self.main_screen = None
         self.project_manager = ProjectFileManager(self)
         self.gedcom_manager = GedcomManager(self)
@@ -68,7 +68,7 @@ class MainWindow(QMainWindow):
         """ Sets up all widgets and window stuff """
         self.setWindowIcon(QIcon(":/icons/grant.ico"))
 
-        self.main_screen = MainScreen(self, self.data_model)
+        self.main_screen = MainScreen(self, self.data_context)
         self.setCentralWidget(self.main_screen)
 
         self.project_manager.project_changed.connect(self.project_changed_handler)
@@ -78,9 +78,9 @@ class MainWindow(QMainWindow):
             self.project_manager.needs_saving = True
             self.setup_window_title()
 
-        self.data_model.dataChanged.connect(model_changed)
-        self.data_model.layoutChanged.connect(model_changed)
-        self.data_model.rowsRemoved.connect(model_changed)
+        self.data_context.data_model.dataChanged.connect(model_changed)
+        self.data_context.data_model.layoutChanged.connect(model_changed)
+        self.data_context.data_model.rowsRemoved.connect(model_changed)
 
     def setup_menubar(self):
         """ Sets up the menu bar """
@@ -131,7 +131,7 @@ class MainWindow(QMainWindow):
 
     def project_changed_handler(self):
         """ Updates all the screens with the new project information """
-        self.data_model.set_project(self.project_manager.project)
+        self.data_context.data_model.set_project(self.project_manager.project)
         self.main_screen.set_project(self.project_manager.project)
         if (
             self.project_manager.project is None

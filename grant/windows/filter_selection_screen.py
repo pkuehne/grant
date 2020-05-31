@@ -18,11 +18,11 @@ from .base_screens import SelectionScreen
 class FilterSelectionScreen(SelectionScreen):
     """ Shows all plans and tasks in a tree view """
 
-    def __init__(self, model):
-        super(FilterSelectionScreen, self).__init__(model)
+    def __init__(self, data_context):
+        super(FilterSelectionScreen, self).__init__(data_context)
 
         self.table_model = TableModel()
-        self.table_model.setSourceModel(self.data_model)
+        self.table_model.setSourceModel(self.data_context.data_model)
         self.tasks_model = TasksModel()
         self.tasks_model.setSourceModel(self.table_model)
 

@@ -83,7 +83,7 @@ def test_model_data_change_sets_dirty_flag(qtbot):
     qtbot.addWidget(window)
 
     # When
-    window.data_model.dataChanged.emit(QModelIndex(), QModelIndex())
+    window.data_context.data_model.dataChanged.emit(QModelIndex(), QModelIndex())
 
     # Then
     assert window.project_manager.needs_saving is True

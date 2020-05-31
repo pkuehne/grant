@@ -4,15 +4,16 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtCore import QModelIndex
 from grant.research import ResearchProject
+from grant.windows.data_context import DataContext
 
 
 class BaseScreen(QWidget):
     """ Forms the basis of all screen in the main window """
 
-    def __init__(self, model):
+    def __init__(self, data_context: DataContext):
         super(BaseScreen, self).__init__()
         self.project = None
-        self.data_model = model
+        self.data_context = data_context
 
     def update_project(self, project: ResearchProject):
         """ Sets the screen's reference to the overal project information """
@@ -45,8 +46,8 @@ class SelectionScreen(BaseScreen):
 class DetailScreen(BaseScreen):
     """ Basis of all detail screens on the right-hand side """
 
-    # def __init__(self, model):
-    #     super(DetailScreen, self).__init__(model)
+    def __init__(self, data_context):
+        super(DetailScreen, self).__init__(data_context)
 
     def set_selected_item(self, item):
         """ Receive selected item from main window """

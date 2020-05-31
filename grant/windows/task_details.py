@@ -11,8 +11,8 @@ from .result_widget import ResultWidget
 class TaskDetails(DetailScreen):
     """ Displays all current Research Plans """
 
-    def __init__(self, model):
-        super().__init__(model)
+    def __init__(self, data_context):
+        super().__init__(data_context)
 
         form_layout = QFormLayout()
         self.source = QLineEdit()
@@ -33,7 +33,7 @@ class TaskDetails(DetailScreen):
         self.setLayout(layout)
 
         self.mapper = QDataWidgetMapper()
-        self.mapper.setModel(self.data_model)
+        self.mapper.setModel(self.data_context.data_model)
         self.mapper.addMapping(self.source, 0)
         self.mapper.addMapping(self.description, 1)
         self.mapper.addMapping(self.result, 2)

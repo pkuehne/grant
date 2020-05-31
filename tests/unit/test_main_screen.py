@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from unittest import mock
 import pytest
 from PyQt5.QtCore import QModelIndex
+from grant.windows.data_context import DataContext
 from grant.windows.main_screen import MainScreen
 from grant.models.tree_model import TreeModel
 
@@ -14,7 +15,7 @@ from grant.research import ResearchProject
 def test_selection_change_picks_blank_detail_screen(qtbot):
     """ When changing the selection screen, the blank details screen should be loaded """
     # Given
-    screen = MainScreen(None, TreeModel())
+    screen = MainScreen(None, DataContext())
     qtbot.add_widget(screen)
 
     # When
@@ -27,7 +28,7 @@ def test_selection_change_picks_blank_detail_screen(qtbot):
 def test_selection_change_picks_selection_screen(qtbot):
     """ When changing the selection screen, the blank details screen should be loaded """
     # Given
-    screen = MainScreen(None, TreeModel())
+    screen = MainScreen(None, DataContext())
     qtbot.add_widget(screen)
 
     # When
@@ -40,7 +41,7 @@ def test_selection_change_picks_selection_screen(qtbot):
 def test_detail_change_sets_screen(qtbot):
     """ When changing the selection screen, the blank details screen should be loaded """
     # Given
-    screen = MainScreen(None, TreeModel())
+    screen = MainScreen(None, DataContext())
     qtbot.add_widget(screen)
 
     # When
@@ -62,7 +63,7 @@ def test_selection_changed_handler_updates_detail_screen(qtbot, node_type, scree
     item = mock.MagicMock()
     item.internalPointer = mock.MagicMock(return_value=node)
 
-    screen = MainScreen(None, TreeModel())
+    screen = MainScreen(None, DataContext())
     screen.change_detail_screen = mock.MagicMock()
     qtbot.add_widget(screen)
 
@@ -76,7 +77,7 @@ def test_selection_changed_handler_updates_detail_screen(qtbot, node_type, scree
 def test_update_project_updates_screens(qtbot):
     """ When caling update_project, this is passed to the screens """
     # Given
-    screen = MainScreen(None, TreeModel())
+    screen = MainScreen(None, DataContext())
     qtbot.add_widget(screen)
     project = ResearchProject("")
     assert screen.screens["blank"].project is None
