@@ -46,9 +46,15 @@ class Individual:
 class IndividualsModel(QAbstractTableModel):
     """ Model representation of Gedcom Individuals """
 
-    def __init__(self, individuals: List[Individual]):
+    def __init__(self, individuals: List[Individual] = None):
         super().__init__()
+        self.individuals: List[Individual] = individuals if individuals else []
+
+    def update_list(self, individuals: List[Individual]):
+        """ Updates the internal representation """
+        self.beginResetModel()
         self.individuals = individuals
+        self.endResetModel()
 
     def rowCount(self, parent=QModelIndex()):  # pylint: disable=invalid-name
         """ Number of individuals """
@@ -72,11 +78,6 @@ class IndividualsModel(QAbstractTableModel):
 
         if index.column() == IndividualsModelColumns.POINTER:
             return individual.pointer
-        # if index.column() == IndividualsModelColumns.DESCRIPTIVE_NAME:
-        #     individual = self.individuals[index.row()]
-        #     name = individual.first_name + " " + individual.last_name
-        #     alive_range = str(individual.birth_year) + "-" + str(individual.death_year)
-        #     return name + " (" + alive_range + ")"
         if index.column() == IndividualsModelColumns.FIRST_NAME:
             return individual.first_name
         if index.column() == IndividualsModelColumns.LAST_NAME:

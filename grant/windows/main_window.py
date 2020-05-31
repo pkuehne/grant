@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
         self.data_context = DataContext()
         self.main_screen = None
         self.project_manager = ProjectFileManager(self)
-        self.gedcom_manager = GedcomManager(self)
+        self.gedcom_manager = GedcomManager(self.data_context, self)
         self.setup_window()
         self.setup_window_title()
         self.setup_menubar()

@@ -3,13 +3,14 @@
 from unittest import mock
 from PyQt5.QtWidgets import QMessageBox
 from grant.windows.gedcom_manager import GedcomManager
+from grant.windows.data_context import DataContext
 from grant.models.individuals_model import Individual
 
 
 def test_load_link_filename_cannot_be_none():
     """ When loading a file, the filename cannot be None """
     # Given
-    manager = GedcomManager()
+    manager = GedcomManager(DataContext())
 
     # When
     manager.load_link(None)
@@ -18,7 +19,7 @@ def test_load_link_filename_cannot_be_none():
 def test_load_link_filename_cannot_be_empty():
     """ When loading a file, the filename cannot be None """
     # Given
-    manager = GedcomManager()
+    manager = GedcomManager(DataContext())
 
     # When
     manager.load_link("")
@@ -30,7 +31,7 @@ def test_load_link_invalid_filename_shows_message(monkeypatch):
     an error dialog is shown
     """
     # Given
-    manager = GedcomManager()
+    manager = GedcomManager(DataContext())
     monkeypatch.setattr(QMessageBox, "warning", mock.MagicMock())
 
     # When
@@ -43,7 +44,7 @@ def test_load_link_invalid_filename_shows_message(monkeypatch):
 def test_loading_file_adds_individuals():
     """ When loading a gedcom file, individuals should be added to the list """
     # Given
-    manager = GedcomManager()
+    manager = GedcomManager(DataContext())
 
     # When
     manager.load_link("tests/unit/test.ged")
@@ -55,19 +56,19 @@ def test_loading_file_adds_individuals():
 def test_loading_file_creates_model():
     """ When loading a gedcom file, individuals should be added to the list """
     # Given
-    manager = GedcomManager()
+    manager = GedcomManager(DataContext())
 
     # When
     manager.load_link("tests/unit/test.ged")
 
     # Then
-    assert manager.individuals_model.rowCount() != 0
+    assert manager.data_context.individuals_model.rowCount() != 0
 
 
 def test_loading_creates_individual():
     """ Individuals should have their values set correctly """
     # Given
-    manager = GedcomManager()
+    manager = GedcomManager(DataContext())
 
     # When
     manager.load_link("tests/unit/test.ged")
@@ -84,7 +85,7 @@ def test_loading_creates_individual():
 def test_clear_link_removes_individuals():
     """ When the link is removed, the individuals cache should be cleared too """
     # Given
-    manager = GedcomManager()
+    manager = GedcomManager(DataContext())
     manager.individuals.append(Individual("I000", "Test", "User", 1900, 1999))
 
     # When

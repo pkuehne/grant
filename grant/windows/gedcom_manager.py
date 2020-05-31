@@ -5,20 +5,19 @@ from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QMessageBox
 from gedcom.parser import Parser
 from gedcom.element.individual import IndividualElement
-from grant.models.individuals_model import (
-    IndividualsModel,
-    Individual,
-)
+from grant.models.individuals_model import Individual
+
+from grant.windows.data_context import DataContext
 
 
 class GedcomManager(QObject):
     """ Manager for the gedcom link """
 
-    def __init__(self, parent=None):
+    def __init__(self, data_context: DataContext, parent=None):
         super().__init__(parent)
         self.parser = Parser()
         self.individuals: List[Individual] = []
-        self.individuals_model = IndividualsModel([])
+        self.data_context = data_context
 
     def load_link(self, file_path):
         """ Loads filename and parses file """
@@ -39,7 +38,7 @@ class GedcomManager(QObject):
         for element in root_child_elements:
             if isinstance(element, IndividualElement):
                 self.add_individual(element)
-        self.individuals_model = IndividualsModel(self.individuals)
+        self.data_context.individuals_model.update_list(self.individuals)
 
     def add_individual(self, element: IndividualElement):
         """ Adds an individual to the list """
@@ -55,4 +54,4 @@ class GedcomManager(QObject):
     def clear_link(self):
         """ Unset everything """
         self.individuals.clear()
-        self.individuals_model = IndividualsModel([])
+        self.data_context.individuals_model.update_list([])

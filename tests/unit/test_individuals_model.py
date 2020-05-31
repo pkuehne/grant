@@ -23,7 +23,7 @@ def test_column_count_is_nonzero():
     # Given
 
     # When
-    model = IndividualsModel([])
+    model = IndividualsModel()
 
     # Then
     assert model.columnCount() > 0
@@ -124,3 +124,21 @@ def test_autocomplete_name_includes_relevant_data():
     assert indi.last_name in descriptive_name
     assert str(indi.birth_year) in descriptive_name
     assert str(indi.death_year) in descriptive_name
+
+
+def test_update_list_changes_data(qtbot):
+    """ Check the first name """
+    # Given
+    model = IndividualsModel()
+    assert model.rowCount() == 0
+
+    individuals = []
+    indi = Individual("I001", "Test", "Person", 1901, 1951)
+    individuals.append(indi)
+
+    # When
+    with qtbot.waitSignals([model.modelAboutToBeReset, model.modelReset]):
+        model.update_list(individuals)
+
+    # Then
+    assert model.rowCount() == 1
