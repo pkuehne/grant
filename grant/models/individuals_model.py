@@ -16,6 +16,7 @@ class IndividualsModelColumns(IntEnum):
     LAST_NAME = 2
     BIRTH_YEAR = 3
     DEATH_YEAR = 4
+    AUTOCOMPLETE = 5
 
 
 class Individual:
@@ -34,6 +35,12 @@ class Individual:
         self.last_name = last_name
         self.birth_year = birth_year
         self.death_year = death_year
+
+    def autocomplete_name(self):
+        """ The name to appear in autocomplete lists """
+        full_name = f"{self.first_name} {self.last_name}"
+        life_span = f"({self.birth_year}-{self.death_year})"
+        return f"{full_name} {life_span}"
 
 
 class IndividualsModel(QAbstractTableModel):
@@ -78,3 +85,5 @@ class IndividualsModel(QAbstractTableModel):
             return individual.birth_year
         if index.column() == IndividualsModelColumns.DEATH_YEAR:
             return individual.death_year
+        if index.column() == IndividualsModelColumns.AUTOCOMPLETE:
+            return individual.autocomplete_name()

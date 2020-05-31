@@ -94,32 +94,33 @@ def test_data_returns_values_in_individual_record():
     last = model.data(model.index(0, IndividualsModelColumns.LAST_NAME))
     birth = model.data(model.index(0, IndividualsModelColumns.BIRTH_YEAR))
     death = model.data(model.index(0, IndividualsModelColumns.DEATH_YEAR))
-
+    autocomplete = model.data(model.index(0, IndividualsModelColumns.AUTOCOMPLETE))
     # Then
-    assert model.columnCount() == 5
+    assert model.columnCount() == 6
     assert pointer == indi.pointer
     assert first == indi.first_name
     assert last == indi.last_name
     assert birth == indi.birth_year
     assert death == indi.death_year
+    assert autocomplete != ""
 
 
-# def test_data_returns_first_name():
-#     """ Check the first name """
-#     # Given
-#     individuals = []
-#     indi = Individual("I001", "Test", "Person", 1901, 1951)
-#     individuals.append(indi)
+def test_autocomplete_name_includes_relevant_data():
+    """ Check the first name """
+    # Given
+    individuals = []
+    indi = Individual("I001", "Test", "Person", 1901, 1951)
+    individuals.append(indi)
 
-#     model = IndividualsModel(individuals)
-#     index = model.index(0, 1)
+    model = IndividualsModel(individuals)
+    index = model.index(0, IndividualsModelColumns.AUTOCOMPLETE)
 
-#     # When
-#     descriptive_name = model.data(index)
+    # When
+    descriptive_name = model.data(index)
 
-#     # Then
-#     assert indi.pointer not in descriptive_name
-#     assert indi.first_name in descriptive_name
-#     assert indi.last_name in descriptive_name
-#     assert str(indi.birth_year) in descriptive_name
-#     assert str(indi.death_year) in descriptive_name
+    # Then
+    assert indi.pointer not in descriptive_name
+    assert indi.first_name in descriptive_name
+    assert indi.last_name in descriptive_name
+    assert str(indi.birth_year) in descriptive_name
+    assert str(indi.death_year) in descriptive_name
