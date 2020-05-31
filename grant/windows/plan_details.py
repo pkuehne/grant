@@ -25,6 +25,9 @@ class PlanDetails(DetailScreen):
         completer.setModel(self.data_context.individuals_model)
         completer.setCompletionRole(Qt.DisplayRole)
         completer.setCompletionColumn(IndividualsModelColumns.AUTOCOMPLETE)
+        completer.setCaseSensitivity(Qt.CaseInsensitive)
+        completer.setCompletionMode(QCompleter.PopupCompletion)
+        self.ancestor.setCompleter(completer)
 
         self.goal = QTextEdit()
         form_layout.addRow(QLabel("Goal:"), self.goal)
