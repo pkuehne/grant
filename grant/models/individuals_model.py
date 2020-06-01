@@ -39,8 +39,17 @@ class Individual:
     def autocomplete_name(self):
         """ The name to appear in autocomplete lists """
         full_name = f"{self.first_name} {self.last_name}"
-        life_span = f"({self.birth_year}-{self.death_year})"
+        birth_year = self.format_year(self.birth_year)
+        death_year = self.format_year(self.death_year)
+        life_span = f"({birth_year} - {death_year})"
         return f"{full_name} {life_span}"
+
+    @classmethod
+    def format_year(cls, year: int) -> str:
+        """ Formats dates """
+        if year > 0:
+            return str(year)
+        return "?"
 
 
 class IndividualsModel(QAbstractTableModel):
