@@ -27,6 +27,7 @@ class PlanDetails(DetailScreen):
         completer.setCompletionColumn(IndividualsModelColumns.AUTOCOMPLETE)
         completer.setCaseSensitivity(Qt.CaseInsensitive)
         completer.setCompletionMode(QCompleter.PopupCompletion)
+        completer.setFilterMode(Qt.MatchContains)
         self.ancestor.setCompleter(completer)
 
         self.goal = QTextEdit()
