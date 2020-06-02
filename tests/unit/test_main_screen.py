@@ -6,9 +6,6 @@ import pytest
 from PyQt5.QtCore import QModelIndex
 from grant.windows.data_context import DataContext
 from grant.windows.main_screen import MainScreen
-from grant.models.tree_model import TreeModel
-
-# from grant.windows.base_screens import DetailScreen
 from grant.research import ResearchProject
 
 
