@@ -104,3 +104,20 @@ def test_clear_link_removes_caches():
     # Then
     assert len(manager.individuals) == 0
     assert len(manager.sources) == 0
+
+
+def test_refresh_link_reloads_file():
+    """ When the link is removed, the caches should be cleared too """
+    # Given
+    manager = GedcomManager(DataContext())
+    manager.individuals.append(Individual("IND01", "Test", "User", 1900, 1999))
+    manager.sources.append(Source("SOU01", "Test", "User", "S/O", "ABB"))
+
+    # When
+    manager.refresh_link("tests/unit/test.ged")
+
+    # Then
+    assert len(manager.individuals) == 2
+    assert manager.individuals[0].pointer == "I0000"
+    assert len(manager.sources) == 2
+    assert manager.sources[0].pointer == "S0000"

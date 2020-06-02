@@ -80,3 +80,8 @@ class GedcomManager(QObject):
         self.sources.clear()
         self.data_context.individuals_model.update_list([])
         self.data_context.sources_model.update_list([])
+
+    def refresh_link(self, file_path: str):
+        """ Refresh caches from gedcom file """
+        self.clear_link()
+        self.load_link(file_path)

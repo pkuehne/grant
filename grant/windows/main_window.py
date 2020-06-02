@@ -104,6 +104,11 @@ class MainWindow(QMainWindow):
         self.menu_bar.gedcom_unlink_action.triggered.connect(
             self.project_manager.unlink_gedcom_file
         )
+        self.menu_bar.gedcom_refresh_action.triggered.connect(
+            lambda: self.gedcom_manager.refresh_link(
+                self.project_manager.project.gedcom
+            )
+        )
 
         self.menu_bar.view_project_action.triggered.connect(
             lambda: self.main_screen.change_selection_screen("tree")
@@ -123,6 +128,10 @@ class MainWindow(QMainWindow):
                 self.project_manager.project is None
             )
             self.menu_bar.gedcom_unlink_action.setDisabled(
+                self.project_manager.project is None
+                or not self.project_manager.project.has_gedcom()
+            )
+            self.menu_bar.gedcom_refresh_action.setDisabled(
                 self.project_manager.project is None
                 or not self.project_manager.project.has_gedcom()
             )

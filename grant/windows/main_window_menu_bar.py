@@ -53,10 +53,13 @@ class MenuBar(QMenuBar):
         self.gedcom_link_action.setDisabled(True)
         self.gedcom_unlink_action = QAction("&Unlink Gedcom File", self)
         self.gedcom_unlink_action.setDisabled(True)
+        self.gedcom_refresh_action = QAction("&Reload Gedcom File", self)
+        self.gedcom_refresh_action.setDisabled(True)
 
         gedcom_menu = self.addMenu("&Gedcom")
         gedcom_menu.addAction(self.gedcom_link_action)
         gedcom_menu.addAction(self.gedcom_unlink_action)
+        gedcom_menu.addAction(self.gedcom_refresh_action)
 
     def setup_view_menu(self):
         """ Create the View menu """
