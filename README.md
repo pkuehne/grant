@@ -4,21 +4,23 @@
 
 Grant is a tool for genealogists to organize their research. It is based on the idea of [Research Logs](https://www.familysearch.org/wiki/en/Research_Logs), where each ancestor (or any family member really) is recorded with the sources that have been searched and the result of those searches along with any documents created.
 
-Try try it out, head to the [Releases](https://github.com/pkuehne/grant/releases) page.
+To try it out, head to the [Releases](https://github.com/pkuehne/grant/releases) page.
 
 ## Features
 
 - Store your research in a YAML file - no proprietary lock-in and easy enough to read with notepad
 - Divides research up into Plans each with multiple Tasks to track specific sources
 - Filter Plans/Tasks by keywords, status, etc
+- Autocomplete names of ancestors and sources from linked gedcom file
 
 ## Coming Soon
 
-- Link to your gedcom file to link Plans to individual/families/locations/etc
 - Filter Plans/Tasks by linked individuals/families/locations/etc
-- Keep track of Correspondence
+- Keep track of correspondence with repositories and archives
 - Store your research as a Note inside your gedcom file and never lose it
 - Print the research logs for hard-copy storage
+
+See more on the [Feature Ideas](https://github.com/pkuehne/grant/projects/1) board.
 
 # Development
 
