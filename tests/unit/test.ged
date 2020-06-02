@@ -2,8 +2,8 @@
 1 SOUR Gramps
 2 VERS GrampsAIO64-5.1.2-1
 2 NAME Gramps
-1 DATE 21 MAY 2020
-2 TIME 14:40:48
+1 DATE 2 JUN 2020
+2 TIME 10:04:19
 1 SUBM @SUBM@
 1 FILE C:\Development\grant\test_data\test.ged
 1 COPR Copyright (c) 2020 .
@@ -37,5 +37,21 @@
 1 CHAN
 2 DATE 21 MAY 2020
 3 TIME 13:38:00
+0 @S0000@ SOUR
+1 TITL Grantham Church Books 1705-1767
+1 AUTH Grantham Diocese
+1 PUBL Ancestry.com
+1 ABBR GCB17
+1 CHAN
+2 DATE 2 JUN 2020
+3 TIME 09:03:53
+0 @S0001@ SOUR
+1 TITL Arundel Church Books 1734-1776
+1 AUTH Grantham Diocese
+1 PUBL Ancestry.com
+1 ABBR ACB171
+1 CHAN
+2 DATE 2 JUN 2020
+3 TIME 09:04:08
 0 @N0000@ NOTE Add a few more people with interesting names
 0 TRLR
