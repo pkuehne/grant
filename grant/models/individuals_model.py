@@ -85,15 +85,11 @@ class IndividualsModel(QAbstractTableModel):
             return None
         individual = self.individuals[index.row()]
 
-        if index.column() == IndividualsModelColumns.POINTER:
-            return individual.pointer
-        if index.column() == IndividualsModelColumns.FIRST_NAME:
-            return individual.first_name
-        if index.column() == IndividualsModelColumns.LAST_NAME:
-            return individual.last_name
-        if index.column() == IndividualsModelColumns.BIRTH_YEAR:
-            return individual.birth_year
-        if index.column() == IndividualsModelColumns.DEATH_YEAR:
-            return individual.death_year
-        if index.column() == IndividualsModelColumns.AUTOCOMPLETE:
-            return individual.autocomplete_name()
+        return {
+            IndividualsModelColumns.POINTER: individual.pointer,
+            IndividualsModelColumns.FIRST_NAME: individual.first_name,
+            IndividualsModelColumns.LAST_NAME: individual.last_name,
+            IndividualsModelColumns.BIRTH_YEAR: individual.birth_year,
+            IndividualsModelColumns.DEATH_YEAR: individual.death_year,
+            IndividualsModelColumns.AUTOCOMPLETE: individual.autocomplete_name(),
+        }[index.column()]

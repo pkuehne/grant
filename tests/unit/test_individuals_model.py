@@ -142,3 +142,25 @@ def test_update_list_changes_data(qtbot):
 
     # Then
     assert model.rowCount() == 1
+
+
+def test_format_year_returns_year_stringified():
+    """ When format_year is called with an invalid year, some placeholder is returned """
+    # Given
+
+    # When
+    text = Individual.format_year(1967)
+
+    # Then
+    assert text == "1967"
+
+
+def test_format_year_returns_placeholder_for_invalid_year():
+    """ When format_year is called with an invalid year, some placeholder is returned """
+    # Given
+
+    # When
+    text = Individual.format_year(-200)
+
+    # Then
+    assert text == "?"
