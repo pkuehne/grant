@@ -1,8 +1,9 @@
-pyqt5
-pytest
-pytest-qt
-pytest-cov
-pyyaml
-pyinstaller
-pylint
-black
+pyqt5==5.14.2
+pytest==5.4.2
+pytest-qt==3.3.0
+pytest-cov==2.8.1
+pyyaml==5.3.1
+pyinstaller==3.6
+pylint==2.5.2
+black==19.10b0
+python-gedcom==1.0.0

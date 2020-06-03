@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QStackedWidget
 from PyQt5.QtWidgets import QHBoxLayout
 
+from grant.windows.data_context import DataContext
 from .tree_selection_screen import TreeSelectionScreen
 from .filter_selection_screen import FilterSelectionScreen
 from .plan_details import PlanDetails
@@ -14,9 +15,9 @@ from .base_screens import DetailScreen
 class MainScreen(QWidget):
     """ The main selection and display screen """
 
-    def __init__(self, parent, data_model):
+    def __init__(self, parent, data_context: DataContext):
         super().__init__(parent)
-        self.data_model = data_model
+        self.data_context = data_context
         self.selection_stack = None
         self.detail_stack = None
         self.screens = {}
@@ -29,10 +30,10 @@ class MainScreen(QWidget):
         """ Set up the screens for selection """
         self.selection_stack = QStackedWidget()
 
-        self.screens["tree"] = TreeSelectionScreen(self.data_model)
+        self.screens["tree"] = TreeSelectionScreen(self.data_context)
         self.selection_stack.addWidget(self.screens["tree"])
 
-        self.screens["filter"] = FilterSelectionScreen(self.data_model)
+        self.screens["filter"] = FilterSelectionScreen(self.data_context)
         self.selection_stack.addWidget(self.screens["filter"])
 
         self.screens["tree"].item_selected.connect(self.selection_changed)
@@ -42,11 +43,11 @@ class MainScreen(QWidget):
         """ Set up the screens for detail views """
         self.detail_stack = QStackedWidget()
 
-        self.screens["blank"] = DetailScreen(self.data_model)
+        self.screens["blank"] = DetailScreen(self.data_context)
         self.detail_stack.addWidget(self.screens["blank"])
-        self.screens["plan"] = PlanDetails(self.data_model)
+        self.screens["plan"] = PlanDetails(self.data_context)
         self.detail_stack.addWidget(self.screens["plan"])
-        self.screens["task"] = TaskDetails(self.data_model)
+        self.screens["task"] = TaskDetails(self.data_context)
         self.detail_stack.addWidget(self.screens["task"])
 
         self.detail_stack.setCurrentWidget(self.screens["blank"])
@@ -85,6 +86,6 @@ class MainScreen(QWidget):
 
     def set_project(self, project):
         """ Updates all the screens with the new project information """
-        self.data_model.set_project(project)
+        self.data_context.data_model.set_project(project)
         for screen in self.screens.values():
             screen.update_project(project)

@@ -7,13 +7,14 @@ from PyQt5.QtGui import QIcon
 
 # from PyQt5.QtCore import pyqtSignal
 from grant.research import ResearchProject
-from grant.models.tree_model import TreeModel
+from grant.windows.gedcom_manager import GedcomManager
+from grant.windows.data_context import DataContext
 from .main_window_menu_bar import MenuBar
 from .main_screen import MainScreen
 from .project_file_manager import ProjectFileManager
 
 TEST_DATA = """
-gedcom: none
+gedcom:
 plans:
 - goal: Identify any bastard children
   tasks:
@@ -38,9 +39,10 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.data_model = TreeModel()
+        self.data_context = DataContext()
         self.main_screen = None
         self.project_manager = ProjectFileManager(self)
+        self.gedcom_manager = GedcomManager(self.data_context, self)
         self.setup_window()
         self.setup_window_title()
         self.setup_menubar()
@@ -66,7 +68,7 @@ class MainWindow(QMainWindow):
         """ Sets up all widgets and window stuff """
         self.setWindowIcon(QIcon(":/icons/grant.ico"))
 
-        self.main_screen = MainScreen(self, self.data_model)
+        self.main_screen = MainScreen(self, self.data_context)
         self.setCentralWidget(self.main_screen)
 
         self.project_manager.project_changed.connect(self.project_changed_handler)
@@ -76,9 +78,9 @@ class MainWindow(QMainWindow):
             self.project_manager.needs_saving = True
             self.setup_window_title()
 
-        self.data_model.dataChanged.connect(model_changed)
-        self.data_model.layoutChanged.connect(model_changed)
-        self.data_model.rowsRemoved.connect(model_changed)
+        self.data_context.data_model.dataChanged.connect(model_changed)
+        self.data_context.data_model.layoutChanged.connect(model_changed)
+        self.data_context.data_model.rowsRemoved.connect(model_changed)
 
     def setup_menubar(self):
         """ Sets up the menu bar """
@@ -96,6 +98,17 @@ class MainWindow(QMainWindow):
         self.menu_bar.file_save_project_as_action.triggered.connect(
             self.project_manager.save_project_as
         )
+        self.menu_bar.gedcom_link_action.triggered.connect(
+            self.project_manager.link_gedcom_file
+        )
+        self.menu_bar.gedcom_unlink_action.triggered.connect(
+            self.project_manager.unlink_gedcom_file
+        )
+        self.menu_bar.gedcom_refresh_action.triggered.connect(
+            lambda: self.gedcom_manager.refresh_link(
+                self.project_manager.project.gedcom
+            )
+        )
 
         self.menu_bar.view_project_action.triggered.connect(
             lambda: self.main_screen.change_selection_screen("tree")
@@ -111,12 +124,29 @@ class MainWindow(QMainWindow):
             self.menu_bar.file_save_project_as_action.setDisabled(
                 self.project_manager.project is None
             )
+            self.menu_bar.gedcom_link_action.setDisabled(
+                self.project_manager.project is None
+            )
+            self.menu_bar.gedcom_unlink_action.setDisabled(
+                self.project_manager.project is None
+                or not self.project_manager.project.has_gedcom()
+            )
+            self.menu_bar.gedcom_refresh_action.setDisabled(
+                self.project_manager.project is None
+                or not self.project_manager.project.has_gedcom()
+            )
 
         self.project_manager.project_changed.connect(enable_on_project_load)
 
     def project_changed_handler(self):
         """ Updates all the screens with the new project information """
-        self.data_model.set_project(self.project_manager.project)
+        self.data_context.data_model.set_project(self.project_manager.project)
         self.main_screen.set_project(self.project_manager.project)
-
+        if (
+            self.project_manager.project is None
+            or self.project_manager.project.gedcom == ""
+        ):
+            self.gedcom_manager.clear_link()
+        else:
+            self.gedcom_manager.load_link(self.project_manager.project.gedcom)
         self.setup_window_title()

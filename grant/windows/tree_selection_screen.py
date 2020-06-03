@@ -16,7 +16,7 @@ class TreeSelectionScreen(SelectionScreen):
         super(TreeSelectionScreen, self).__init__(model)
 
         self.tree_view = QTreeView()
-        self.tree_view.setModel(self.data_model)
+        self.tree_view.setModel(self.data_context.data_model)
         self.tree_view.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.tree_view.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tree_view.selectionModel().selectionChanged.connect(self.selection_changed)
@@ -70,17 +70,17 @@ class TreeSelectionScreen(SelectionScreen):
         """ Deletes the selected row if valid """
         if len(self.tree_view.selectedIndexes()) == 0:
             return
-        self.data_model.delete_node(self.tree_view.selectedIndexes()[0])
+        self.data_context.data_model.delete_node(self.tree_view.selectedIndexes()[0])
 
     def add_plan(self):
         """ Create a new plan in the project """
-        self.data_model.add_node(self.data_model.plans_index)
+        self.data_context.data_model.add_node(self.data_context.data_model.plans_index)
 
     def add_task(self):
         """ Create a new task in the project """
         if len(self.tree_view.selectedIndexes()) == 0:
             return
-        self.data_model.add_node(self.tree_view.selectedIndexes()[0])
+        self.data_context.data_model.add_node(self.tree_view.selectedIndexes()[0])
 
     def clear_selection(self):
         """ Called when screen is being switched to """

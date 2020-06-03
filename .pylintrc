@@ -1,2 +1,5 @@
 [MASTER]
 extension-pkg-whitelist=PyQt5
+
+[MESSAGES CONTROL]
+disable=C0330

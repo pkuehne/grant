@@ -83,8 +83,9 @@ def test_save_as_changes_filename(qtbot, tmpdir, monkeypatch):
     project = ResearchProject("")
     manager.project = project
 
-    monkeypatch.setattr(QFileDialog, 'getSaveFileName',
-                        lambda _, __, ___, ____: (str(filename), True))
+    monkeypatch.setattr(
+        QFileDialog, "getSaveFileName", lambda _, __, ___, ____: (str(filename), True)
+    )
 
     # When
     manager.save_project_as()
@@ -98,7 +99,7 @@ def test_save_as_does_nothing_if_no_project_set(qtbot, monkeypatch):
     # Given
     manager = ProjectFileManager()
     qtbot.add_widget(manager)
-    monkeypatch.delattr(QFileDialog, 'getSaveFileName')
+    monkeypatch.delattr(QFileDialog, "getSaveFileName")
 
     # When
     manager.save_project_as()
@@ -116,8 +117,9 @@ def test_save_as_aborts_on_empty_filename(qtbot, monkeypatch):
     project = ResearchProject(filename)
     manager.project = project
 
-    monkeypatch.setattr(QFileDialog, 'getSaveFileName',
-                        lambda _, __, ___, ____: ("", True))
+    monkeypatch.setattr(
+        QFileDialog, "getSaveFileName", lambda _, __, ___, ____: ("", True)
+    )
 
     # When
     with qtbot.assertNotEmitted(manager.project_saved):
@@ -133,9 +135,8 @@ def test_create_new_confirms_discard_and_aborts(qtbot, monkeypatch):
     manager = ProjectFileManager()
     manager.needs_saving = True
     qtbot.add_widget(manager)
-    monkeypatch.delattr(QFileDialog, 'getSaveFileName')
-    monkeypatch.setattr(manager.discard_dialog, 'exec_',
-                        lambda: QMessageBox.Cancel)
+    monkeypatch.delattr(QFileDialog, "getSaveFileName")
+    monkeypatch.setattr(manager.project_discard, "exec_", lambda: QMessageBox.Cancel)
 
     # When
     with qtbot.assertNotEmitted(manager.project_saved):
@@ -151,10 +152,10 @@ def test_create_new_saves_after_confirming(qtbot, monkeypatch, tmpdir):
     filename = tmpdir.join("test_save_resets_need_saving.txt")
     manager = ProjectFileManager()
     manager.needs_saving = True
-    monkeypatch.setattr(manager.discard_dialog, 'exec_',
-                        lambda: QMessageBox.Ok)
-    monkeypatch.setattr(QFileDialog, 'getSaveFileName',
-                        lambda _, __, ___, ____: (str(filename), False))
+    monkeypatch.setattr(manager.project_discard, "exec_", lambda: QMessageBox.Ok)
+    monkeypatch.setattr(
+        QFileDialog, "getSaveFileName", lambda _, __, ___, ____: (str(filename), False)
+    )
 
     # When
     with qtbot.waitSignals([manager.project_saved]):
@@ -169,8 +170,9 @@ def test_create_new_aborts_empty_filename(qtbot, monkeypatch):
     """ When creating, an empty filename will abort the creation """
     # Given
     manager = ProjectFileManager()
-    monkeypatch.setattr(QFileDialog, 'getSaveFileName',
-                        lambda _, __, ___, ____: ("", False))
+    monkeypatch.setattr(
+        QFileDialog, "getSaveFileName", lambda _, __, ___, ____: ("", False)
+    )
 
     # When
     with qtbot.assertNotEmitted(manager.project_saved):
@@ -185,8 +187,9 @@ def test_create_new_creates_new_project_with_signal(qtbot, monkeypatch, tmpdir):
     # Given
     filename = tmpdir.join("test_save_resets_need_saving.txt")
     manager = ProjectFileManager()
-    monkeypatch.setattr(QFileDialog, 'getSaveFileName',
-                        lambda _, __, ___, ____: (str(filename), False))
+    monkeypatch.setattr(
+        QFileDialog, "getSaveFileName", lambda _, __, ___, ____: (str(filename), False)
+    )
 
     # When
     with qtbot.waitSignals([manager.project_saved]):
@@ -203,9 +206,8 @@ def test_open_confirms_discard_and_aborts(qtbot, monkeypatch):
     manager = ProjectFileManager()
     manager.needs_saving = True
     qtbot.add_widget(manager)
-    monkeypatch.delattr(QFileDialog, 'getOpenFileName')
-    monkeypatch.setattr(manager.discard_dialog, 'exec_',
-                        lambda: QMessageBox.Cancel)
+    monkeypatch.delattr(QFileDialog, "getOpenFileName")
+    monkeypatch.setattr(manager.project_discard, "exec_", lambda: QMessageBox.Cancel)
 
     # When
     with qtbot.assertNotEmitted(manager.project_changed):
@@ -222,10 +224,10 @@ def test_open_saves_after_confirming(qtbot, monkeypatch, tmpdir):
     filename.write("gedcom: none\n" + "plans: []\n" + "version: '1.0'")
     manager = ProjectFileManager()
     manager.needs_saving = True
-    monkeypatch.setattr(manager.discard_dialog, 'exec_',
-                        lambda: QMessageBox.Ok)
-    monkeypatch.setattr(QFileDialog, 'getOpenFileName',
-                        lambda _, __, ___, ____: (str(filename), False))
+    monkeypatch.setattr(manager.project_discard, "exec_", lambda: QMessageBox.Ok)
+    monkeypatch.setattr(
+        QFileDialog, "getOpenFileName", lambda _, __, ___, ____: (str(filename), False)
+    )
 
     # When
     with qtbot.waitSignals([manager.project_changed]):
@@ -240,8 +242,9 @@ def test_open_aborts_empty_filename(qtbot, monkeypatch):
     """ When creating, an empty filename will abort the creation """
     # Given
     manager = ProjectFileManager()
-    monkeypatch.setattr(QFileDialog, 'getOpenFileName',
-                        lambda _, __, ___, ____: ("", False))
+    monkeypatch.setattr(
+        QFileDialog, "getOpenFileName", lambda _, __, ___, ____: ("", False)
+    )
 
     # When
     with qtbot.assertNotEmitted(manager.project_changed):
@@ -257,8 +260,9 @@ def test_open_creates_new_project_with_signal(qtbot, monkeypatch, tmpdir):
     filename = tmpdir.join("test_save_resets_need_saving.txt")
     filename.write("gedcom: none\n" + "plans: []\n" + "version: '1.0'")
     manager = ProjectFileManager()
-    monkeypatch.setattr(QFileDialog, 'getOpenFileName',
-                        lambda _, __, ___, ____: (str(filename), False))
+    monkeypatch.setattr(
+        QFileDialog, "getOpenFileName", lambda _, __, ___, ____: (str(filename), False)
+    )
 
     # When
     with qtbot.waitSignals([manager.project_changed]):
@@ -267,3 +271,153 @@ def test_open_creates_new_project_with_signal(qtbot, monkeypatch, tmpdir):
     # Then
     assert manager.project is not None
     assert manager.project.filename == filename
+
+
+def test_link_gedcom_does_nothing_if_no_project_set(monkeypatch, qtbot):
+    """ If the project is None, no gedcom link should be done """
+    # Given
+    manager = ProjectFileManager()
+    monkeypatch.delattr(QFileDialog, "getOpenFileName")
+
+    # when
+    with qtbot.assertNotEmitted(manager.project_changed):
+        manager.link_gedcom_file()
+
+    # Then
+    assert manager.project is None
+
+
+def test_link_gedcom_discard_cancel_stops(monkeypatch, qtbot):
+    """ When a link already exists, ask the user to overwrite it and stop on cancel """
+    # Given
+    manager = ProjectFileManager()
+    manager.project = ResearchProject("")
+    manager.project.gedcom = "Foo"
+    monkeypatch.delattr(QFileDialog, "getOpenFileName")
+    monkeypatch.setattr(manager.gedcom_discard, "exec_", lambda: QMessageBox.Cancel)
+
+    # when
+    with qtbot.assertNotEmitted(manager.project_changed):
+        manager.link_gedcom_file()
+
+    # Then
+    assert manager.project.gedcom == "Foo"
+
+
+def test_link_gedcom_discard_ok_proceeds(monkeypatch, qtbot):
+    """ When a link already exists, ask the user to overwrite it and continue on ok """
+    # Given
+    manager = ProjectFileManager()
+    manager.project = ResearchProject("")
+    manager.project.gedcom = "Bar"
+    file_name = "Foo"
+    monkeypatch.setattr(manager.gedcom_discard, "exec_", lambda: QMessageBox.Ok)
+    monkeypatch.setattr(
+        QFileDialog, "getOpenFileName", lambda _, __, ___, ____: (file_name, True)
+    )
+
+    # When
+    with qtbot.waitSignals([manager.project_changed]):
+        manager.link_gedcom_file()
+
+    # Then
+    assert manager.project.gedcom == file_name
+    assert manager.needs_saving is True
+
+
+def test_link_gedcom_sets_selected_link(monkeypatch, qtbot):
+    """ When a new link is selected it should be set on the project """
+    # Given
+    manager = ProjectFileManager()
+    manager.project = ResearchProject("")
+    file_name = "Foo"
+    monkeypatch.setattr(
+        QFileDialog, "getOpenFileName", lambda _, __, ___, ____: (file_name, True)
+    )
+
+    # When
+    with qtbot.waitSignals([manager.project_changed]):
+        manager.link_gedcom_file()
+
+    # Then
+    assert manager.project.gedcom == file_name
+    assert manager.needs_saving is True
+
+
+def test_link_gedcom_does_nothing_on_cancel(monkeypatch, qtbot):
+    """ When the fileopen dialog is cancelled, the gedcom path is not changed """
+    # Given
+    manager = ProjectFileManager()
+    manager.project = ResearchProject("")
+    monkeypatch.setattr(
+        QFileDialog, "getOpenFileName", lambda _, __, ___, ____: ("", False)
+    )
+
+    # When
+    with qtbot.assertNotEmitted(manager.project_changed):
+        manager.link_gedcom_file()
+
+    # Then
+    assert manager.project.gedcom == ""
+
+
+def test_unlink_gedcom_does_nothing_if_no_project_set(qtbot):
+    """ If the project is None, no gedcom link should be removed """
+    # Given
+    manager = ProjectFileManager()
+    # monkeypatch.delattr(manager.gedcom_discard, "exec_")
+
+    # when
+    with qtbot.assertNotEmitted(manager.project_changed):
+        manager.unlink_gedcom_file()
+
+    # Then
+    assert manager.project is None
+
+
+def test_unlink_gedcom_does_nothing_if_no_gedcom_link_set(qtbot):
+    """ If there is no gedcom link, nothing should happen """
+    # Given
+    manager = ProjectFileManager()
+    manager.project = ResearchProject("")
+    # monkeypatch.delattr(manager.gedcom_discard, "exec_")
+
+    # when
+    with qtbot.assertNotEmitted(manager.project_changed):
+        manager.unlink_gedcom_file()
+
+    # Then
+    assert manager.project.gedcom == ""
+
+
+def test_unlink_discard_cancel_makes_no_change(monkeypatch, qtbot):
+    """ When a link exists and the confirmation dialog cancels, nothing should happen """
+    # Given
+    manager = ProjectFileManager()
+    manager.project = ResearchProject("")
+    manager.project.gedcom = "Foo"
+    monkeypatch.setattr(manager.gedcom_discard, "exec_", lambda: QMessageBox.Cancel)
+
+    # when
+    with qtbot.assertNotEmitted(manager.project_changed):
+        manager.unlink_gedcom_file()
+
+    # Then
+    assert manager.project.gedcom == "Foo"
+
+
+def test_unlink_discard_ok_removes_link(monkeypatch, qtbot):
+    """ When a link exists and the confirmation dialog accepted, the link is removed """
+    # Given
+    manager = ProjectFileManager()
+    manager.project = ResearchProject("")
+    manager.project.gedcom = "Foo"
+    monkeypatch.setattr(manager.gedcom_discard, "exec_", lambda: QMessageBox.Ok)
+
+    # when
+    with qtbot.waitSignals([manager.project_changed]):
+        manager.unlink_gedcom_file()
+
+    # Then
+    assert manager.project.gedcom == ""
+    assert manager.needs_saving is True
