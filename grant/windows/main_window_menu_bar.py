@@ -27,6 +27,10 @@ class MenuBar(QMenuBar):
         self.file_open_project_action = QAction("&Open Project", self)
         self.file_open_project_action.setShortcut("CTRL+O")
 
+        self.file_project_overview_action = QAction("&Project Overview", self)
+        self.file_project_overview_action.setShortcut("CTRL+P")
+        self.file_project_overview_action.setDisabled(True)
+
         self.file_save_project_action = QAction("&Save Project", self)
         self.file_save_project_action.setShortcut("CTRL+S")
         self.file_save_project_action.setDisabled(True)
@@ -42,6 +46,7 @@ class MenuBar(QMenuBar):
         file_menu = self.addMenu("&File")
         file_menu.addAction(self.file_create_new_action)
         file_menu.addAction(self.file_open_project_action)
+        file_menu.addAction(self.file_project_overview_action)
         file_menu.addAction(self.file_save_project_action)
         file_menu.addAction(self.file_save_project_as_action)
         file_menu.addSeparator()
