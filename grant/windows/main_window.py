@@ -4,11 +4,10 @@ import os
 import yaml
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtGui import QIcon
-
-# from PyQt5.QtCore import pyqtSignal
 from grant.research import ResearchProject
 from grant.windows.gedcom_manager import GedcomManager
 from grant.windows.data_context import DataContext
+from grant.windows.project_overview_dialog import ProjectOverviewDialog
 from .main_window_menu_bar import MenuBar
 from .main_screen import MainScreen
 from .project_file_manager import ProjectFileManager
@@ -92,6 +91,11 @@ class MainWindow(QMainWindow):
         self.menu_bar.file_open_project_action.triggered.connect(
             self.project_manager.open_project
         )
+        self.menu_bar.file_project_overview_action.triggered.connect(
+            lambda: ProjectOverviewDialog.show(
+                self.data_context, self.project_manager.project, self
+            )
+        )
         self.menu_bar.file_save_project_action.triggered.connect(
             self.project_manager.save_project
         )
@@ -118,6 +122,9 @@ class MainWindow(QMainWindow):
         )
 
         def enable_on_project_load():
+            self.menu_bar.file_project_overview_action.setDisabled(
+                self.project_manager.project is None
+            )
             self.menu_bar.file_save_project_action.setDisabled(
                 self.project_manager.project is None
             )

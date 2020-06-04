@@ -20,6 +20,8 @@ class ResultDialog(QDialog):
         super(ResultDialog, self).__init__(parent)
         self.result = result
 
+        self.setWindowTitle("Task Result")
+
         form_layout = QFormLayout()
 
         self.status = QComboBox()
