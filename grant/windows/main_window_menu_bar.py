@@ -68,9 +68,9 @@ class MenuBar(QMenuBar):
 
     def setup_view_menu(self):
         """ Create the View menu """
-        self.view_project_action = QAction("Project &Overview", self)
+        self.view_project_action = QAction("&Tree View", self)
 
-        self.view_filter_action = QAction("Tasks Filter", self)
+        self.view_filter_action = QAction("&Filter View", self)
 
         view_menu = self.addMenu("&View")
         view_menu.addAction(self.view_project_action)
