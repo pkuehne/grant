@@ -92,7 +92,9 @@ class MainWindow(QMainWindow):
             self.project_manager.open_project
         )
         self.menu_bar.file_project_overview_action.triggered.connect(
-            lambda: ProjectOverviewDialog.show(self)
+            lambda: ProjectOverviewDialog.show(
+                self.data_context, self.project_manager.project, self
+            )
         )
         self.menu_bar.file_save_project_action.triggered.connect(
             self.project_manager.save_project

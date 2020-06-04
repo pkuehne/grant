@@ -17,15 +17,31 @@ class ProjectOverviewDialog(QDialog):
 
     def __init__(self, context: DataContext, project: ResearchProject, parent=None):
         super(ProjectOverviewDialog, self).__init__(parent)
-        self.context = context
-        self.project = project
 
         self.setWindowIcon(QIcon(":/icons/grant.ico"))
         self.setWindowTitle("Project Overview")
 
         form_layout = QFormLayout()
 
-        form_layout.addRow(QLabel("Filename:"), QLabel("Hello world"))
+        all_tasks = [task for plan in project.plans for task in plan.tasks]
+        form_layout.addRow(QLabel("Project File:"), QLabel(project.filename))
+        form_layout.addRow(QLabel("Total Plans:"), QLabel(str(len(project.plans))))
+        form_layout.addRow(
+            QLabel("Total Tasks:"), QLabel(str(len(all_tasks))),
+        )
+        form_layout.addRow(
+            QLabel("Open Tasks:"),
+            QLabel(str(len([t for t in all_tasks if t.is_open()]))),
+        )
+        form_layout.addRow(QLabel(""), QLabel(""))
+        form_layout.addRow(QLabel("Gedcom Link:"), QLabel(project.gedcom))
+        form_layout.addRow(
+            QLabel("Linked Individuals:"),
+            QLabel(str(context.individuals_model.rowCount())),
+        )
+        form_layout.addRow(
+            QLabel("Linked Sources:"), QLabel(str(context.sources_model.rowCount())),
+        )
 
         button_layout = QHBoxLayout()
         button_layout.addStretch()
@@ -35,12 +51,13 @@ class ProjectOverviewDialog(QDialog):
 
         main_layout = QVBoxLayout()
         main_layout.addLayout(form_layout)
+        main_layout.addStretch()
         main_layout.addLayout(button_layout)
 
         self.setLayout(main_layout)
 
     @classmethod
-    def show(cls, parent):
+    def show(cls, context: DataContext, project: ResearchProject, parent):
         """ Wraps the creation of the dialog, particularly for unit testing """
-        dialog = cls(parent)
+        dialog = cls(context, project, parent)
         dialog.exec_()
