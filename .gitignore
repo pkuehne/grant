@@ -9,3 +9,4 @@ resources.py
 .coverage
 cov_html
 cov.xml
+develop/
