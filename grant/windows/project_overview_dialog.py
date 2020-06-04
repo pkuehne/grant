@@ -1,6 +1,7 @@
 """ Dialog showing an overview of the project """
 
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtWidgets import QFormLayout
@@ -21,10 +22,13 @@ class ProjectOverviewDialog(QDialog):
         self.setWindowIcon(QIcon(":/icons/grant.ico"))
         self.setWindowTitle("Project Overview")
 
+        all_tasks = [task for plan in project.plans for task in plan.tasks]
+
         form_layout = QFormLayout()
 
-        all_tasks = [task for plan in project.plans for task in plan.tasks]
-        form_layout.addRow(QLabel("Project File:"), QLabel(project.filename))
+        self.filename_label = QLabel(project.filename, self)
+        self.filename_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        form_layout.addRow(QLabel("Project File:"), self.filename_label)
         form_layout.addRow(QLabel("Total Plans:"), QLabel(str(len(project.plans))))
         form_layout.addRow(
             QLabel("Total Tasks:"), QLabel(str(len(all_tasks))),
@@ -34,7 +38,10 @@ class ProjectOverviewDialog(QDialog):
             QLabel(str(len([t for t in all_tasks if t.is_open()]))),
         )
         form_layout.addRow(QLabel(""), QLabel(""))
-        form_layout.addRow(QLabel("Gedcom Link:"), QLabel(project.gedcom))
+
+        self.gedcom_label = QLabel(project.gedcom, self)
+        self.gedcom_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        form_layout.addRow(QLabel("Gedcom Link:"), self.gedcom_label)
         form_layout.addRow(
             QLabel("Linked Individuals:"),
             QLabel(str(context.individuals_model.rowCount())),
