@@ -5,6 +5,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtCore import QItemSelectionModel
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QTreeView
+from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QMessageBox
 from grant.windows.main_window import MainWindow
 from grant.windows.result_dialog import ResultDialog
 
@@ -12,9 +14,10 @@ from grant.windows.result_dialog import ResultDialog
 class WindowDriver:
     """ Test class automating common steps """
 
-    def __init__(self, qtbot):
+    def __init__(self, qtbot, monkeypatch):
         self.window = MainWindow()
         self.qtbot = qtbot
+        self.monkeypatch = monkeypatch
 
     def project(self):
         """ Returns a reference to the project """
@@ -32,12 +35,35 @@ class WindowDriver:
 
     def create_new_project(self, filename):
         """ Creates a new project """
+        self.monkeypatch.setattr(
+            QFileDialog,
+            "getSaveFileName",
+            lambda _, __, ___, ____: (str(filename), False),
+        )
         self.window.menu_bar.file_create_new_action.trigger()
         assert self.window.project_manager.project.filename == filename
         assert (
             self.window.main_screen.selection_stack.currentWidget()
             == self.window.main_screen.screens["tree"]
         )
+
+    def link_gedcom(self, filename):
+        """ Creates a new project """
+        self.monkeypatch.setattr(
+            QFileDialog,
+            "getOpenFileName",
+            lambda _, __, ___, ____: (str(filename), False),
+        )
+        self.window.menu_bar.gedcom_link_action.trigger()
+        assert self.window.project_manager.project.gedcom == filename
+
+    def unlink_gedcom(self):
+        """ Unlinks a gedcom again """
+        self.monkeypatch.setattr(
+            self.window.project_manager.gedcom_discard, "exec_", lambda: QMessageBox.Ok
+        )
+        self.window.menu_bar.gedcom_unlink_action.trigger()
+        assert self.window.project_manager.project.gedcom == ""
 
     def add_plan(self):
         """ Adds a new plan """
@@ -106,9 +132,9 @@ class WindowDriver:
 
 
 @pytest.fixture
-def window_driver(qtbot):
+def window_driver(qtbot, monkeypatch):
     """ Create a main_window """
-    driver = WindowDriver(qtbot)
+    driver = WindowDriver(qtbot, monkeypatch)
     qtbot.addWidget(driver.window)
     driver.window.show()
     return driver

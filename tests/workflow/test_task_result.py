@@ -1,9 +1,6 @@
 """ Workflow test for Research Results """
 
-from PyQt5.QtWidgets import QFileDialog
-
-
-def test_research_result(window_driver, monkeypatch, tmpdir):
+def test_research_result(window_driver, tmpdir):
     """
     Test Schedule:
     * Create Main Window
@@ -16,9 +13,6 @@ def test_research_result(window_driver, monkeypatch, tmpdir):
 
     # Setup
     filename = tmpdir.join("new_project.gra").ensure()
-    monkeypatch.setattr(
-        QFileDialog, "getSaveFileName", lambda _, __, ___, ____: (str(filename), False)
-    )
 
     # Create new project
     window_driver.create_new_project(filename)
