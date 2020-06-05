@@ -38,7 +38,10 @@ jobs:
           pip install -r requirements.txt
       - name: Run unit tests
         run: |
-          pytest --cov=grant --cov-report xml:cov.xml --cov-fail-under=90 tests/
+          pytest --cov=grant --cov-report xml:cov.xml --cov-fail-under=90 tests/unit
+      - name: Run workflow tests
+        run: |
+          pytest tests/workflow
       - name: Check for issues
         run: |
           pylint -E grant

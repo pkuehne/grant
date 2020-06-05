@@ -16,6 +16,8 @@ from grant.research import ResearchResult
 class ResultDialog(QDialog):
     """ Edit a given Result """
 
+    dialog_reference = None
+
     def __init__(self, result: ResearchResult, parent=None):
         super(ResultDialog, self).__init__(parent)
         self.result = result
@@ -71,7 +73,9 @@ class ResultDialog(QDialog):
     @classmethod
     def get_result(cls, result, parent):
         """ Wraps the creation of the dialog, particularly for unit testing """
-        dialog = cls(result, parent)
-        dialog.summary.setFocus()
-        dialog.exec_()
-        return dialog.result
+        ResultDialog.dialog_reference = cls(result, parent)
+        ResultDialog.dialog_reference.summary.setFocus()
+        ResultDialog.dialog_reference.exec_()
+        result = ResultDialog.dialog_reference.result
+        ResultDialog.dialog_reference = None
+        return result
