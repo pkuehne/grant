@@ -4,7 +4,6 @@ import pytest
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
-from grant.models.tree_node import TreeNode
 from grant.models.tree_model import TreeModel
 from grant.research import ResearchProject, ResearchPlan, ResearchTask, ResearchResult
 
@@ -25,7 +24,7 @@ def test_new_model_is_empty_by_default(qtmodeltester):
     # Then
     qtmodeltester.check(model)
     assert model.project is None
-    assert model.root_nodes == []
+    assert model.plans_node is None
 
 
 @pytest.mark.parametrize("project", [ResearchProject(""), None])
@@ -42,7 +41,6 @@ def test_set_project_calls_begin_end_reset(project, qtbot, qtmodeltester):
     qtmodeltester.check(model)
 
 
-@pytest.mark.xfail
 def test_set_project_clears_existing_nodes():
     """ Setting valid project should clear existing nodes """
     # Given
@@ -54,8 +52,7 @@ def test_set_project_clears_existing_nodes():
     model.set_project(project)
 
     # Then
-    assert sum(1 for n in model.root_nodes if n.type == "gedcom") == 1
-    assert sum(1 for n in model.root_nodes if n.type == "filename") == 1
+    assert len(model.plans_node.children) == 0
 
 
 def test_index_returns_empty_for_invalid_row():
@@ -106,19 +103,6 @@ def test_delete_calls_signals(qtbot):
     # When
     with qtbot.waitSignals([model.rowsAboutToBeRemoved, model.rowsRemoved]):
         model.delete_node(plan_index)
-
-
-def test_delete_does_not_call_signals_for_invalid_index(qtbot):
-    """ The start and end row removal signals should not be emitted if the index is invalid"""
-    # Given
-    model = TreeModel()
-    node = TreeNode("foo", None, None, 0)
-    model.root_nodes.append(node)
-
-    # When
-    with qtbot.assertNotEmitted(model.rowsAboutToBeRemoved):
-        with qtbot.assertNotEmitted(model.rowsRemoved):
-            model.delete_node(QModelIndex())
 
 
 def test_delete_removes_task():

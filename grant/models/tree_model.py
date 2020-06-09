@@ -13,9 +13,7 @@ class TreeModel(QAbstractItemModel):
     def __init__(self):
         QAbstractItemModel.__init__(self)
         self.project = None
-        self.root_nodes = []
-        self.gedcom_index = QModelIndex()
-        self.filename_index = QModelIndex()
+        self.plans_node = None
         self.plans_index = QModelIndex()
 
     def set_project(self, project):
@@ -23,11 +21,10 @@ class TreeModel(QAbstractItemModel):
         self.beginResetModel()
         self.project: ResearchProject = project
         if self.project is not None:
-            self.root_nodes.clear()
-            self.root_nodes.append(TreeNode("plans", self.project, None, 2))
+            self.plans_node = TreeNode("plans", self.project, None, 2)
         self.endResetModel()
 
-        self.plans_index = self.index(0, 0, QModelIndex())
+        self.plans_index = QModelIndex()
 
     def delete_node(self, index):
         """ Deletes the node at the given index """
@@ -43,7 +40,10 @@ class TreeModel(QAbstractItemModel):
 
     def add_node(self, index):
         """ Adds a new node at the given index """
-        node = index.internalPointer()
+        if not index.isValid():
+            node = self.plans_node
+        else:
+            node = index.internalPointer()
 
         self.layoutAboutToBeChanged.emit()
         self.beginInsertRows(index, len(node.children), len(node.children) + 1)
@@ -58,8 +58,9 @@ class TreeModel(QAbstractItemModel):
         if self.project is None:
             return QModelIndex()
         if not parent.isValid():
-            return self.createIndex(row, column, self.root_nodes[row])
-        node = parent.internalPointer()
+            node = self.plans_node
+        else:
+            node = parent.internalPointer()
         if row >= len(node.children):
             return QModelIndex()
         return self.createIndex(row, column, node.children[row])
@@ -69,21 +70,25 @@ class TreeModel(QAbstractItemModel):
         if not index.isValid():
             return QModelIndex()
         node = index.internalPointer()
-        if node.parent is None:
+        if node.parent is self.plans_node:
             return QModelIndex()
         return self.createIndex(node.parent.row, 0, node.parent)
 
     def hasChildren(self, parent):  # pylint: disable=invalid-name
         """ Return whether this node has any children """
+        if self.project is None:
+            return False
         if not parent.isValid():
-            return len(self.root_nodes) != 0
+            return len(self.plans_node.children) != 0
         node = parent.internalPointer()
         return len(node.children) != 0
 
     def rowCount(self, parent):  # pylint: disable=invalid-name
         """ Return number of children for the given index object """
+        if self.project is None:
+            return 0
         if not parent.isValid():
-            return len(self.root_nodes)
+            return len(self.plans_node.children)
         node = parent.internalPointer()
         return len(node.children)
 
