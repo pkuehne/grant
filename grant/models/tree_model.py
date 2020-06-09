@@ -24,14 +24,10 @@ class TreeModel(QAbstractItemModel):
         self.project: ResearchProject = project
         if self.project is not None:
             self.root_nodes.clear()
-            self.root_nodes.append(TreeNode("gedcom", self.project.gedcom, None, 0))
-            self.root_nodes.append(TreeNode("filename", self.project.filename, None, 1))
             self.root_nodes.append(TreeNode("plans", self.project, None, 2))
         self.endResetModel()
 
-        self.gedcom_index = self.index(0, 0, QModelIndex())
-        self.filename_index = self.index(1, 0, QModelIndex())
-        self.plans_index = self.index(2, 0, QModelIndex())
+        self.plans_index = self.index(0, 0, QModelIndex())
 
     def delete_node(self, index):
         """ Deletes the node at the given index """
