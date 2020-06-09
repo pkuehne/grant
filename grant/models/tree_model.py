@@ -94,17 +94,7 @@ class TreeModel(QAbstractItemModel):
 
     def columnCount(self, _):  # pylint: disable=invalid-name, no-self-use
         """ Number of columns to display """
-        return 1
-
-    def data_column(self, node, column):
-        """ Returns the data that this node should show in the given column """
-        if column == 0:
-            return node.get_text()
-        if column == 1:
-            return node.get_description()
-        if column == 2:
-            return node.get_result()
-        return None
+        return 3
 
     def data(self, index, role):  # pylint: disable= no-self-use
         """ Return the data associated with the specific index for the role """
@@ -112,7 +102,12 @@ class TreeModel(QAbstractItemModel):
             return None
         node = index.internalPointer()
         if role in [Qt.DisplayRole, Qt.EditRole]:
-            return self.data_column(node, index.column())
+            return {
+                0: node.get_text(),
+                1: node.get_description(),
+                2: node.get_result(),
+            }[index.column()]
+            # return self.data_column(node, index.column())
         if role == Qt.DecorationRole:
             return node.get_icon()
         if role == Qt.FontRole:
