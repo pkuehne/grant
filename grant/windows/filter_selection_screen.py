@@ -47,6 +47,8 @@ class FilterSelectionScreen(SelectionScreen):
         self.table_view.selectionModel().selectionChanged.connect(
             self.selection_changed
         )
+        self.table_view.hideColumn(1)
+        self.table_view.hideColumn(2)
 
         layout = QVBoxLayout()
         layout.addLayout(filter_widgets)

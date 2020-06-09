@@ -13,9 +13,7 @@ class TreeModel(QAbstractItemModel):
     def __init__(self):
         QAbstractItemModel.__init__(self)
         self.project = None
-        self.root_nodes = []
-        self.gedcom_index = QModelIndex()
-        self.filename_index = QModelIndex()
+        self.plans_node = None
         self.plans_index = QModelIndex()
 
     def set_project(self, project):
@@ -23,15 +21,10 @@ class TreeModel(QAbstractItemModel):
         self.beginResetModel()
         self.project: ResearchProject = project
         if self.project is not None:
-            self.root_nodes.clear()
-            self.root_nodes.append(TreeNode("gedcom", self.project.gedcom, None, 0))
-            self.root_nodes.append(TreeNode("filename", self.project.filename, None, 1))
-            self.root_nodes.append(TreeNode("plans", self.project, None, 2))
+            self.plans_node = TreeNode("plans", self.project, None, 2)
         self.endResetModel()
 
-        self.gedcom_index = self.index(0, 0, QModelIndex())
-        self.filename_index = self.index(1, 0, QModelIndex())
-        self.plans_index = self.index(2, 0, QModelIndex())
+        self.plans_index = QModelIndex()
 
     def delete_node(self, index):
         """ Deletes the node at the given index """
@@ -47,7 +40,10 @@ class TreeModel(QAbstractItemModel):
 
     def add_node(self, index):
         """ Adds a new node at the given index """
-        node = index.internalPointer()
+        if not index.isValid():
+            node = self.plans_node
+        else:
+            node = index.internalPointer()
 
         self.layoutAboutToBeChanged.emit()
         self.beginInsertRows(index, len(node.children), len(node.children) + 1)
@@ -62,8 +58,9 @@ class TreeModel(QAbstractItemModel):
         if self.project is None:
             return QModelIndex()
         if not parent.isValid():
-            return self.createIndex(row, column, self.root_nodes[row])
-        node = parent.internalPointer()
+            node = self.plans_node
+        else:
+            node = parent.internalPointer()
         if row >= len(node.children):
             return QModelIndex()
         return self.createIndex(row, column, node.children[row])
@@ -73,37 +70,31 @@ class TreeModel(QAbstractItemModel):
         if not index.isValid():
             return QModelIndex()
         node = index.internalPointer()
-        if node.parent is None:
+        if node.parent is self.plans_node:
             return QModelIndex()
         return self.createIndex(node.parent.row, 0, node.parent)
 
     def hasChildren(self, parent):  # pylint: disable=invalid-name
         """ Return whether this node has any children """
+        if self.project is None:
+            return False
         if not parent.isValid():
-            return len(self.root_nodes) != 0
+            return len(self.plans_node.children) != 0
         node = parent.internalPointer()
         return len(node.children) != 0
 
     def rowCount(self, parent):  # pylint: disable=invalid-name
         """ Return number of children for the given index object """
+        if self.project is None:
+            return 0
         if not parent.isValid():
-            return len(self.root_nodes)
+            return len(self.plans_node.children)
         node = parent.internalPointer()
         return len(node.children)
 
     def columnCount(self, _):  # pylint: disable=invalid-name, no-self-use
         """ Number of columns to display """
-        return 1
-
-    def data_column(self, node, column):
-        """ Returns the data that this node should show in the given column """
-        if column == 0:
-            return node.get_text()
-        if column == 1:
-            return node.get_description()
-        if column == 2:
-            return node.get_result()
-        return None
+        return 3
 
     def data(self, index, role):  # pylint: disable= no-self-use
         """ Return the data associated with the specific index for the role """
@@ -111,7 +102,12 @@ class TreeModel(QAbstractItemModel):
             return None
         node = index.internalPointer()
         if role in [Qt.DisplayRole, Qt.EditRole]:
-            return self.data_column(node, index.column())
+            return {
+                0: node.get_text(),
+                1: node.get_description(),
+                2: node.get_result(),
+            }[index.column()]
+            # return self.data_column(node, index.column())
         if role == Qt.DecorationRole:
             return node.get_icon()
         if role == Qt.FontRole:

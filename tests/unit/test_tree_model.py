@@ -4,7 +4,6 @@ import pytest
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
-from grant.models.tree_node import TreeNode
 from grant.models.tree_model import TreeModel
 from grant.research import ResearchProject, ResearchPlan, ResearchTask, ResearchResult
 
@@ -17,6 +16,15 @@ def test_model_checker(qtmodeltester):
     qtmodeltester.check(model)
 
 
+def test_only_column_count_returns_correct_number():
+    """ Checks that the column count is correct """
+    # Given
+    model = TreeModel()
+
+    # Then
+    assert model.columnCount(QModelIndex()) == 3
+
+
 def test_new_model_is_empty_by_default(qtmodeltester):
     """ Empty model should not have a project set and no nodes """
     # Given
@@ -25,7 +33,7 @@ def test_new_model_is_empty_by_default(qtmodeltester):
     # Then
     qtmodeltester.check(model)
     assert model.project is None
-    assert model.root_nodes == []
+    assert model.plans_node is None
 
 
 @pytest.mark.parametrize("project", [ResearchProject(""), None])
@@ -53,8 +61,7 @@ def test_set_project_clears_existing_nodes():
     model.set_project(project)
 
     # Then
-    assert sum(1 for n in model.root_nodes if n.type == "gedcom") == 1
-    assert sum(1 for n in model.root_nodes if n.type == "filename") == 1
+    assert len(model.plans_node.children) == 0
 
 
 def test_index_returns_empty_for_invalid_row():
@@ -66,10 +73,9 @@ def test_index_returns_empty_for_invalid_row():
     project.plans.append(plan)
 
     model.set_project(project)
-    plans_index = model.index(2, 0, QModelIndex())
 
     # When
-    plan_index = model.index(10, 0, plans_index)
+    plan_index = model.index(10, 0, model.plans_index)
 
     # Then
     assert plan_index.isValid() is False
@@ -84,13 +90,63 @@ def test_index_returns_index_for_valid_row():
     project.plans.append(plan)
 
     model.set_project(project)
-    plans_index = model.index(2, 0, QModelIndex())
 
     # When
-    plan_index = model.index(0, 0, plans_index)
+    plan_index = model.index(0, 0, model.plans_index)
 
     # Then
     assert plan_index.isValid() is True
+
+
+def test_has_children_handles_no_project_set():
+    """ When no project is set, hasChildren should return False """
+    # Given
+    model = TreeModel()
+
+    # Then
+    assert model.hasChildren(QModelIndex()) is False
+
+
+def test_has_children_handles_parent_index():
+    """ When no project is set, hasChildren should return False """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    project.add_plan().add_task()
+    model.set_project(project)
+
+    # Then
+    assert model.hasChildren(QModelIndex()) is True
+
+
+def test_has_children_handles_plan_index():
+    """ When no project is set, hasChildren should return False """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    project.add_plan().add_task()
+    model.set_project(project)
+
+    # Then
+    assert model.hasChildren(model.index(0, 0, model.plans_index)) is True
+
+
+def test_delete_does_nothing_on_invalid_index(qtbot):
+    """ Delete removes task from underlying data structure """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    project.add_plan().add_task()
+    model.set_project(project)
+
+    # When
+    with qtbot.assertNotEmitted(model.rowsAboutToBeRemoved):
+        with qtbot.assertNotEmitted(model.rowsRemoved):
+            model.delete_node(QModelIndex())
+
+    # Then
+    assert len(project.plans) == 1
+    assert len(project.plans[0].tasks) == 1
 
 
 def test_delete_calls_signals(qtbot):
@@ -102,25 +158,11 @@ def test_delete_calls_signals(qtbot):
     project.plans.append(plan)
 
     model.set_project(project)
-    plans_index = model.index(2, 0, QModelIndex())
-    plan_index = model.index(0, 0, plans_index)
+    plan_index = model.index(0, 0, model.plans_index)
 
     # When
     with qtbot.waitSignals([model.rowsAboutToBeRemoved, model.rowsRemoved]):
         model.delete_node(plan_index)
-
-
-def test_delete_does_not_call_signals_for_invalid_index(qtbot):
-    """ The start and end row removal signals should not be emitted if the index is invalid"""
-    # Given
-    model = TreeModel()
-    node = TreeNode("foo", None, None, 0)
-    model.root_nodes.append(node)
-
-    # When
-    with qtbot.assertNotEmitted(model.rowsAboutToBeRemoved):
-        with qtbot.assertNotEmitted(model.rowsRemoved):
-            model.delete_node(QModelIndex())
 
 
 def test_delete_removes_task():
@@ -134,8 +176,7 @@ def test_delete_removes_task():
     project.plans.append(plan)
 
     model.set_project(project)
-    plans_index = model.index(2, 0, QModelIndex())
-    plan_index = model.index(0, 0, plans_index)
+    plan_index = model.index(0, 0, model.plans_index)
     task_index = model.index(0, 0, plan_index)
 
     # When
@@ -157,8 +198,7 @@ def test_delete_removes_plan():
     project.plans.append(plan)
 
     model.set_project(project)
-    plans_index = model.index(2, 0, QModelIndex())
-    plan_index = model.index(0, 0, plans_index)
+    plan_index = model.index(0, 0, model.plans_index)
 
     # When
     model.delete_node(plan_index)
@@ -174,10 +214,9 @@ def test_add_creates_plan():
     project = ResearchProject("")
 
     model.set_project(project)
-    plans_index = model.index(2, 0, QModelIndex())
 
     # When
-    model.add_node(plans_index)
+    model.add_node(model.plans_index)
 
     # Then
     assert len(project.plans) == 1
@@ -192,8 +231,7 @@ def test_add_creates_task():
     project.plans.append(plan)
 
     model.set_project(project)
-    plans_index = model.index(2, 0, QModelIndex())
-    plan_index = model.index(0, 0, plans_index)
+    plan_index = model.index(0, 0, model.plans_index)
 
     # When
     model.add_node(plan_index)
@@ -270,6 +308,47 @@ def test_setdata_returns_false_on_invalid_column():
     retval = model.setData(plan_index, "Foo", None)
 
     assert retval is False
+
+
+def test_setdata_updates_description():
+    """ setData() works on the description """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    plan = ResearchPlan()
+    project.plans.append(plan)
+
+    model.set_project(project)
+    plan_index = model.index(0, 1, model.plans_index)
+
+    # When
+    retval = model.setData(plan_index, "Foo", None)
+
+    assert retval is True
+    assert model.data(plan_index, Qt.DisplayRole) == "Foo"
+
+
+def test_setdata_updates_result():
+    """ setData() works on the result """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    plan = ResearchPlan()
+    project.plans.append(plan)
+    project.plans[0].add_task()
+
+    model.set_project(project)
+    plan_index = model.index(0, 0, model.plans_index)
+    task_index = model.index(0, 2, plan_index)
+
+    result = ResearchResult(True)
+    result.description = "Test"
+
+    # When
+    retval = model.setData(task_index, result, None)
+
+    assert retval is True
+    assert model.data(task_index, Qt.DisplayRole) == result
 
 
 def test_data_returns_none_for_invalid_index():
@@ -378,8 +457,7 @@ def test_get_font_returns_strikeout_for_task_with_result():
 
     model.set_project(project)
 
-    plans_index = model.index(2, 0, QModelIndex())
-    plan_index = model.index(0, 0, plans_index)
+    plan_index = model.index(0, 0, model.plans_index)
     task_index = model.index(0, 0, plan_index)
 
     # When
@@ -387,3 +465,63 @@ def test_get_font_returns_strikeout_for_task_with_result():
 
     # Then
     assert font.strikeOut() is True
+
+
+def test_header_data_set_for_valid_orientation():
+    """ Check that the header data is correctly returned """
+    # Given
+    model = TreeModel()
+
+    # Then
+    assert model.headerData(0, Qt.Horizontal, Qt.DisplayRole) != ""
+
+
+def test_header_data_none_for_invalid_orientation():
+    """ Check that the header data is correctly returned """
+    # Given
+    model = TreeModel()
+
+    # Then
+    assert model.headerData(0, Qt.Vertical, Qt.DisplayRole) != ""
+
+
+def test_flags_set_for_line_items():
+    """ Check flags are set correctly for plans and tasks """
+    # Given
+    model = TreeModel()
+
+    project = ResearchProject("")
+    project.add_plan().add_task()
+    model.set_project(project)
+
+    # When
+    plan_index = model.index(0, 0, model.plans_index)
+    task_index = model.index(0, 0, plan_index)
+
+    # Then
+    plan_flags = int(model.flags(plan_index))
+    task_flags = int(model.flags(task_index))
+
+    assert plan_flags & Qt.ItemIsSelectable == Qt.ItemIsSelectable
+    assert plan_flags & Qt.ItemIsEditable == Qt.ItemIsEditable
+    assert plan_flags & Qt.ItemIsEnabled == Qt.ItemIsEnabled
+    assert task_flags & Qt.ItemIsSelectable == Qt.ItemIsSelectable
+    assert task_flags & Qt.ItemIsEditable == Qt.ItemIsEditable
+    assert task_flags & Qt.ItemIsEnabled == Qt.ItemIsEnabled
+
+
+def test_flags_no_flags_for_invalid_index():
+    """ Check that no flags are returned for invalid index """
+    # Given
+    model = TreeModel()
+
+    project = ResearchProject("")
+    project.add_plan().add_task()
+
+    # When
+    plan_index = model.index(0, 0, model.plans_index)
+    task_index = model.index(0, 0, plan_index)
+
+    # Then
+    assert model.flags(plan_index) == Qt.NoItemFlags
+    assert model.flags(task_index) == Qt.NoItemFlags

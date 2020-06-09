@@ -21,6 +21,7 @@ class TreeSelectionScreen(SelectionScreen):
         self.tree_view.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tree_view.selectionModel().selectionChanged.connect(self.selection_changed)
         self.tree_view.hideColumn(1)
+        self.tree_view.hideColumn(2)
 
         self.button_add_plan = QPushButton()
         self.button_add_plan.setText("Add Plan")
