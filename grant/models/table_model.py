@@ -60,7 +60,8 @@ class TableModel(QAbstractProxyModel):
         """ map given index from flat table to tree """
         if not index.isValid() or index.row() not in self.index_map:
             return QModelIndex()
-        return self.index_map[index.row()]
+        source_index = self.index_map[index.row()]
+        return source_index.siblingAtColumn(index.column())
 
     def columnCount(self, index):  # pylint: disable=invalid-name
         """ Return column count of source model for this index """

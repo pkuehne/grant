@@ -109,7 +109,7 @@ class TreeModel(QAbstractItemModel):
 
     def data(self, index, role):  # pylint: disable= no-self-use
         """ Return the data associated with the specific index for the role """
-        if not index.isValid() or index.column() > 2:
+        if not index.isValid() or index.column() > self.columnCount(None):
             return None
         node = index.internalPointer()
         if role in [Qt.DisplayRole, Qt.EditRole]:
