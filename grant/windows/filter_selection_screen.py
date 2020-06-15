@@ -58,7 +58,7 @@ class FilterSelectionScreen(SelectionScreen):
 
     def selection_changed(self, selected, _):
         """ Handle changed selection """
-        if len(selected.indexes()) != 1:
+        if len(selected.indexes()) < 1:
             return
         index = selected.indexes()[0]
         flat_index = self.tasks_model.mapToSource(index)
