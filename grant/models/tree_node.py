@@ -92,6 +92,12 @@ class TreeNode:
         if self.type == "task":
             self.data.result = value
 
+    def get_ancestor(self):
+        """ Return the parent plan's ancestor value """
+        if self.type != "task":
+            return ""
+        return self.parent.data.ancestor
+
     def get_icon(self):
         """ Returns a QIcon for this node """
         if self.type == "gedcom":

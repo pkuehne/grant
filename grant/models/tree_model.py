@@ -1,10 +1,21 @@
 """ Contains the tree representation class for a ResearchProject """
 
+from enum import IntEnum, unique
 from PyQt5.QtCore import QAbstractItemModel
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import Qt
 from grant.research import ResearchProject
 from grant.models.tree_node import TreeNode
+
+
+@unique
+class TreeModelCols(IntEnum):
+    """ Enum for the columns of the TreeModel """
+
+    TEXT = (0,)
+    DESCRIPTION = (1,)
+    RESULT = (2,)
+    ANCESTOR = 3
 
 
 class TreeModel(QAbstractItemModel):
@@ -94,7 +105,7 @@ class TreeModel(QAbstractItemModel):
 
     def columnCount(self, _):  # pylint: disable=invalid-name, no-self-use
         """ Number of columns to display """
-        return 3
+        return len(list(TreeModelCols))
 
     def data(self, index, role):  # pylint: disable= no-self-use
         """ Return the data associated with the specific index for the role """
@@ -103,11 +114,11 @@ class TreeModel(QAbstractItemModel):
         node = index.internalPointer()
         if role in [Qt.DisplayRole, Qt.EditRole]:
             return {
-                0: node.get_text(),
-                1: node.get_description(),
-                2: node.get_result(),
+                TreeModelCols.TEXT: node.get_text(),
+                TreeModelCols.DESCRIPTION: node.get_description(),
+                TreeModelCols.RESULT: node.get_result(),
+                TreeModelCols.ANCESTOR: node.get_ancestor(),
             }[index.column()]
-            # return self.data_column(node, index.column())
         if role == Qt.DecorationRole:
             return node.get_icon()
         if role == Qt.FontRole:
@@ -121,13 +132,13 @@ class TreeModel(QAbstractItemModel):
         node = index.internalPointer()
 
         prev = ""
-        if index.column() == 0:
+        if index.column() == TreeModelCols.TEXT:
             prev = node.get_text()
             node.set_text(value)
-        if index.column() == 1:
+        if index.column() == TreeModelCols.DESCRIPTION:
             prev = node.get_description()
             node.set_description(value)
-        if index.column() == 2:
+        if index.column() == TreeModelCols.RESULT:
             prev = node.get_result()
             node.set_result(value)
 
@@ -139,12 +150,17 @@ class TreeModel(QAbstractItemModel):
         self, section, orientation, role
     ):  # pylint: disable=invalid-name, no-self-use
         """ Set the header information """
-        if orientation == Qt.Horizontal and role == Qt.DisplayRole and section == 0:
-            return "Research Project"
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            return {
+                TreeModelCols.TEXT: "Research Project",
+                TreeModelCols.ANCESTOR: "Ancestor",
+            }.get(section, "")
         return None
 
     def flags(self, index):  # pylint: disable= no-self-use
         """ Returns the flags for the given index """
         if not index.isValid():
             return Qt.NoItemFlags
-        return Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled
+        flags = Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        flags |= {TreeModelCols.ANCESTOR: 0}.get(index.column(), Qt.ItemIsEditable)
+        return flags
