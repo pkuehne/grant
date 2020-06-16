@@ -27,6 +27,11 @@ class FilterSelectionScreen(SelectionScreen):
         self.tasks_model.setSourceModel(self.table_model)
 
         filter_widgets = QFormLayout()
+        self.ancestor_filter = QLineEdit()
+        self.ancestor_filter.textChanged.connect(
+            self.tasks_model.task_matcher.ancestor_filter
+        )
+        filter_widgets.addRow(QLabel("Ancestor:"), self.ancestor_filter)
         self.text_filter = QLineEdit()
         self.text_filter.textChanged.connect(self.tasks_model.task_matcher.text_filter)
         filter_widgets.addRow(QLabel("Text:"), self.text_filter)

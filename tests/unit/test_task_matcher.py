@@ -1,8 +1,10 @@
 """ Tests for the TaskMatcher class """
 
+import pytest
 from grant.models.task_matcher import TaskMatcher
 from grant.research import ResearchTask
 from grant.research import ResearchResult
+from grant.research import ResearchPlan
 
 
 def test_default_matches_all():
@@ -160,28 +162,28 @@ def test_success_result_filter_matches_success_results():
     assert matcher.match(task) is True
 
 
-def test_unknown_result_filter_matches_no_results():
+@pytest.mark.parametrize(
+    "result, value",
+    [(None, False), (ResearchResult(False), False), (ResearchResult(True), False)],
+)
+def test_unknown_result_filter_matches_no_results(result, value):
     """ An unknown result filter will match no result types """
     # Given
-    nil_result = ResearchResult(False)
-    success_result = ResearchResult(True)
     task = ResearchTask()
     matcher = TaskMatcher()
     matcher.result_filter("foo")
 
     # When
-    task.result = None
-    assert matcher.match(task) is False
-
-    task.result = nil_result
-    assert matcher.match(task) is False
-
-    task.result = success_result
-    assert matcher.match(task) is False
+    task.result = result
+    assert matcher.match(task) is value
 
 
-def test_filters_are_anded():
-    """ An unknown result filter will match no result types """
+@pytest.mark.parametrize(
+    "source, result, value",
+    [("foo", None, True), ("foo", ResearchResult(False), False), ("bar", None, False)],
+)
+def test_filters_are_anded(source, result, value):
+    """ Test that filters are 'and'ed together """
     # Given
     task = ResearchTask()
     matcher = TaskMatcher()
@@ -189,14 +191,38 @@ def test_filters_are_anded():
     matcher.text_filter("foo")
 
     # When
-    task.source = "foo"
-    task.result = None
-    assert matcher.match(task) is True
+    task.source = source
+    task.result = result
 
-    task.source = "foo"
-    task.result = ResearchResult(False)
-    assert matcher.match(task) is False
+    # Then
+    assert matcher.match(task) is value
 
-    task.source = "bar"
-    task.result = None
-    assert matcher.match(task) is False
+
+@pytest.mark.parametrize(
+    "ancestor, value", [("Henry", True), ("David", False), ("", False), (None, True)]
+)
+def test_ancestor_matches_plan(ancestor, value):
+    """ When the plan is passed and ancestor filter set, it should be applied """
+    # Given
+    task = ResearchTask()
+    plan = ResearchPlan()
+    matcher = TaskMatcher()
+    matcher.ancestor_filter("Henry")
+
+    # When
+    plan.ancestor = ancestor
+
+    # Then
+    assert matcher.match(task, plan) is value
+
+
+def test_ancestor_filter_has_no_effect_if_no_plan_passed():
+    """ When no plan is passed to the match function, the ancestor filter should have no effect """
+
+    # Given
+    task = ResearchTask()
+    matcher = TaskMatcher()
+    matcher.ancestor_filter("Henry")
+
+    # When
+    assert matcher.match(task, None) is True

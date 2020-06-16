@@ -2,8 +2,6 @@
 
 from PyQt5.QtCore import QSortFilterProxyModel
 from PyQt5.QtCore import Qt
-
-# from PyQt5.QtCore import QModelIndex
 from grant.models.task_matcher import TaskMatcher
 
 
@@ -26,7 +24,7 @@ class TasksModel(QSortFilterProxyModel):
         if node.type != "task":
             return False
 
-        return self.task_matcher.match(node.data)
+        return self.task_matcher.match(node.data, node.parent.data)
 
     def setSourceModel(self, model):  # pylint: disable=invalid-name
         """ Connect to source model signals """
@@ -42,7 +40,7 @@ class TasksModel(QSortFilterProxyModel):
             return "Task Source"
         return self.sourceModel().headerData(section, orientation, role)
 
-    def data(self, proxy_index, role):  # pylint: disable= no-self-use
+    def data(self, proxy_index, role=Qt.DisplayRole):  # pylint: disable= no-self-use
         """ Return the data associated with the specific index for the role """
         if role == Qt.DecorationRole:
             return None
