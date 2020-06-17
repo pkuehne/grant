@@ -2,6 +2,7 @@
 
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtCore import QObject
+from grant.research import ResearchTask, ResearchPlan
 
 
 class TaskMatcher(QObject):
@@ -13,6 +14,7 @@ class TaskMatcher(QObject):
         super(TaskMatcher, self).__init__()
         self._text_filter = ""
         self._result_filter = ""
+        self._ancestor_filter = ""
 
     def text_filter(self, text):
         """ Sets the text filter """
@@ -22,6 +24,11 @@ class TaskMatcher(QObject):
     def result_filter(self, text):
         """ Sets the result filter  """
         self._result_filter = text
+        self.filters_updated.emit()
+
+    def ancestor_filter(self, text):
+        """ Sets the ancestor filter """
+        self._ancestor_filter = text
         self.filters_updated.emit()
 
     def match_result_filter(self, task):
@@ -34,7 +41,13 @@ class TaskMatcher(QObject):
 
         return self._result_filter in str(task.result)
 
-    def match(self, task):
+    def match_ancestor_filter(self, plan: ResearchPlan):
+        """ Determines whether the task's parent plan matches the ancestor filter """
+        if plan is None or plan.ancestor is None:
+            return True
+        return self._ancestor_filter in plan.ancestor
+
+    def match(self, task: ResearchTask, plan: ResearchPlan = None):
         """ Checks the task against the given filters """
         if task is None:
             return False
@@ -42,4 +55,5 @@ class TaskMatcher(QObject):
         result = True
         result = result and self._text_filter in task.source
         result = result and self.match_result_filter(task)
+        result = result and self.match_ancestor_filter(plan)
         return result

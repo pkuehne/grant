@@ -4,7 +4,7 @@ import pytest
 from PyQt5.QtCore import QModelIndex
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
-from grant.models.tree_model import TreeModel
+from grant.models.tree_model import TreeModel, TreeModelCols
 from grant.research import ResearchProject, ResearchPlan, ResearchTask, ResearchResult
 
 
@@ -22,7 +22,7 @@ def test_only_column_count_returns_correct_number():
     model = TreeModel()
 
     # Then
-    assert model.columnCount(QModelIndex()) == 3
+    assert model.columnCount(QModelIndex()) == len(list(TreeModelCols))
 
 
 def test_new_model_is_empty_by_default(qtmodeltester):
@@ -515,8 +515,8 @@ def test_flags_no_flags_for_invalid_index():
     # Given
     model = TreeModel()
 
-    project = ResearchProject("")
-    project.add_plan().add_task()
+    # project = ResearchProject("")
+    # project.add_plan().add_task()
 
     # When
     plan_index = model.index(0, 0, model.plans_index)
@@ -525,3 +525,20 @@ def test_flags_no_flags_for_invalid_index():
     # Then
     assert model.flags(plan_index) == Qt.NoItemFlags
     assert model.flags(task_index) == Qt.NoItemFlags
+
+
+def test_flags_not_editable_for_ancestor_column():
+    """ The ancestor column should not be editable """
+    model = TreeModel()
+
+    project = ResearchProject("")
+    project.add_plan().add_task()
+    model.set_project(project)
+
+    # When
+    plan_index = model.index(0, TreeModelCols.ANCESTOR, model.plans_index)
+    task_index = model.index(0, TreeModelCols.ANCESTOR, plan_index)
+
+    # Then
+    assert model.flags(plan_index) & Qt.ItemIsEditable != Qt.ItemIsEditable
+    assert model.flags(task_index) & Qt.ItemIsEditable != Qt.ItemIsEditable
