@@ -8,6 +8,7 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtCore import Qt
 from grant.windows.base_screens import DetailScreen
 from grant.models.individuals_model import IndividualsModelColumns
+from grant.models.tree_model import TreeModelCols
 
 
 class PlanDetails(DetailScreen):
@@ -43,6 +44,6 @@ class PlanDetails(DetailScreen):
 
         self.mapper = QDataWidgetMapper()
         self.mapper.setModel(self.data_context.data_model)
-        self.mapper.addMapping(self.ancestor, 0)
-        self.mapper.addMapping(self.goal, 1)
+        self.mapper.addMapping(self.ancestor, TreeModelCols.TEXT)
+        self.mapper.addMapping(self.goal, TreeModelCols.DESCRIPTION, b"plainText")
         self.mapper.toFirst()

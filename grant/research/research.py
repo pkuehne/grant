@@ -1,6 +1,14 @@
 """ The Research-related classes """
 from datetime import datetime
 from PyQt5.QtCore import QObject
+from PyQt5.QtGui import QTextDocument
+
+
+def convert_html(text: str) -> str:
+    """ Converts potential HTML into plain text """
+    document = QTextDocument()
+    document.setHtml(text)
+    return document.toPlainText().rstrip().lstrip()
 
 
 class ResearchResult(QObject):
@@ -61,7 +69,7 @@ class ResearchTask:
     def from_py(self, data):
         """ Converts from pythonic to class """
         self.source = data.get("source", "")
-        self.description = data.get("description", "")
+        self.description = convert_html(data.get("description", ""))
         result = data.get("result", None)
         if result is not None:
             self.result = ResearchResult(False)
@@ -97,7 +105,7 @@ class ResearchPlan:
     def from_py(self, data):
         """ Converts from pythonic to class """
         self.ancestor = data.get("ancestor", None)
-        self.goal = data.get("goal", "")
+        self.goal = convert_html(data.get("goal", ""))
         for task_data in data.get("tasks", []):
             task = ResearchTask()
             task.from_py(task_data)

@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QCompleter
 from grant.windows.base_screens import DetailScreen
 from grant.windows.result_widget import ResultWidget
 from grant.models.sources_model import SourcesModelColumns
+from grant.models.tree_model import TreeModelCols
 
 
 class TaskDetails(DetailScreen):
@@ -45,8 +46,10 @@ class TaskDetails(DetailScreen):
 
         self.mapper = QDataWidgetMapper()
         self.mapper.setModel(self.data_context.data_model)
-        self.mapper.addMapping(self.source, 0)
-        self.mapper.addMapping(self.description, 1)
-        self.mapper.addMapping(self.result, 2)
+        self.mapper.addMapping(self.source, TreeModelCols.TEXT)
+        self.mapper.addMapping(
+            self.description, TreeModelCols.DESCRIPTION, b"plainText"
+        )
+        self.mapper.addMapping(self.result, TreeModelCols.RESULT)
         self.result.result_changed.connect(self.mapper.submit)
         self.mapper.toFirst()
