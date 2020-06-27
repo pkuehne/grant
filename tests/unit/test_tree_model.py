@@ -302,7 +302,7 @@ def test_setdata_returns_false_on_invalid_column():
     project.plans.append(plan)
 
     model.set_project(project)
-    plan_index = model.index(0, 5, model.plans_index)
+    plan_index = model.index(0, model.columnCount(None) + 1, model.plans_index)
 
     # When
     retval = model.setData(plan_index, "Foo", None)
@@ -351,6 +351,26 @@ def test_setdata_updates_result():
     assert model.data(task_index, Qt.DisplayRole) == result
 
 
+def test_setdata_updates_link():
+    """ setData() works on the link """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    plan = ResearchPlan()
+    project.plans.append(plan)
+    project.plans[0].add_task()
+
+    model.set_project(project)
+    plan_index = model.index(0, 0, model.plans_index)
+    task_index = model.index(0, TreeModelCols.LINK, plan_index)
+
+    # When
+    retval = model.setData(task_index, 1234, None)
+
+    assert retval is True
+    assert model.data(task_index, Qt.DisplayRole) == 1234
+
+
 def test_data_returns_none_for_invalid_index():
     """ When getting data, nothing is returned for invalid index """
     # Given
@@ -397,7 +417,7 @@ def test_data_returns_none_for_invalid_column():
     project.plans.append(plan)
 
     model.set_project(project)
-    plan_index = model.index(0, 5, model.plans_index)
+    plan_index = model.index(0, len(list(TreeModelCols)) + 1, model.plans_index)
 
     # When
     retval = model.data(plan_index, Qt.DisplayRole)

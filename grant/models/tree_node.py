@@ -98,14 +98,29 @@ class TreeNode:
             return ""
         return self.parent.data.ancestor
 
+    def get_link(self):
+        """ Returns the node's gedcom link """
+        if self.type == "task":
+            return self.data.source_link
+        if self.type == "plan":
+            return self.data.ancestor_link
+        return ""
+
+    def set_link(self, value):
+        """ Sets the node's gedcom link to value """
+        if self.type == "task":
+            self.data.source_link = value
+        if self.type == "plan":
+            self.data.ancestor_link = value
+
     def get_icon(self):
         """ Returns a QIcon for this node """
-        if self.type == "gedcom":
-            return QIcon(":/icons/gedcom.ico")
-        if self.type == "filename":
-            return QIcon(":/icons/file.ico")
-        if self.type == "plans":
-            return QIcon(":/icons/plans.ico")
+        # if self.type == "gedcom":
+        #     return QIcon(":/icons/gedcom.ico")
+        # if self.type == "filename":
+        #     return QIcon(":/icons/file.ico")
+        # if self.type == "plans":
+        #     return QIcon(":/icons/plans.ico")
         if self.type == "plan":
             return QIcon(":/icons/plan.ico")
         if self.type == "task":

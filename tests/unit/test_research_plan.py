@@ -100,12 +100,14 @@ def test_to_py_sets_fields():
     # Given
     plan = ResearchPlan()
     plan.ancestor = "ANCESTOR"
+    plan.ancestor_link = 11
 
     # When
     data = plan.to_py()
 
     # Then
     assert data["ancestor"] == plan.ancestor
+    assert data["ancestor_link"] == plan.ancestor_link
     assert data["goal"] == plan.goal
     assert data["tasks"] == plan.tasks
-    assert len(data.keys()) == 3  # To verify nothing else was added
+    assert len(data.keys()) == 4  # To verify nothing else was added

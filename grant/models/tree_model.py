@@ -12,10 +12,11 @@ from grant.models.tree_node import TreeNode
 class TreeModelCols(IntEnum):
     """ Enum for the columns of the TreeModel """
 
-    TEXT = (0,)
-    DESCRIPTION = (1,)
-    RESULT = (2,)
+    TEXT = 0
+    DESCRIPTION = 1
+    RESULT = 2
     ANCESTOR = 3
+    LINK = 4
 
 
 class TreeModel(QAbstractItemModel):
@@ -118,6 +119,7 @@ class TreeModel(QAbstractItemModel):
                 TreeModelCols.DESCRIPTION: node.get_description(),
                 TreeModelCols.RESULT: node.get_result(),
                 TreeModelCols.ANCESTOR: node.get_ancestor(),
+                TreeModelCols.LINK: node.get_link(),
             }[index.column()]
         if role == Qt.DecorationRole:
             return node.get_icon()
@@ -127,7 +129,7 @@ class TreeModel(QAbstractItemModel):
 
     def setData(self, index, value, _):  # pylint: disable=invalid-name
         """ Updates the nodes values based on an edit """
-        if not index.isValid() or index.column() > 2:
+        if not index.isValid() or index.column() > self.columnCount(None):
             return False
         node = index.internalPointer()
 
@@ -141,6 +143,9 @@ class TreeModel(QAbstractItemModel):
         if index.column() == TreeModelCols.RESULT:
             prev = node.get_result()
             node.set_result(value)
+        if index.column() == TreeModelCols.LINK:
+            prev = node.get_link()
+            node.set_link(value)
 
         if prev != value:
             self.dataChanged.emit(index, index)

@@ -60,6 +60,7 @@ class ResearchTask:
 
     def __init__(self):
         self.source = ""
+        self.source_link = None
         self.description = ""
         self.result = None
 
@@ -69,6 +70,7 @@ class ResearchTask:
     def from_py(self, data):
         """ Converts from pythonic to class """
         self.source = data.get("source", "")
+        self.source_link = data.get("source_link", None)
         self.description = convert_html(data.get("description", ""))
         result = data.get("result", None)
         if result is not None:
@@ -79,6 +81,7 @@ class ResearchTask:
         """ Converts from class to pythonic """
         data = {}
         data["source"] = self.source
+        data["source_link"] = self.source_link
         data["description"] = self.description
         data["result"] = None if self.result is None else self.result.to_py()
         return data
@@ -95,6 +98,7 @@ class ResearchPlan:
 
     def __init__(self):
         self.ancestor = self.default_ancestor
+        self.ancestor_link = None
         self.goal = "Describe your goals for this plan..."
         self.tasks = []
 
@@ -105,6 +109,7 @@ class ResearchPlan:
     def from_py(self, data):
         """ Converts from pythonic to class """
         self.ancestor = data.get("ancestor", None)
+        self.ancestor_link = data.get("ancestor_link", None)
         self.goal = convert_html(data.get("goal", ""))
         for task_data in data.get("tasks", []):
             task = ResearchTask()
@@ -115,6 +120,7 @@ class ResearchPlan:
         """ Converts from class to pythonic """
         data = {}
         data["ancestor"] = self.ancestor
+        data["ancestor_link"] = self.ancestor_link
         data["goal"] = self.goal
         data["tasks"] = []
         for task in self.tasks:

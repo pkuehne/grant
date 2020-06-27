@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QComboBox
 from grant.models.tasks_model import TasksModel
 from grant.models.table_model import TableModel
+from grant.models.tree_model import TreeModelCols
 from .base_screens import SelectionScreen
 
 
@@ -52,8 +53,9 @@ class FilterSelectionScreen(SelectionScreen):
         self.table_view.selectionModel().selectionChanged.connect(
             self.selection_changed
         )
-        self.table_view.hideColumn(1)
-        self.table_view.hideColumn(2)
+        self.table_view.hideColumn(TreeModelCols.DESCRIPTION)
+        self.table_view.hideColumn(TreeModelCols.RESULT)
+        self.table_view.hideColumn(TreeModelCols.LINK)
 
         layout = QVBoxLayout()
         layout.addLayout(filter_widgets)
