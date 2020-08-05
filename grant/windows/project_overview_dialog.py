@@ -43,11 +43,19 @@ class ProjectOverviewDialog(QDialog):
         self.gedcom_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         form_layout.addRow(QLabel("Gedcom Link:"), self.gedcom_label)
         form_layout.addRow(
-            QLabel("Linked Individuals:"),
+            QLabel("Individuals Records:"),
             QLabel(str(context.individuals_model.rowCount())),
         )
         form_layout.addRow(
-            QLabel("Linked Sources:"), QLabel(str(context.sources_model.rowCount())),
+            QLabel("Sources Records:"), QLabel(str(context.sources_model.rowCount())),
+        )
+        form_layout.addRow(
+            QLabel("Linked Individuals:"),
+            QLabel(str(len([p for p in project.plans if p.ancestor_link != ""]))),
+        )
+        form_layout.addRow(
+            QLabel("Linked Sources:"),
+            QLabel(str(len([t for t in all_tasks if t.source_link != ""]))),
         )
 
         button_layout = QHBoxLayout()
