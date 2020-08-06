@@ -21,8 +21,8 @@ class PlanDetails(DetailScreen):
         super(PlanDetails, self).__init__(data_context)
 
         unlink_tooltip = (
-            "This name is linked to an entry in your GEDCOM"
-            + "and will update as the name in your gedcom changes."
+            "This name is linked to an entry in your GEDCOM "
+            + "and will update as the name in your gedcom changes. "
             + "Click to break this link."
         )
         form_layout = QFormLayout()
