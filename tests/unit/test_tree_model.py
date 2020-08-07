@@ -254,7 +254,7 @@ def test_setdata_doesnot_fire_signal_if_no_change(qtbot):
 
     # When
     with qtbot.assertNotEmitted(model.dataChanged):
-        retval = model.setData(plan_index, plan.ancestor, None)
+        retval = model.setData(plan_index, plan.ancestor)
 
     assert retval is True
 
@@ -272,7 +272,7 @@ def test_setdata_fires_signal_on_change(qtbot):
 
     # When
     with qtbot.waitSignal(model.dataChanged):
-        retval = model.setData(plan_index, "Foo", None)
+        retval = model.setData(plan_index, "Foo")
 
     assert retval is True
 
@@ -288,7 +288,7 @@ def test_setdata_returns_false_on_invalid_index():
     model.set_project(project)
 
     # When
-    retval = model.setData(QModelIndex(), "Foo", None)
+    retval = model.setData(QModelIndex(), "Foo")
 
     assert retval is False
 
@@ -305,7 +305,7 @@ def test_setdata_returns_false_on_invalid_column():
     plan_index = model.index(0, model.columnCount(None) + 1, model.plans_index)
 
     # When
-    retval = model.setData(plan_index, "Foo", None)
+    retval = model.setData(plan_index, "Foo")
 
     assert retval is False
 
@@ -322,7 +322,7 @@ def test_setdata_updates_description():
     plan_index = model.index(0, 1, model.plans_index)
 
     # When
-    retval = model.setData(plan_index, "Foo", None)
+    retval = model.setData(plan_index, "Foo")
 
     assert retval is True
     assert model.data(plan_index, Qt.DisplayRole) == "Foo"
@@ -345,7 +345,7 @@ def test_setdata_updates_result():
     result.description = "Test"
 
     # When
-    retval = model.setData(task_index, result, None)
+    retval = model.setData(task_index, result)
 
     assert retval is True
     assert model.data(task_index, Qt.DisplayRole) == result
@@ -365,7 +365,7 @@ def test_setdata_updates_link():
     task_index = model.index(0, TreeModelCols.LINK, plan_index)
 
     # When
-    retval = model.setData(task_index, 1234, None)
+    retval = model.setData(task_index, 1234)
 
     assert retval is True
     assert model.data(task_index, Qt.DisplayRole) == 1234

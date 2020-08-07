@@ -127,9 +127,13 @@ class TreeModel(QAbstractItemModel):
             return node.get_font()
         return None
 
-    def setData(self, index, value, _):  # pylint: disable=invalid-name
+    def setData(self, index, value, role=Qt.EditRole):  # pylint: disable=invalid-name
         """ Updates the nodes values based on an edit """
-        if not index.isValid() or index.column() > self.columnCount(None):
+        if (
+            not index.isValid()
+            or index.column() > self.columnCount(None)
+            or role != Qt.EditRole
+        ):
             return False
         node = index.internalPointer()
 
