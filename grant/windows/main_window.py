@@ -8,6 +8,7 @@ from grant.research import ResearchProject
 from grant.windows.gedcom_manager import GedcomManager
 from grant.windows.data_context import DataContext
 from grant.windows.project_overview_dialog import ProjectOverviewDialog
+from grant.windows.link_updater import LinkUpdater
 from .main_window_menu_bar import MenuBar
 from .main_screen import MainScreen
 from .project_file_manager import ProjectFileManager
@@ -42,6 +43,7 @@ class MainWindow(QMainWindow):
         self.main_screen = None
         self.project_manager = ProjectFileManager(self)
         self.gedcom_manager = GedcomManager(self.data_context, self)
+        self.link_updater = LinkUpdater(self.data_context)
         self.setup_window()
         self.setup_window_title()
         self.setup_menubar()
@@ -147,8 +149,6 @@ class MainWindow(QMainWindow):
 
     def project_changed_handler(self):
         """ Updates all the screens with the new project information """
-        self.data_context.data_model.set_project(self.project_manager.project)
-        self.main_screen.set_project(self.project_manager.project)
         if (
             self.project_manager.project is None
             or self.project_manager.project.gedcom == ""
@@ -156,4 +156,9 @@ class MainWindow(QMainWindow):
             self.gedcom_manager.clear_link()
         else:
             self.gedcom_manager.load_link(self.project_manager.project.gedcom)
+        self.data_context.data_model.set_project(self.project_manager.project)
+        self.main_screen.set_project(self.project_manager.project)
+        self.link_updater.calculate_updates()
+        if self.link_updater.has_pending_updates():
+            self.link_updater.commit_updates()
         self.setup_window_title()

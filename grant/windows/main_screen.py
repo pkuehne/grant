@@ -5,11 +5,12 @@ from PyQt5.QtWidgets import QStackedWidget
 from PyQt5.QtWidgets import QHBoxLayout
 
 from grant.windows.data_context import DataContext
-from .tree_selection_screen import TreeSelectionScreen
-from .filter_selection_screen import FilterSelectionScreen
-from .plan_details import PlanDetails
-from .task_details import TaskDetails
-from .base_screens import DetailScreen
+from grant.windows.tree_selection_screen import TreeSelectionScreen
+from grant.windows.filter_selection_screen import FilterSelectionScreen
+from grant.windows.plan_details import PlanDetails
+from grant.windows.task_details import TaskDetails
+from grant.windows.base_screens import DetailScreen
+from grant.research import ResearchProject
 
 
 class MainScreen(QWidget):
@@ -84,7 +85,7 @@ class MainScreen(QWidget):
         self.screens[name].clear_selection()
         self.detail_stack.setCurrentWidget(self.screens["blank"])
 
-    def set_project(self, project):
+    def set_project(self, project: ResearchProject):
         """ Updates all the screens with the new project information """
         self.data_context.data_model.set_project(project)
         for screen in self.screens.values():
