@@ -1,7 +1,6 @@
 """ Tests for the Plan Details screen """
 
 from unittest import mock
-from PyQt5.QtWidgets import QMessageBox
 from grant.windows.plan_details import PlanDetails
 from grant.windows.data_context import DataContext
 
@@ -20,10 +19,10 @@ def test_ancestor_edit_has_completer(qtbot):
     assert screen.ancestor.completer().model() is not None
 
 
-def test_unlink_clears_link_on_confirmation(qtbot, monkeypatch):
+def test_link_updated_sets_link_edit(qtbot):
     """
-    When the unlink action is triggered, the link should be cleared and the change submitted
-    after the user confirmed
+    When the link_updated() function is triggered, it updates the _link_
+    QLineEdit and calls the mapper to submit the changes
     """
     # Given
     data_context = DataContext()
@@ -33,34 +32,9 @@ def test_unlink_clears_link_on_confirmation(qtbot, monkeypatch):
     screen.link.setText("Foo")
     screen.mapper = mock.MagicMock()
 
-    monkeypatch.setattr(screen.confirmation_dialog, "exec_", lambda: QMessageBox.Ok)
-
     # When
-    screen.unlink_name()
+    screen.link_updated("Bar")
 
     # Then
-    assert screen.link.text() == ""
+    assert screen.link.text() == "Bar"
     screen.mapper.submit.assert_called()
-
-
-def test_unlink_does_nothin_if_cancelled(qtbot, monkeypatch):
-    """
-    When the unlink action is triggered, the link should not be cleared if the user cancelled
-    the dialog
-    """
-    # Given
-    data_context = DataContext()
-    screen = PlanDetails(data_context)
-    qtbot.add_widget(screen)
-
-    screen.link.setText("Foo")
-    screen.mapper = mock.MagicMock()
-
-    monkeypatch.setattr(screen.confirmation_dialog, "exec_", lambda: QMessageBox.Cancel)
-
-    # When
-    screen.unlink_name()
-
-    # Then
-    assert screen.link.text() != ""
-    screen.mapper.submit.assert_not_called()
