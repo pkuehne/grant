@@ -26,6 +26,35 @@ def test_has_pending_updates():
     assert updater.has_pending_updates() is True
 
 
+def test_pending_updates_are_cleared():
+    """
+    If there are any previous pending changes, they are cleared before
+    updates are calculated
+    """
+
+    # Given
+    tree_model = TreeModel()
+    tree_model.set_project(ResearchProject(""))
+
+    individuals_model = IndividualsModel([])
+    sources_model = SourcesModel([])
+
+    context = DataContext(
+        data_model=tree_model,
+        individuals_model=individuals_model,
+        sources_model=sources_model,
+    )
+    updater = LinkUpdater(context)
+    updater.source_updates = ["Foo", "Bar"]
+    updater.ancestor_fixes = ["Baz", "Fiz"]
+
+    # When
+    updater.calculate_updates()
+
+    # Then
+    assert updater.has_pending_updates() is False
+
+
 def test_plan_links_are_checked():
     """
     Check the following:

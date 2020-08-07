@@ -18,10 +18,15 @@ class LinkUpdater:
 
     def __init__(self, context: DataContext):
         self.data_context = context
+        self.clear_pending_updates()
+        self.setup_confirmation_dialog()
+
+    def clear_pending_updates(self):
+        """ Removes any pending updates """
         self.source_updates = []
         self.ancestor_updates = []
-
-        self.setup_confirmation_dialog()
+        self.source_fixes = []
+        self.ancestor_fixes = []
 
     def setup_confirmation_dialog(self):
         """ Sets up the break-link confirmation dialog """
@@ -35,13 +40,19 @@ class LinkUpdater:
 
     def has_pending_updates(self) -> bool:
         """ Whether there are any updates waiting to be applied """
-        pending_updates = len(self.source_updates) + len(self.ancestor_updates)
+        pending_updates = (
+            len(self.source_updates)
+            + len(self.ancestor_updates)
+            + len(self.source_fixes)
+            + len(self.ancestor_fixes)
+        )
         return pending_updates != 0
 
     def calculate_updates(self):
         """
         Checks whether any names in the project can be updated from the linked gedcom file
         """
+        self.clear_pending_updates()
 
         plans: int = self.data_context.data_model.rowCount(QModelIndex())
         for plan_row in range(plans):
@@ -61,17 +72,19 @@ class LinkUpdater:
         if plan_index.data() == "":
             return
         start_index = self.data_context.individuals_model.index(0, 0)
+        plan_text = plan_index.siblingAtColumn(TreeModelCols.TEXT)
+        plan_link = plan_index.siblingAtColumn(TreeModelCols.LINK)
 
         matches = self.data_context.individuals_model.match(
             start_index, Qt.DisplayRole, plan_index.data()
         )
         if len(matches) != 1:
-            print("Broken Link - " + f"Plan {plan_index.row()}: {len(matches)} matches")
+            # print("Broken Link - " + f"Plan {plan_index.row()}: {len(matches)} matches")
+            self.ancestor_fixes.append({"index": plan_link, "value": ""})
             return
         gedcom_value = (
             matches[0].siblingAtColumn(IndividualsModelColumns.AUTOCOMPLETE).data()
         )
-        plan_text = plan_index.siblingAtColumn(TreeModelCols.TEXT)
         if gedcom_value != plan_text.data():
             # print(f"Gedcom has changed: {plan_text} -> {gedcom_value}")
             self.ancestor_updates.append({"index": plan_text, "value": gedcom_value})
@@ -81,17 +94,19 @@ class LinkUpdater:
         if task_index.data() == "":
             return
         start_index = self.data_context.sources_model.index(0, 0)
+        task_text = task_index.siblingAtColumn(TreeModelCols.TEXT)
+        task_link = task_index.siblingAtColumn(TreeModelCols.LINK)
 
         matches = self.data_context.sources_model.match(
             start_index, Qt.DisplayRole, task_index.data()
         )
         if len(matches) != 1:
-            print("Broken Link - " + f"Task {task_index.row()}: {len(matches)} matches")
+            # print("Broken Link - " + f"Task {task_index.row()}: {len(matches)} matches")
+            self.source_fixes.append({"index": task_link, "value": ""})
             return
         gedcom_value = (
             matches[0].siblingAtColumn(SourcesModelColumns.AUTOCOMPLETE).data()
         )
-        task_text = task_index.siblingAtColumn(TreeModelCols.TEXT)
         if gedcom_value != task_text.data():
             # print(f"Gedcom has changed: {task_text} -> {gedcom_value}")
             self.source_updates.append({"index": task_text, "value": gedcom_value})
@@ -100,29 +115,46 @@ class LinkUpdater:
         """ Commit the pending updates """
         num_ancestor_updates = len(self.ancestor_updates)
         num_source_updates = len(self.source_updates)
+        num_ancestor_fixes = len(self.ancestor_fixes)
+        num_source_fixes = len(self.source_fixes)
 
-        ancestor_text = (
+        ancestor_update_text = (
             f"• {num_ancestor_updates} ancestor name changes\n"
             if num_ancestor_updates
             else ""
         )
-        source_text = (
+        source_update_text = (
             f"• {num_source_updates} source name changes\n"
             if num_source_updates
             else ""
         )
+        ancestor_fix_text = (
+            f"• {num_ancestor_fixes} ancestor links broken\n"
+            if num_ancestor_fixes
+            else ""
+        )
+        source_fix_text = (
+            f"• {num_source_fixes} source links broken\n" if num_source_fixes else ""
+        )
 
         text = (
             "Values in the linked GEDCOM file have changed. There are\n"
-            + ancestor_text
-            + source_text
-            + "Do you want to update them with values from the GEDCOM file?"
+            + ancestor_update_text
+            + source_update_text
+            + ancestor_fix_text
+            + source_fix_text
+            + "Do you want to update with values from the GEDCOM file and remove broken links?"
         )
         self.confirmation_dialog.setText(text)
         button = self.confirmation_dialog.exec_()
         if button == QMessageBox.Cancel:
             return
 
-        for update in self.ancestor_updates + self.source_updates:
+        for update in (
+            self.ancestor_updates
+            + self.source_updates
+            + self.ancestor_fixes
+            + self.source_fixes
+        ):
             # print(f"Updating {update['index']} to {update['value']}")
             self.data_context.data_model.setData(update["index"], update["value"])
