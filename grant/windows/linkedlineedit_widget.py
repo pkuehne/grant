@@ -63,6 +63,7 @@ class LinkedLineEdit(QLineEdit):
     def set_link_visible(self, visible: bool):
         """ The index of the selected plan has changed """
         self.link_action.setVisible(visible)
+        self.setReadOnly(visible)
 
     def autocomplete_activated(self, index: QModelIndex):
         """ Called when the autocomplete is activated """
