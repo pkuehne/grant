@@ -71,7 +71,6 @@ class ResearchTask:
         """ Converts from pythonic to class """
         self.source = data.get("source", "")
         self.source_link = data.get("source_link", "")
-        self.source_link = "" if self.source_link is None else self.source_link
         self.description = convert_html(data.get("description", ""))
         result = data.get("result", None)
         if result is not None:
@@ -111,7 +110,6 @@ class ResearchPlan:
         """ Converts from pythonic to class """
         self.ancestor = data.get("ancestor", None)
         self.ancestor_link = data.get("ancestor_link", "")
-        self.ancestor_link = "" if self.ancestor_link is None else self.ancestor_link
         self.goal = convert_html(data.get("goal", ""))
         for task_data in data.get("tasks", []):
             task = ResearchTask()

@@ -43,7 +43,6 @@ class MainWindow(QMainWindow):
         self.main_screen = None
         self.project_manager = ProjectFileManager(self)
         self.gedcom_manager = GedcomManager(self.data_context, self)
-        self.link_updater = LinkUpdater(self.data_context)
         self.setup_window()
         self.setup_window_title()
         self.setup_menubar()
@@ -158,7 +157,8 @@ class MainWindow(QMainWindow):
             self.gedcom_manager.load_link(self.project_manager.project.gedcom)
         self.data_context.data_model.set_project(self.project_manager.project)
         self.main_screen.set_project(self.project_manager.project)
-        self.link_updater.calculate_updates()
-        if self.link_updater.has_pending_updates():
-            self.link_updater.commit_updates()
+        updater = LinkUpdater(self.data_context)
+        updater.calculate_updates()
+        if updater.has_pending_updates():
+            updater.commit_updates()
         self.setup_window_title()

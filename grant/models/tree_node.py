@@ -115,12 +115,6 @@ class TreeNode:
 
     def get_icon(self):
         """ Returns a QIcon for this node """
-        # if self.type == "gedcom":
-        #     return QIcon(":/icons/gedcom.ico")
-        # if self.type == "filename":
-        #     return QIcon(":/icons/file.ico")
-        # if self.type == "plans":
-        #     return QIcon(":/icons/plans.ico")
         if self.type == "plan":
             return QIcon(":/icons/plan.ico")
         if self.type == "task":
