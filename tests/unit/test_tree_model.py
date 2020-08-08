@@ -254,7 +254,7 @@ def test_setdata_doesnot_fire_signal_if_no_change(qtbot):
 
     # When
     with qtbot.assertNotEmitted(model.dataChanged):
-        retval = model.setData(plan_index, plan.ancestor, None)
+        retval = model.setData(plan_index, plan.ancestor)
 
     assert retval is True
 
@@ -272,7 +272,7 @@ def test_setdata_fires_signal_on_change(qtbot):
 
     # When
     with qtbot.waitSignal(model.dataChanged):
-        retval = model.setData(plan_index, "Foo", None)
+        retval = model.setData(plan_index, "Foo")
 
     assert retval is True
 
@@ -288,7 +288,7 @@ def test_setdata_returns_false_on_invalid_index():
     model.set_project(project)
 
     # When
-    retval = model.setData(QModelIndex(), "Foo", None)
+    retval = model.setData(QModelIndex(), "Foo")
 
     assert retval is False
 
@@ -302,10 +302,10 @@ def test_setdata_returns_false_on_invalid_column():
     project.plans.append(plan)
 
     model.set_project(project)
-    plan_index = model.index(0, 5, model.plans_index)
+    plan_index = model.index(0, model.columnCount(None) + 1, model.plans_index)
 
     # When
-    retval = model.setData(plan_index, "Foo", None)
+    retval = model.setData(plan_index, "Foo")
 
     assert retval is False
 
@@ -322,7 +322,7 @@ def test_setdata_updates_description():
     plan_index = model.index(0, 1, model.plans_index)
 
     # When
-    retval = model.setData(plan_index, "Foo", None)
+    retval = model.setData(plan_index, "Foo")
 
     assert retval is True
     assert model.data(plan_index, Qt.DisplayRole) == "Foo"
@@ -345,10 +345,30 @@ def test_setdata_updates_result():
     result.description = "Test"
 
     # When
-    retval = model.setData(task_index, result, None)
+    retval = model.setData(task_index, result)
 
     assert retval is True
     assert model.data(task_index, Qt.DisplayRole) == result
+
+
+def test_setdata_updates_link():
+    """ setData() works on the link """
+    # Given
+    model = TreeModel()
+    project = ResearchProject("")
+    plan = ResearchPlan()
+    project.plans.append(plan)
+    project.plans[0].add_task()
+
+    model.set_project(project)
+    plan_index = model.index(0, 0, model.plans_index)
+    task_index = model.index(0, TreeModelCols.LINK, plan_index)
+
+    # When
+    retval = model.setData(task_index, 1234)
+
+    assert retval is True
+    assert model.data(task_index, Qt.DisplayRole) == 1234
 
 
 def test_data_returns_none_for_invalid_index():
@@ -397,7 +417,7 @@ def test_data_returns_none_for_invalid_column():
     project.plans.append(plan)
 
     model.set_project(project)
-    plan_index = model.index(0, 5, model.plans_index)
+    plan_index = model.index(0, len(list(TreeModelCols)) + 1, model.plans_index)
 
     # When
     retval = model.data(plan_index, Qt.DisplayRole)

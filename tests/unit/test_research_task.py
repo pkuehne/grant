@@ -47,6 +47,7 @@ def test_to_py_sets_fields():
     # Given
     task = ResearchTask()
     task.source = "SOURCE"
+    task.source_link = 123
     task.description = "DESCRIPTION"
 
     # When
@@ -55,5 +56,6 @@ def test_to_py_sets_fields():
     # Then
     assert data["description"] == task.description
     assert data["source"] == task.source
+    assert data["source_link"] == task.source_link
     assert data["result"] == task.result
-    assert len(data.keys()) == 3  # To verify nothing else was added
+    assert len(data.keys()) == 4  # To verify nothing else was added

@@ -1,13 +1,12 @@
 """ Detail View for a plan """
 
-from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QFormLayout
 from PyQt5.QtWidgets import QLabel, QLineEdit, QTextEdit, QGroupBox
 from PyQt5.QtWidgets import QDataWidgetMapper
-from PyQt5.QtWidgets import QCompleter
 from grant.windows.base_screens import DetailScreen
 from grant.windows.result_widget import ResultWidget
+from grant.windows.linkedlineedit_widget import LinkedLineEdit
 from grant.models.sources_model import SourcesModelColumns
 from grant.models.tree_model import TreeModelCols
 
@@ -19,16 +18,13 @@ class TaskDetails(DetailScreen):
         super().__init__(data_context)
 
         form_layout = QFormLayout()
-        self.source = QLineEdit()
+        self.source = LinkedLineEdit(
+            self.data_context.sources_model,
+            SourcesModelColumns.AUTOCOMPLETE,
+            SourcesModelColumns.POINTER,
+        )
+        self.source.link_updated.connect(self.link_updated)
         form_layout.addRow(QLabel("Source:"), self.source)
-        completer = QCompleter()
-        completer.setModel(self.data_context.sources_model)
-        completer.setCompletionRole(Qt.DisplayRole)
-        completer.setCompletionColumn(SourcesModelColumns.AUTOCOMPLETE)
-        completer.setCaseSensitivity(Qt.CaseInsensitive)
-        completer.setCompletionMode(QCompleter.PopupCompletion)
-        completer.setFilterMode(Qt.MatchContains)
-        self.source.setCompleter(completer)
 
         self.description = QTextEdit()
         form_layout.addRow(QLabel("Description:"), self.description)
@@ -42,6 +38,9 @@ class TaskDetails(DetailScreen):
         layout = QVBoxLayout()
         layout.addWidget(form_group)
 
+        # Don't add this, we just want to get/set the value
+        self.link = QLineEdit()
+
         self.setLayout(layout)
 
         self.mapper = QDataWidgetMapper()
@@ -51,5 +50,17 @@ class TaskDetails(DetailScreen):
             self.description, TreeModelCols.DESCRIPTION, b"plainText"
         )
         self.mapper.addMapping(self.result, TreeModelCols.RESULT)
+        self.mapper.addMapping(self.link, TreeModelCols.LINK)
         self.result.result_changed.connect(self.mapper.submit)
+        self.mapper.currentIndexChanged.connect(
+            lambda _: self.source.set_link_visible(self.link.text() != "")
+        )
+        self.data_context.data_model.dataChanged.connect(
+            lambda _, __: self.source.set_link_visible(self.link.text() != "")
+        )
         self.mapper.toFirst()
+
+    def link_updated(self, text: str):
+        """ Called when the link needs updating from the LineEdit """
+        self.link.setText(text)
+        self.mapper.submit()
