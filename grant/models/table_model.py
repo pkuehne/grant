@@ -47,6 +47,7 @@ class TableModel(QAbstractProxyModel):
         self.sourceModel().dataChanged.connect(self.sourceDataChanged)
         self.sourceModel().modelReset.connect(self.reset_model)
         self.sourceModel().layoutChanged.connect(self.reset_model)
+        self.sourceModel().rowsRemoved.connect(self.reset_model)
 
     def mapFromSource(self, index):  # pylint: disable=invalid-name
         """ map given index from Tree to Flat """
