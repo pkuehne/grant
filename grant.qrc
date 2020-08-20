@@ -10,6 +10,7 @@
 <file>icons/more.ico</file>
 <file>icons/plan.ico</file>
 <file>icons/plans.ico</file>
+<file>icons/print.ico</file>
 <file>icons/task.ico</file>
 </qresource>
 </RCC>

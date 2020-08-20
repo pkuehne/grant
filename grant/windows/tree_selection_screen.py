@@ -6,6 +6,10 @@ from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QTextDocument
+from PyQt5.QtGui import QPageLayout
+from PyQt5.QtPrintSupport import QPrinter
+from PyQt5.QtPrintSupport import QPrintDialog
 from grant.models.tree_model import TreeModelCols
 from .base_screens import SelectionScreen
 
@@ -41,11 +45,17 @@ class TreeSelectionScreen(SelectionScreen):
         self.button_delete_selection.setIcon(QIcon(":/icons/delete.ico"))
         self.button_delete_selection.setDisabled(True)
         self.button_delete_selection.pressed.connect(self.delete_selection)
+        self.button_print_selection = QPushButton()
+        self.button_print_selection.setText("Print")
+        self.button_print_selection.setIcon(QIcon(":/icons/print.ico"))
+        self.button_print_selection.setDisabled(True)
+        self.button_print_selection.pressed.connect(self.print_selection)
 
         button_box = QHBoxLayout()
         button_box.addWidget(self.button_add_plan)
         button_box.addWidget(self.button_add_task)
         button_box.addWidget(self.button_delete_selection)
+        button_box.addWidget(self.button_print_selection)
 
         layout = QVBoxLayout()
         layout.addWidget(self.tree_view)
@@ -66,6 +76,7 @@ class TreeSelectionScreen(SelectionScreen):
 
         node = index.internalPointer()
         self.button_add_task.setEnabled(node.type == "plan")
+        self.button_print_selection.setEnabled(node.type == "plan")
         self.button_delete_selection.setEnabled(
             node.type == "plan" or node.type == "task"
         )
@@ -75,6 +86,89 @@ class TreeSelectionScreen(SelectionScreen):
         if len(self.tree_view.selectedIndexes()) == 0:
             return
         self.data_context.data_model.delete_node(self.tree_view.selectedIndexes()[0])
+
+    def print_selection(self):
+        """ Print the selected plan """
+        printer = QPrinter(QPrinter.HighResolution)
+        printer.setPageOrientation(QPageLayout.Landscape)
+        dialog = QPrintDialog(printer)
+        if dialog.exec_() != QPrintDialog.Accepted:
+            return
+        document = QTextDocument()
+
+        plan = self.tree_view.selectedIndexes()[0].internalPointer().data
+        style = """
+            @media print {
+                body {
+                width: 21cm;
+                height: 29.7cm;
+                margin: 2mm;
+                }
+            }
+            table,
+            th,
+            td {
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+            th,
+            td {
+                padding: 15px;
+                vertical-align: center;
+            }
+            .task_date {
+                text-align: center;
+            }
+            .task_result {
+                text-align: center;
+            }
+            #task_table {
+                width: 100%;
+                margin: 20px 0px 0px 0px;
+            }
+        """
+        tasks = ""
+        for task in plan.tasks:
+            tasks += f"""
+            <tbody><tr>
+                <td class="task_date"></td>
+                <td>{task.source}</td>
+                <td>{task.description}</td>
+                <td class="task_result">Nil</td>
+            </tr></tbody>
+            """
+        task_table = f"""
+        <table id="task_table">
+            <thead><tr>
+                <th>Date of Search</th>
+                <th>Source searched<br />(author, title, year, pages)</th>
+                <th>
+                Description of search<br />(purpose of search, years/names searched)
+                </th>
+                <th>Outcome</th>
+            </tr></thead>
+            {tasks}
+        </table>
+        """
+        html = f"""
+        <html>
+          <head>
+            <style>
+              {style}
+            </style>
+          </head>
+          <body>
+            <h1>Research Log - {plan.ancestor}</h1>
+            <hr />
+            <h3>Research Goals:</h3>
+            To find out when he lived, his parents and any potential wife he may have
+            had.
+            {task_table}
+          </body>
+        </html>
+        """
+        document.setHtml(html)
+        document.print(printer)
 
     def add_plan(self):
         """ Create a new plan in the project """
