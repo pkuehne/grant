@@ -41,13 +41,17 @@ def _style_html() -> str:
 
 def _task_html(task: research.ResearchTask) -> str:
     """ Generates the HTML needed to print a task """
+    date = task.result.date.strftime("%Y-%m-%d %H:%M") if task.result else ""
+    result = str(task.result) if task.result else ""
+    document = task.result.document if task.result else ""
     return f"""
             <tbody>
               <tr>
-                <td class="task-date"></td>
-                <td>{task.source}</td>
-                <td>{task.description}</td>
-                <td class="task-result">Nil</td>
+                <td class="task-date">{date}</td>
+                <td class="task-source">{task.source}</td>
+                <td class="task-description">{task.description}</td>
+                <td class="task-result">{result}</td>
+                <td class="task-document">{document}</td>
               </tr>
             </tbody>
         """
@@ -69,7 +73,8 @@ def _plan_html(plan: research.ResearchPlan) -> str:
                 <th>
                     Description of search<br />(purpose of search, years/names searched)
                 </th>
-                <th>Outcome</th>
+                <th>Outcome<br />(Nil or Success, description of what was found)</th>
+                <th>Document #</th>
             </tr>
             </thead>
             {''.join(_task_html(task) for task in plan.tasks)}
@@ -116,6 +121,8 @@ class PlanPrinter:
         if self.dialog.exec_() != QtPrintSupport.QPrintDialog.Accepted:
             return
 
+        html = _document_html(plans)
+        # print(html)
         document = QtGui.QTextDocument()
-        document.setHtml(_document_html(plans))
+        document.setHtml(html)
         document.print(self.printer)
