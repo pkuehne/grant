@@ -88,8 +88,7 @@ class TreeSelectionScreen(SelectionScreen):
         """ Print the selected plan """
         plan = self.tree_view.selectedIndexes()[0].internalPointer().data
         printer = PlanPrinter()
-        # printer.print_plan(plan)
-        printer.print_plans([plan, plan])
+        printer.print_plan(plan)
 
     def add_plan(self):
         """ Create a new plan in the project """
