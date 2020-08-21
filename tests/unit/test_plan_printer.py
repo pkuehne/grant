@@ -102,7 +102,7 @@ def test_document_is_sent_to_printer(monkeypatch):
 
 
 def test_printing_project_includes_all_plans(monkeypatch):
-    """ The document should be set to the pronter """
+    """ The document should be sent to the printer """
     # Given
     printer = PlanPrinter()
     document = mock.MagicMock()
