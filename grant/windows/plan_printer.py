@@ -105,6 +105,8 @@ class PlanPrinter:
     def __init__(self):
         self.printer = QtPrintSupport.QPrinter(QtPrintSupport.QPrinter.HighResolution)
         self.printer.setPageOrientation(QtGui.QPageLayout.Landscape)
+        self.printer.setPageMargins(2, 2, 2, 2, QtPrintSupport.QPrinter.Millimeter)
+        self.printer.setPageSize(QtPrintSupport.QPrinter.A4)
         self.dialog = QtPrintSupport.QPrintDialog(self.printer)
 
     def print_project(self, project: research.ResearchProject):
