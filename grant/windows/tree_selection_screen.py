@@ -7,7 +7,8 @@ from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtGui import QIcon
 from grant.models.tree_model import TreeModelCols
-from .base_screens import SelectionScreen
+from grant.windows.base_screens import SelectionScreen
+from grant.windows.plan_printer import PlanPrinter
 
 
 class TreeSelectionScreen(SelectionScreen):
@@ -41,11 +42,17 @@ class TreeSelectionScreen(SelectionScreen):
         self.button_delete_selection.setIcon(QIcon(":/icons/delete.ico"))
         self.button_delete_selection.setDisabled(True)
         self.button_delete_selection.pressed.connect(self.delete_selection)
+        self.button_print_selection = QPushButton()
+        self.button_print_selection.setText("Print")
+        self.button_print_selection.setIcon(QIcon(":/icons/print.ico"))
+        self.button_print_selection.setDisabled(True)
+        self.button_print_selection.pressed.connect(self.print_selection)
 
         button_box = QHBoxLayout()
         button_box.addWidget(self.button_add_plan)
         button_box.addWidget(self.button_add_task)
         button_box.addWidget(self.button_delete_selection)
+        button_box.addWidget(self.button_print_selection)
 
         layout = QVBoxLayout()
         layout.addWidget(self.tree_view)
@@ -66,6 +73,7 @@ class TreeSelectionScreen(SelectionScreen):
 
         node = index.internalPointer()
         self.button_add_task.setEnabled(node.type == "plan")
+        self.button_print_selection.setEnabled(node.type == "plan")
         self.button_delete_selection.setEnabled(
             node.type == "plan" or node.type == "task"
         )
@@ -75,6 +83,12 @@ class TreeSelectionScreen(SelectionScreen):
         if len(self.tree_view.selectedIndexes()) == 0:
             return
         self.data_context.data_model.delete_node(self.tree_view.selectedIndexes()[0])
+
+    def print_selection(self):
+        """ Print the selected plan """
+        plan = self.tree_view.selectedIndexes()[0].internalPointer().data
+        printer = PlanPrinter()
+        printer.print_plan(plan)
 
     def add_plan(self):
         """ Create a new plan in the project """

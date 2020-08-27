@@ -1,4 +1,6 @@
 """ The Research-related classes """
+
+from typing import List
 from datetime import datetime
 from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QTextDocument
@@ -100,7 +102,7 @@ class ResearchPlan:
         self.ancestor = self.default_ancestor
         self.ancestor_link = ""
         self.goal = "Describe your goals for this plan..."
-        self.tasks = []
+        self.tasks: List[ResearchTask] = []
 
     def __str__(self):
         retval = "Research Plan: " + self.ancestor
@@ -133,7 +135,7 @@ class ResearchPlan:
         self.tasks.append(task)
         return task
 
-    def delete_task(self, index):
+    def delete_task(self, index: int):
         """ Deletes the task at the given index """
         if index > len(self.tasks) or len(self.tasks) == 0:
             return
