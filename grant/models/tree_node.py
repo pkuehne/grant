@@ -124,8 +124,14 @@ class TreeNode:
     def get_font(self):
         """ Returns the font to display the item in """
         font = QFont()
-        if self.type != "task":
-            return font
-        if self.data.result is not None and self.data.result.is_nil():
+        if self.is_complete():
             font.setStrikeOut(True)
         return font
+
+    def is_complete(self):
+        """ Whether this plan/task is complete or not """
+        if self.type == "plans":
+            return False
+        if self.type == "task":
+            return self.data.result is not None
+        return all([node.is_complete() for node in self.children])

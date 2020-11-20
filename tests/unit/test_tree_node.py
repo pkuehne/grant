@@ -82,3 +82,76 @@ def test_set_link_updates_link_id():
     # Then
     assert plan_data.ancestor_link == 1234
     assert task_data.source_link == 2345
+
+
+def test_is_complete_false_for_plans():
+    """ is_complete() returns false if there is no result set """
+    # Given
+    plans_data = SimpleNamespace(plans=[])
+    plans = TreeNode("plans", plans_data, None, 0)
+
+    # When
+    retval = plans.is_complete()
+
+    # Then
+    assert retval is False
+
+
+def test_is_complete_false_for_no_result():
+    """ is_complete() returns false if there is no result set """
+    # Given
+    task_data = SimpleNamespace(result=None)
+    plan_data = SimpleNamespace(tasks=[task_data])
+    plan = TreeNode("plan", plan_data, None, 0)
+    task = TreeNode("task", task_data, plan, 1)
+
+    # When
+    retval = task.is_complete()
+
+    # Then
+    assert retval is False
+
+
+def test_is_complete_true_if_result():
+    """ is_complete() returns true if there is a result """
+    # Given
+    task_data = SimpleNamespace(result=True)
+    plan_data = SimpleNamespace(tasks=[task_data])
+    plan = TreeNode("plan", plan_data, None, 0)
+    task = TreeNode("task", task_data, plan, 1)
+
+    # When
+    retval = task.is_complete()
+
+    # Then
+    assert retval is True
+
+
+def test_is_complete_true_for_plan_if_tasks_complete():
+    """ is_complete() returns true for a plan if all tasks are complete """
+    # Given
+    task_data = SimpleNamespace(result=True)
+    plan_data = SimpleNamespace(tasks=[task_data])
+    plan = TreeNode("plan", plan_data, None, 0)
+    task = TreeNode("task", task_data, plan, 1)  # pylint: disable=unused-variable
+
+    # When
+    retval = plan.is_complete()
+
+    # Then
+    assert retval is True
+
+
+def test_is_complete_false_for_plan_if_task_open():
+    """ is_complete() returns false for a plan if there is an open task """
+    # Given
+    task_data = SimpleNamespace(result=None)
+    plan_data = SimpleNamespace(tasks=[task_data])
+    plan = TreeNode("plan", plan_data, None, 0)
+    task = TreeNode("task", task_data, plan, 1)  # pylint: disable=unused-variable
+
+    # When
+    retval = plan.is_complete()
+
+    # Then
+    assert retval is False
