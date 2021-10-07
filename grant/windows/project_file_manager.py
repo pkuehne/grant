@@ -42,26 +42,22 @@ class ProjectFileManager(QObject):
     def save_project(self):
         """ Saves the currently loaded project """
         if self.project is None:
-            print("No project to save")
             return
 
         with open(self.project.filename, "w") as file:
             yaml.dump(self.project.to_py(), file)
-        print("Saved project: " + self.project.filename)
         self.needs_saving = False
         self.project_saved.emit()
 
     def save_project_as(self):
         """ Saves the currently loaded project as a new name """
         if self.project is None:
-            print("No project to save")
             return
 
         (file_name, _) = QFileDialog.getSaveFileName(
             self.parent(), "Save as ", ".", "Grant Project (*.gra)"
         )
         if file_name == "":
-            print("Cancelled saving")
             return
 
         self.project.filename = file_name
@@ -80,7 +76,6 @@ class ProjectFileManager(QObject):
             self.parent(), "Create a project", ".", "Grant Project (*.gra)"
         )
         if file_name == "":
-            print("Cancelled creation")
             return
 
         self.project = ResearchProject(file_name)
@@ -99,7 +94,6 @@ class ProjectFileManager(QObject):
             self.parent(), "Open a project", ".", "Grant Project (*.gra)"
         )
         if file_name == "":
-            print("Cancelled opening")
             return
 
         self.project = ResearchProject(file_name)
@@ -122,7 +116,6 @@ class ProjectFileManager(QObject):
             self.parent(), "Select file link", ".", "Gedcom File (*.ged)"
         )
         if file_name == "":
-            print("Cancelled opening")
             return
 
         self.project.gedcom = file_name

@@ -5,6 +5,8 @@ test_data/
 build/
 dist/
 develop/
+venv/
+htmlcov/
 *.spec
 resources.py
 .coverage

@@ -1,5 +1,6 @@
 """ A window to edit the ResearchResult of a ResearchTask """
 
+import datetime
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtWidgets import QFormLayout
 from PyQt5.QtWidgets import QHBoxLayout
@@ -9,12 +10,13 @@ from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QTextEdit
 from PyQt5.QtWidgets import QComboBox
-from PyQt5.QtCore import QStringListModel
+from PyQt5.QtWidgets import QDateEdit
+from PyQt5.QtCore import QStringListModel, QDate
 from grant.research import ResearchResult
 
 
 class ResultDialog(QDialog):
-    """ Edit a given Result """
+    """Edit a given Result"""
 
     dialog_reference = None
 
@@ -30,6 +32,8 @@ class ResultDialog(QDialog):
         status_model = QStringListModel(["<remove>", "success", "nil"])
         self.status.setModel(status_model)
         form_layout.addRow(QLabel("Result:"), self.status)
+        self.completed = QDateEdit()
+        form_layout.addRow(QLabel("Date:"), self.completed)
         self.summary = QTextEdit()
         form_layout.addRow(QLabel("Summary:"), self.summary)
         self.document = QLineEdit()
@@ -51,14 +55,16 @@ class ResultDialog(QDialog):
         self.setLayout(main_layout)
 
         if self.result is not None:
+            self.completed.setDate(self.result.date)
             self.status.setCurrentText("nil" if self.result.is_nil() else "success")
             self.summary.setText(self.result.summary)
             self.document.setText(self.result.document)
         else:
+            self.completed.setDate(QDate.currentDate())
             self.status.setCurrentText("<remove>")
 
     def ok_pressed(self):
-        """ Triggered when the OK button is pressed """
+        """Triggered when the OK button is pressed"""
         if self.status.currentText() == "<remove>":
             self.result = None
         else:
@@ -68,11 +74,17 @@ class ResultDialog(QDialog):
             self.result.summary = self.summary.toPlainText()
             self.result.document = self.document.text()
             self.result.nil = success is False
+            self.result.date = datetime.date(
+                self.completed.date().year(),
+                self.completed.date().month(),
+                self.completed.date().day(),
+            )
+
         self.accept()
 
     @classmethod
     def get_result(cls, result, parent):
-        """ Wraps the creation of the dialog, particularly for unit testing """
+        """Wraps the creation of the dialog, particularly for unit testing"""
         ResultDialog.dialog_reference = cls(result, parent)
         ResultDialog.dialog_reference.summary.setFocus()
         ResultDialog.dialog_reference.exec_()
