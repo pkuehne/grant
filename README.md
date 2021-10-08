@@ -1,4 +1,4 @@
-![Master Branch Validation](https://github.com/pkuehne/grant/workflows/Master%20Branch%20Validation/badge.svg?branch=master)
+![Main Branch Validation](https://github.com/pkuehne/grant/workflows/Main%20Branch%20Validation/badge.svg?branch=main)
 ![GitHub All Releases](https://img.shields.io/github/downloads/pkuehne/grant/total)
 ![Latest release](https://img.shields.io/github/v/release/pkuehne/grant)
 
