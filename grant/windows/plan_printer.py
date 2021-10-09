@@ -7,7 +7,7 @@ from grant import research
 
 
 def _style_html() -> str:
-    """ The style to use in the header """
+    """The style to use in the header"""
     return """
         body {
             width: 21cm;
@@ -40,7 +40,7 @@ def _style_html() -> str:
 
 
 def _task_html(task: research.ResearchTask) -> str:
-    """ Generates the HTML needed to print a task """
+    """Generates the HTML needed to print a task"""
     date = task.result.date.strftime("%Y-%m-%d %H:%M") if task.result else ""
     result = str(task.result) if task.result else ""
     document = task.result.document if task.result else ""
@@ -58,13 +58,12 @@ def _task_html(task: research.ResearchTask) -> str:
 
 
 def _plan_html(plan: research.ResearchPlan) -> str:
-    """ Generates the HTML necessary to print a plan """
+    """Generates the HTML necessary to print a plan"""
     return f"""
         <h1>Research Log - {plan.ancestor}</h1>
         <hr />
         <h3>Research Goals:</h3>
-        To find out when he lived, his parents and any potential wife he may have
-        had.
+        {plan.goal}
         <table id="task-table">
             <thead>
             <tr>
@@ -84,7 +83,7 @@ def _plan_html(plan: research.ResearchPlan) -> str:
 
 
 def _document_html(plans: typing.List[research.ResearchPlan]) -> str:
-    """ Generates the wrapper html for the printer """
+    """Generates the wrapper html for the printer"""
     return f"""
         <html>
             <head>
@@ -100,7 +99,7 @@ def _document_html(plans: typing.List[research.ResearchPlan]) -> str:
 
 
 class PlanPrinter:
-    """ Allows printing of ResearchPlan objects """
+    """Allows printing of ResearchPlan objects"""
 
     def __init__(self):
         self.printer = QtPrintSupport.QPrinter(QtPrintSupport.QPrinter.HighResolution)
@@ -110,15 +109,15 @@ class PlanPrinter:
         self.dialog = QtPrintSupport.QPrintDialog(self.printer)
 
     def print_project(self, project: research.ResearchProject):
-        """ Prints all plans in the project """
+        """Prints all plans in the project"""
         self.print_plans(project.plans)
 
     def print_plan(self, plan: research.ResearchPlan):
-        """ Print a single plan """
+        """Print a single plan"""
         self.print_plans([plan])
 
     def print_plans(self, plans: typing.List[research.ResearchPlan]):
-        """ print a list of plans """
+        """print a list of plans"""
 
         if self.dialog.exec_() != QtPrintSupport.QPrintDialog.Accepted:
             return
