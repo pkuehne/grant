@@ -3,7 +3,7 @@ pytest==5.4.2
 pytest-qt==3.3.0
 pytest-cov==2.8.1
 pyyaml==5.4
-pyinstaller==3.6
+pyinstaller==5.13.1
 pylint==2.5.2
 black==19.10b0
 python-gedcom==1.0.0
